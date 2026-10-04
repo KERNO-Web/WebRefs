@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Portfolio — six web projects</title>
+<meta name="description" content="Six frontend projects: NOCTIS, NULL, NEXUS Card, RANKED, ROUTE, Wild Hunt." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Manrope:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root { --bg: #0a0a0c; --text: #ece6dc; --muted: #8b868d; --line: rgba(236,230,220,.12); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 15px/1.6 Manrope, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  main { max-width: 1180px; margin: 0 auto; padding: clamp(48px, 10vw, 120px) clamp(20px, 5vw, 56px) 80px; }
+  .kicker { font-size: 11px; letter-spacing: .32em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 18px 0 0; font: 300 clamp(48px, 8vw, 112px)/.95 'Cormorant Garamond', serif; letter-spacing: -.02em; }
+  h1 em { color: #d9c2b3; }
+  ol { list-style: none; margin: 72px 0 0; padding: 0; border-top: 1px solid var(--line); }
+  a { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: baseline; gap: 16px; padding: 26px 0; border-bottom: 1px solid var(--line); color: inherit; text-decoration: none; transition: padding .5s cubic-bezier(.16,1,.3,1); }
+  a:hover { padding-left: 14px; }
+  .n { font-size: 11px; letter-spacing: .2em; color: var(--muted); }
+  .t { display: grid; gap: 4px; min-width: 0; }
+  .t b { font: 300 clamp(32px, 5vw, 60px)/1 'Cormorant Garamond', serif; }
+  a:hover .t b { font-style: italic; }
+  .t span { color: var(--muted); }
+  .go { font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+  footer { margin-top: 56px; font-size: 12px; color: #5e5a61; }
+  @media (max-width: 600px) { a { grid-template-columns: 1fr; gap: 6px; } .go { display: none; } }
+</style>
+</head>
+<body>
+<main>
+  <span class="kicker">Portfolio · 2026</span>
+  <h1>Six sites,<br /><em>six different voices.</em></h1>
+  <ol>
+    <li><a href="./noctis/"><span class="n">01</span><span class="t"><b>NOCTIS</b><span>Luxury fragrance campaign — WebGL, editorial motion</span></span><span class="go">Open →</span></a></li>
+    <li><a href="./null/"><span class="n">02</span><span class="t"><b>NULL</b><span>Abstract object in five chapters — three.js</span></span><span class="go">Open →</span></a></li>
+    <li><a href="./witcher/"><span class="n">03</span><span class="t"><b>Wild Hunt</b><span>A visual tribute to The Witcher 3</span></span><span class="go">Open →</span></a></li>
+    <li><a href="./ranked/"><span class="n">04</span><span class="t"><b>RANKED</b><span>Gaming services store — configurators, checkout, tracking</span></span><span class="go">Open →</span></a></li>
+    <li><a href="./nexus/"><span class="n">05</span><span class="t"><b>NEXUS Card</b><span>Spend crypto like money — virtual card product</span></span><span class="go">Open →</span></a></li>
+    <li><a href="./route/"><span class="n">06</span><span class="t"><b>ROUTE</b><span>Calm parcel tracker — real map, product photos</span></span><span class="go">Open →</span></a></li>
+  </ol>
+  <footer>Frontend demos made for a portfolio. All brands, orders and payments are fictional.</footer>
+</main>
+</body>
+</html>

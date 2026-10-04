@@ -1,0 +1,53 @@
+export const RU: Record<string, string> = {
+  'Switch language': 'Переключить язык', Today: 'Сегодня', Tomorrow: 'Завтра', Yesterday: 'Вчера',
+  // app
+  'Moved to archive': 'Перемещено в архив', 'Restored from archive': 'Восстановлено из архива', '{name} added': '«{name}» добавлено',
+  'Skip to deliveries': 'Перейти к доставкам', 'Demo data restored': 'Демо-данные восстановлены',
+  'Issue reported. The carrier will reply within 24 hours.': 'Проблема отправлена. Перевозчик ответит в течение 24 часов.', Undo: 'Отменить',
+  // nav
+  'Add tracking': 'Добавить трек', Sections: 'Разделы', Overview: 'Обзор', Arriving: 'Прибывают', 'In transit': 'В пути', Delivered: 'Доставлено',
+  Archived: 'Архив', Settings: 'Настройки', 'Notifications ({n} unread)': 'Уведомления (непрочитанных: {n})', Notifications: 'Уведомления',
+  'Mark all as read': 'Прочитать все', 'Notifications are turned off in Settings.': 'Уведомления выключены в настройках.',
+  'Package arriving today': 'Посылка приедет сегодня', 'Delivery delayed': 'Доставка задерживается', 'Parcel delivered': 'Посылка доставлена', 'Tracking added': 'Трек добавлен',
+  Home: 'Дом', Add: 'Добавить', Archive: 'Архив',
+  // statuses
+  Processing: 'Обрабатывается', Shipped: 'Отправлено', Customs: 'Таможня', 'Out for delivery': 'Курьер в пути', Delayed: 'Задерживается',
+  'New ETA': 'Новый срок', 'Arriving today': 'Приедет сегодня', 'Arriving {day}': 'Ожидается: {day}', 'around 12:30': 'около 12:30',
+  Expected: 'Ожидается', 'Nothing arriving today.': 'Сегодня ничего не приедет.', All: 'Все', 'This week': 'На этой неделе', Later: 'Позже',
+  'Good morning.': 'Доброе утро.', Summary: 'Сводка', today: 'сегодня', 'this week': 'на неделе', 'in transit': 'в пути', 'You have {n} deliveries arriving this week.': 'На этой неделе ожидается доставок: {n}.', '{n} deliveries': 'Доставок: {n}',
+  'Search product, store, tracking, courier': 'Товар, магазин, трек-номер, курьер', 'Search deliveries': 'Поиск доставок', 'Clear search': 'Очистить поиск', Filter: 'Фильтр',
+  'No deliveries match “{q}”.': 'Ничего не найдено по запросу «{q}».', 'Archive is empty. Delivered items you archive will appear here.': 'Архив пуст. Сюда попадут доставленные посылки, которые вы архивируете.',
+  'Nothing here right now.': 'Здесь пока ничего нет.', 'Clear filters': 'Сбросить фильтры', 'Go to delivered': 'К доставленным',
+  // products
+  'Running Shoes': 'Кроссовки для бега', Groceries: 'Продукты', Documents: 'Документы', 'Wireless Headphones': 'Беспроводные наушники', 'Ceramic Vase': 'Керамическая ваза',
+  'Winter Jacket': 'Зимняя куртка', 'Coffee Beans': 'Кофе в зёрнах', 'Phone Case': 'Чехол для телефона', 'Desk Lamp': 'Настольная лампа', 'Dual Monitor Arm, Gas Spring': 'Кронштейн для двух мониторов с газлифтом',
+  'Paperback Books ×3': 'Книги ×3', Passport: 'Паспорт', 'Wireless Keyboard': 'Беспроводная клавиатура', Parcel: 'Посылка',
+  // detail
+  Depot: 'Склад', Courier: 'Курьер', 'Your address': 'Ваш адрес', 'The courier is on the way to you': 'Курьер выехал к вам', 'Last update: {time}': 'Последнее обновление: {time}',
+  'Demo: courier position is illustrative': 'Демо: положение курьера условное', 'Map of the delivery route from the depot to your address': 'Карта маршрута от склада до вашего адреса',
+  'Delivery details': 'Детали доставки', 'Select a delivery to see where it is.': 'Выберите доставку, чтобы увидеть, где она.', 'Tracking number copied': 'Трек-номер скопирован',
+  'All deliveries': 'Все доставки', 'Left at': 'Оставлено', 'Handed to resident': 'Передано лично', 'Front desk': 'На ресепшене', Mailbox: 'В почтовом ящике', 'Signed by resident': 'Под подпись',
+  'Weather disruption': 'Непогода',
+  'Storm closed the Øresund crossing for 36 hours. The parcel is safe at the Malmö hub and leaves on the first truck.': 'Шторм закрыл Эресуннский мост на 36 часов. Посылка в безопасности на складе в Мальмё и уедет первым же грузовиком.',
+  'What happened': 'Что случилось', 'What changes': 'Что изменилось', 'Updated ETA. No action needed from you.': 'Срок обновлён. От вас ничего не требуется.',
+  TODAY: 'СЕГОДНЯ', 'Issue reported': 'Проблема отправлена', 'awaiting carrier reply': 'ждём ответа перевозчика', Journey: 'Маршрут',
+  'Order received': 'Заказ получен', 'Regional facility': 'Региональный склад', Packed: 'Собран', 'Picked up': 'Забран курьером', 'Overnight hub': 'Ночной хаб',
+  'Arrived in Berlin': 'Прибыл в Берлин', 'Customs clearance': 'Таможенное оформление', 'Left origin country': 'Покинул страну отправления', 'Held at hub': 'Задержан на складе',
+  Roasting: 'Обжарка', Ready: 'Готово', completed: 'выполнено', 'current step': 'текущий шаг', upcoming: 'впереди',
+  Details: 'Детали', 'Tracking ID': 'Трек-номер', Carrier: 'Перевозчик', Origin: 'Откуда', Destination: 'Куда', Weight: 'Вес', 'Last update': 'Обновлено',
+  Copied: 'Скопировано', 'Copy tracking': 'Копировать трек', Restore: 'Восстановить', 'Report issue': 'Сообщить о проблеме', 'Demo data · current time {time}': 'Демо-данные · текущее время {time}',
+  // modals
+  Close: 'Закрыть', 'Awaiting first scan': 'Ожидается первое сканирование', 'Tracking number': 'Трек-номер', 'Try a demo number': 'Попробуйте демо-номер',
+  'Auto detect': 'Определить автоматически', Name: 'Название', Optional: 'необязательно', 'e.g. Birthday gift': 'например, подарок на день рождения',
+  'This tracking number is already in your list.': 'Этот трек-номер уже есть в списке.',
+  'Formats we recognise: NP…, RQ… NorthPost · EX… ExpressOne · GL… Global Parcel': 'Распознаём форматы: NP…, RQ… NorthPost · EX… ExpressOne · GL… Global Parcel',
+  Detected: 'Определено', Selected: 'Выбрано', Estimated: 'Ожидается', 'Carrier not recognised. Choose it from the list above.': 'Перевозчик не распознан. Выберите его в списке выше.',
+  Cancel: 'Отмена', 'Add delivery': 'Добавить доставку', 'Package is late': 'Посылка опаздывает', 'Marked delivered, not received': 'Отмечено доставленным, но не получено',
+  'Package arrived damaged': 'Посылка пришла повреждённой', 'Wrong address': 'Неверный адрес', 'Something else': 'Другое', Reason: 'Причина',
+  'Anything the carrier should know': 'Что стоит знать перевозчику', 'Send report': 'Отправить',
+  // settings
+  'Saved on this device.': 'Сохраняется на этом устройстве.', 'Delivery updates': 'Обновления доставок', 'Show alerts for arrivals, delays and deliveries.': 'Показывать уведомления о прибытии, задержках и доставке.',
+  Display: 'Отображение', 'Show delivered on Overview': 'Показывать доставленные в обзоре', 'Keep recently delivered items in the main list.': 'Оставлять недавно доставленное в основном списке.',
+  'Reduce motion': 'Меньше анимации', 'Turn off map and timeline animations.': 'Отключить анимации карты и таймлайна.', Language: 'Язык',
+  'Delivery address': 'Адрес доставки', 'Demo data': 'Демо-данные', 'Reset deliveries': 'Сбросить доставки', 'Restore the original 12 shipments and remove added ones.': 'Вернуть исходные 12 доставок и удалить добавленные.', Reset: 'Сбросить',
+};
