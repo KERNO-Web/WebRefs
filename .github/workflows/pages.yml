@@ -25,7 +25,7 @@ jobs:
       - name: Build every project into _site/<name>
         run: |
           mkdir -p _site
-          cp _landing/index.html _site/index.html
+          cp _landing/index.html _landing/og.jpg _site/
           for p in noctis null witcher ranked nexus route; do
             echo "::group::$p"
             (cd "$p" && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
