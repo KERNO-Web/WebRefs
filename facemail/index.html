@@ -12,9 +12,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body class="has-sidebar">
-    <div class="demo-ribbon">
-      Демо-версия · письма вымышленные · бэкенд, база и секреты отключены ·
-      <a href="https://facemail.site" target="_blank" rel="noopener">живой сайт →</a>
+    <div class="demo-ribbon" role="note">
+      <span class="demo-ribbon-tag">Демо</span>
+      <span class="demo-ribbon-text"><b>Это урезанная демо-версия.</b> Письма вымышленные, большинство функций отключено. Полная версия почты — на&nbsp;официальном сайте.</span>
+      <a class="demo-ribbon-btn" href="https://facemail.site" target="_blank" rel="noopener">Открыть facemail.site <span aria-hidden="true">→</span></a>
+    </div>
+
+    <div class="demo-intro" id="demo-intro" role="dialog" aria-modal="true" aria-labelledby="demo-intro-title" hidden>
+      <div class="demo-intro-card">
+        <span class="demo-intro-tag">Демо-версия</span>
+        <h2 id="demo-intro-title">Вы смотрите демо FACEMAIL</h2>
+        <p>Здесь только интерфейс почты с&nbsp;вымышленными письмами. Отправка, вход, настройки и&nbsp;остальной функционал в&nbsp;демо отключены.</p>
+        <p class="demo-intro-strong">Полная версия со&nbsp;всеми возможностями работает на&nbsp;официальном сайте.</p>
+        <div class="demo-intro-actions">
+          <a class="demo-intro-primary" href="https://facemail.site" target="_blank" rel="noopener">Перейти на facemail.site →</a>
+          <button class="demo-intro-secondary" type="button" id="demo-intro-close">Посмотреть демо</button>
+        </div>
+      </div>
     </div>
 
     <aside class="sidebar">

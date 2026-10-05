@@ -5,39 +5,145 @@
    the live app fills from the backend (message body, empty pane).
    ============================================================ */
 
-/* --- Demo ribbon: fixed full-width strip above the app shell --- */
+/* --- Demo ribbon: big fixed banner above the app shell --- */
+:root { --demo-h: 64px; }
 .demo-ribbon {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  height: 34px;
+  min-height: var(--demo-h);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 0 12px;
-  font-size: 12.5px;
+  gap: 16px;
+  padding: 10px 20px;
+  color: #fff;
+  background: linear-gradient(90deg, #ff7a1a, #ff4d2e);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+.demo-ribbon-tag {
+  flex: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.demo-ribbon-text {
+  font-size: 15px;
+  line-height: 1.35;
   font-weight: 500;
-  color: #fff;
-  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
-  text-align: center;
 }
-.demo-ribbon a {
-  color: #fff;
-  text-decoration: underline;
+.demo-ribbon-text b { font-weight: 700; }
+.demo-ribbon-btn {
+  flex: none;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #fff;
+  color: #1b1b1f;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
   white-space: nowrap;
+  transition: transform 0.15s ease;
 }
+.demo-ribbon-btn:hover { transform: translateY(-1px); }
 
-/* Clear the fixed ribbon: push the whole shell down and keep the
-   sticky sidebar below the ribbon. */
+/* Clear the fixed banner: push the whole shell down and keep the
+   sticky sidebar below it. */
 body.has-sidebar {
-  padding-top: 34px;
+  padding-top: var(--demo-h);
 }
 .sidebar {
-  top: 34px;
-  height: calc(100vh - 34px);
+  top: var(--demo-h);
+  height: calc(100vh - var(--demo-h));
+}
+
+/* --- First-visit card: says plainly this is a cut-down demo --- */
+.demo-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(10, 10, 14, 0.62);
+  backdrop-filter: blur(6px);
+}
+.demo-intro[hidden] { display: none; }
+.demo-intro-card {
+  width: min(520px, 100%);
+  padding: 32px 30px 28px;
+  border-radius: 20px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+.demo-intro-tag {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ff7a1a, #ff4d2e);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.demo-intro-card h2 {
+  margin: 16px 0 10px;
+  font-size: 26px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.demo-intro-card p {
+  margin: 0 0 10px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.demo-intro-card .demo-intro-strong { color: var(--text); font-weight: 600; }
+.demo-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.demo-intro-primary,
+.demo-intro-secondary {
+  padding: 12px 20px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.demo-intro-primary { background: var(--primary); color: #fff; border: 1px solid var(--primary); }
+.demo-intro-primary:hover { background: var(--primary-hover); }
+.demo-intro-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.demo-intro-secondary:hover { border-color: var(--text); }
+
+@media (max-width: 768px) {
+  .demo-ribbon {
+    position: relative;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 10px 12px;
+    padding: 14px 16px;
+  }
+  .demo-ribbon-text { flex: 1 1 200px; font-size: 14px; }
+  .demo-ribbon-btn { width: 100%; text-align: center; }
+  body.has-sidebar { padding-top: 0; }
+  .sidebar { top: 0; height: auto; }
+  /* keep the mailbox inside the phone width */
+  .sidebar-bottom { flex-wrap: wrap; margin-left: 0; width: 100%; }
+  .main, .page, .mail-columns, .mail-list-column, .mail-pane-column { min-width: 0; max-width: 100%; }
 }
 
 /* --- Topbar: theme toggle + account chrome (cosmetic in demo) --- */

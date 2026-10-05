@@ -249,7 +249,7 @@ function updateCounts() {
 let toastTimer;
 function toast(label) {
   const el = $('#toast');
-  el.textContent = `«${label}» — это демо, действие отключено`;
+  el.textContent = `«${label}» отключено в демо. Полная версия — на facemail.site`;
   el.hidden = false;
   requestAnimationFrame(() => el.classList.add('show'));
   clearTimeout(toastTimer);
@@ -267,6 +267,22 @@ function applyTheme(theme) {
   if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
   try { localStorage.setItem(THEME_KEY, theme); } catch { /* ignore */ }
 }
+
+/* --- Keep the shell clear of the fixed banner, whatever its height --- */
+const ribbon = $('.demo-ribbon');
+const syncRibbon = () => document.documentElement.style.setProperty('--demo-h', `${ribbon.offsetHeight}px`);
+if ('ResizeObserver' in window) new ResizeObserver(syncRibbon).observe(ribbon);
+syncRibbon();
+
+/* --- First-visit card: once per browser session --- */
+const INTRO_KEY = 'facemail-demo-intro-seen';
+function closeIntro() {
+  $('#demo-intro').hidden = true;
+  try { sessionStorage.setItem(INTRO_KEY, '1'); } catch { /* ignore */ }
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !$('#demo-intro').hidden) closeIntro();
+});
 
 /* --- Event wiring --- */
 document.addEventListener('click', (e) => {
@@ -299,6 +315,11 @@ document.addEventListener('click', (e) => {
     applyTheme(next);
     return;
   }
+  // Demo intro card
+  if (e.target.closest('#demo-intro-close') || e.target.id === 'demo-intro') {
+    closeIntro();
+    return;
+  }
   // Disabled demo actions
   const demo = e.target.closest('[data-demo-action]');
   if (demo) {
@@ -311,5 +332,8 @@ document.addEventListener('click', (e) => {
 let saved = 'dark';
 try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch { /* ignore */ }
 applyTheme(saved);
+let introSeen = false;
+try { introSeen = sessionStorage.getItem(INTRO_KEY) === '1'; } catch { /* ignore */ }
+if (!introSeen) $('#demo-intro').hidden = false;
 selectFolder('inbox');
 updateCounts();
