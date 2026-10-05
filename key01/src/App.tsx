@@ -1,8 +1,6 @@
-import { useEffect, useRef, useSyncExternalStore } from 'react';
+import { useEffect, useRef } from 'react';
 import { COLORWAYS } from './scene/colorways';
 import { COLOR_ORDER, createStage, type StageHandles } from './scene/stage';
-import { PROFILES, voices } from './sound';
-import Waveform from './Waveform';
 
 const LAYER_COPY = [
   ['caps', '01', 'Keycaps', 'Dye-sublimated PBT, sculpted profile'],
@@ -20,12 +18,6 @@ const DETAILS = [
   ['Signed underneath.', 'Each case is engraved with its own number. Turn it over: this one is yours.'],
 ];
 
-function useVoice() {
-  return useSyncExternalStore(
-    (f) => voices.subscribe(f),
-    () => voices.profile.id,
-  );
-}
 
 function scrollToScene(id: string, at = 0) {
   const el = document.querySelector<HTMLElement>(`[data-scene="${id}"]`);
@@ -37,7 +29,6 @@ function scrollToScene(id: string, at = 0) {
 export default function App() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const stage = useRef<StageHandles | null>(null);
-  const voice = useVoice();
 
   useEffect(() => {
     stage.current = createStage(canvas.current!);
@@ -59,7 +50,6 @@ export default function App() {
           <button onClick={() => scrollToScene('press')}>Feel</button>
           <button onClick={() => scrollToScene('layers', 0.45)}>Layers</button>
           <button onClick={() => scrollToScene('colors', 0.05)}>Colour</button>
-          <button onClick={() => scrollToScene('sound')}>Sound</button>
         </nav>
         <div className="nav-right">
           <a className="back" href="../">Portfolio</a>
@@ -83,7 +73,6 @@ export default function App() {
               </button>
             </div>
           </div>
-          <p className="hint"><kbd>A</kbd> Try typing. It is listening.</p>
         </section>
 
         {/* 2 — FORM */}
@@ -189,38 +178,11 @@ export default function App() {
           </div>
         </section>
 
-        {/* 6 — SOUND */}
-        <section className="scene sound" data-scene="sound">
-          <div className="sound-inner">
-            <div className="sound-head">
-              <p className="eyebrow">05 · Sound</p>
-              <h2>Pick a voice.</h2>
-              <p className="body">Swap switches and foams in a minute, no solder. Four voices to start with:</p>
-            </div>
-            <div className="voices">
-              {PROFILES.map((p) => (
-                <button
-                  key={p.id}
-                  className={`voice ${voice === p.id ? 'active' : ''}`}
-                  onClick={() => {
-                    voices.setProfile(p);
-                    dispatchEvent(new CustomEvent('key01:demo'));
-                  }}
-                >
-                  <span className="vn">{p.name}</span>
-                  <span className="vl">{p.line}</span>
-                </button>
-              ))}
-            </div>
-            <Waveform />
-          </div>
-        </section>
-
-        {/* 7 — DETAILS */}
+        {/* 6 — DETAILS */}
         <section className="scene details" data-scene="details" data-steps="4">
           <div className="sticky">
             <div className="details-copy">
-              <p className="eyebrow">06 · Details</p>
+              <p className="eyebrow">05 · Details</p>
               {DETAILS.map(([t, b], i) => (
                 <div key={t} className="detail" data-slot={i}>
                   <span className="dn">0{i + 1} / 04</span>
@@ -232,7 +194,7 @@ export default function App() {
           </div>
         </section>
 
-        {/* 8 — FINAL */}
+        {/* 7 — FINAL */}
         <section className="scene final" data-scene="final">
           <div className="giant final-giant" aria-hidden="true">touch</div>
           <div className="final-copy">

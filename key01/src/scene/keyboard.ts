@@ -350,18 +350,6 @@ export class Keyboard {
     s.until = performance.now() + hold * 1000;
   }
 
-  releaseKey(index: number) {
-    const s = this.press[index];
-    if (s) s.until = 0;
-  }
-
-  pressCode(code: string) {
-    const i = KEYS.findIndex((k) => k.code === code);
-    if (i >= 0) this.pressKey(i);
-    if (code === 'AudioVolumeUp' || code === 'AudioVolumeDown') this.knob.rotation.y += 0.3;
-    return i;
-  }
-
   /** Layer anchor at the right edge of a layer, in world space. */
   layerAnchor(name: LayerName, out: THREE.Vector3) {
     const x = name === 'case' ? OUT_W / 2 : FIELD_W / 2 + 0.05;

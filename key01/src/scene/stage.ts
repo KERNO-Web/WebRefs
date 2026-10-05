@@ -237,12 +237,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       const kbPose = wide ? P(0, -0.06, 0.55, 0.55, -0.62 + p * 1.0, 0.05) : P(0, -0.04, 1.12, 0.66, -0.4 + p * 0.6, 0.22);
       return base({ kb: kbPose, colorway: idx, bg: COLORWAYS[idx].bg });
     },
-    sound: () =>
-      base({
-        kb: wide ? P(0.0, -0.5, 0.9, 1.0, 0, -0.05) : P(0, -0.44, 1.7, 1.0, 0, -0.08),
-        bg: '#d9f64f',
-        shadow: 0.7,
-      }),
     details: (p) => {
       const frames = wide
         ? [
@@ -315,66 +309,14 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   const macroTap = { p: 0, v: 0, until: 0 };
   const tapMacro = () => {
     macroTap.until = performance.now() + 110;
-    dispatchEvent(new CustomEvent('key01:press'));
   };
 
-  let activeId = 'hero';
-  // real typing: the board follows the physical key down and back up
-  const held = new Map<string, number>();
-  const onKey = (e: KeyboardEvent) => {
-    if (e.repeat || e.metaKey || e.ctrlKey) return;
-    if (activeId === 'press') {
-      tapMacro();
-      return;
-    }
-    const idx = kb.pressCode(e.code);
-    if (idx < 0) return;
-    kb.pressKey(idx, 5);
-    held.set(e.code, idx);
-    dispatchEvent(new CustomEvent('key01:press'));
-  };
-  const onKeyUp = (e: KeyboardEvent) => {
-    const idx = held.get(e.code);
-    if (idx === undefined) return;
-    held.delete(e.code);
-    kb.releaseKey(idx);
-  };
-  addEventListener('keyup', onKeyUp);
-  addEventListener('keydown', onKey);
 
   // colorway "hop": a little lift and turn every time the collection changes
   let hop = 0;
   let lastColor = cur.colorway;
   kb.setColorway(cur.colorway, true);
 
-  // auto-typing for the sound scene
-  let nextAuto = 0;
-  // the voice demo types a short line with a human rhythm on the 3D board
-  const PHRASES = ['built to be felt', 'every press refined', 'form you can hear', 'hello key one'];
-  let phrase = 0;
-  let demoTimers: number[] = [];
-  const onDemo = () => {
-    demoTimers.forEach(clearTimeout);
-    demoTimers = [];
-    const text = PHRASES[phrase++ % PHRASES.length];
-    let t = 0;
-    for (const ch of text) {
-      const code = ch === ' ' ? 'Space' : `Key${ch.toUpperCase()}`;
-      const idx = KEYS.findIndex((k) => k.code === code);
-      if (idx < 0) continue;
-      const hold = 0.065 + Math.random() * 0.05;
-      demoTimers.push(
-        window.setTimeout(() => {
-          kb.pressKey(idx, hold);
-          dispatchEvent(new CustomEvent('key01:press'));
-        }, t),
-      );
-      // faster inside a word, a breath after each space
-      t += (ch === ' ' ? 170 : 95) + Math.random() * 70;
-    }
-    nextAuto = performance.now() + t + 900;
-  };
-  addEventListener('key01:demo', onDemo);
 
   // ── overlays projected from 3D ─────────────────────────────────────
   const labelEls = new Map<LayerName, HTMLElement>();
@@ -447,7 +389,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     const time = now / 1000;
 
     const { state: target, active, progress } = targetAt(scrollY);
-    activeId = active;
     smoothState(target, first || reduce || still ? 1 : 1 - Math.exp(-dt * 7));
     first = false;
 
@@ -482,13 +423,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     kb.setExplode(cur.explode);
     (kb.shadow.material as THREE.MeshBasicMaterial).opacity = 0.5 * cur.shadow;
     kb.shadow.visible = cur.shadow > 0.01;
-
-    // ambient typing in the sound scene
-    if (active === 'sound' && now > nextAuto) {
-      const alphas = KEYS.length;
-      kb.pressKey(Math.floor(Math.random() * alphas), 0.06);
-      nextAuto = now + 140 + Math.random() * 420;
-    }
 
     kb.update(dt, now);
     kb.root.updateMatrixWorld(true);
@@ -557,9 +491,13 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     }
 
     // top-view dimensions in the form scene
-    if (active === 'form' && measureEl) {
+    const formSec = sections.find((x) => x.id === 'form');
+    if (measureEl && (active !== 'form' || !formSec)) measureEl.style.opacity = '0';
+    if (active === 'form' && measureEl && formSec) {
       const pf = progress.form ?? 0;
-      const vis = 1 - smooth(0.26, 0.38, pf);
+      // wait until the board has landed in its top view, then fade out on schedule
+      const arrived = smooth(formSec.top - vh * 0.02, formSec.top + vh * 0.06, scrollY);
+      const vis = arrived * (1 - smooth(0.26, 0.38, pf));
       const y = 1.22;
       const tl = toScreen(kb.root.localToWorld(v.set(-OUT_W / 2, y, -OUT_D / 2)));
       const tr = toScreen(kb.root.localToWorld(v.set(OUT_W / 2, y, -OUT_D / 2)));
@@ -594,10 +532,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       ro.disconnect();
       removeEventListener('resize', measure);
       removeEventListener('pointermove', onPointer);
-      removeEventListener('keydown', onKey);
-      removeEventListener('keyup', onKeyUp);
-      demoTimers.forEach(clearTimeout);
-      removeEventListener('key01:demo', onDemo);
       renderer.dispose();
     },
   };
