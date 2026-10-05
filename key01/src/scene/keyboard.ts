@@ -72,8 +72,20 @@ function keycapGeometry(w: number) {
   return g;
 }
 
+/** Copy one material group of a non-indexed geometry into its own geometry. */
+function groupSlice(g: THREE.BufferGeometry, index: number) {
+  const src = g.index ? g.toNonIndexed() : g;
+  const grp = src.groups[index];
+  const out = new THREE.BufferGeometry();
+  for (const name of ['position', 'normal', 'uv']) {
+    const a = src.attributes[name] as THREE.BufferAttribute;
+    out.setAttribute(name, new THREE.BufferAttribute(a.array.slice(grp.start * a.itemSize, (grp.start + grp.count) * a.itemSize), a.itemSize));
+  }
+  return out;
+}
+
 function legendMaterial(atlas: THREE.Texture) {
-  const m = new THREE.MeshPhysicalMaterial({ roughness: 0.5, metalness: 0, clearcoat: 0.12, clearcoatRoughness: 0.5, envMapIntensity: 0.75 });
+  const m = new THREE.MeshStandardMaterial({ roughness: 0.5, metalness: 0, envMapIntensity: 0.75 });
   const legend = new THREE.Color('#ffffff');
   m.userData.legend = legend;
   // keep the PHYSICAL/STANDARD defines, just switch on the uv varying
@@ -105,14 +117,14 @@ export class Keyboard {
   readonly assembly = new THREE.Group();
   readonly inner = new THREE.Group();
   readonly layers = {} as Record<LayerName, THREE.Group>;
-  readonly keyMeshes: THREE.Mesh[] = [];
+  /** the Esc keycap, kept separate so the press scene can lift it out */
+  esc!: THREE.Mesh;
   readonly knob = new THREE.Group();
   readonly shadow: THREE.Mesh;
   readonly stems: THREE.InstancedMesh;
-  private readonly press = KEYS.map(() => ({ p: 0, v: 0, until: 0 }));
   private readonly tweens: Tween[] = [];
   private readonly caseMat: THREE.MeshPhysicalMaterial;
-  private readonly legendMats: Record<KeyRole, THREE.MeshPhysicalMaterial>;
+  private readonly legendMats: Record<KeyRole, THREE.MeshStandardMaterial>;
   private readonly badgeMat: THREE.MeshStandardMaterial;
   private metalTarget = 0.25;
   private explode = 0;
@@ -254,16 +266,21 @@ export class Keyboard {
       accent: legendMaterial(atlas.tex),
     };
     const sideMats = {
-      alpha: new THREE.MeshPhysicalMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
-      mod: new THREE.MeshPhysicalMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
-      accent: new THREE.MeshPhysicalMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
+      alpha: new THREE.MeshStandardMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
+      mod: new THREE.MeshStandardMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
+      accent: new THREE.MeshStandardMaterial({ roughness: 0.55, envMapIntensity: 0.75 }),
     };
     for (const role of ['alpha', 'mod', 'accent'] as const) {
       tween(this.legendMats[role], (c) => c[role]);
       tween(sideMats[role], (c) => c[role]);
     }
+    // Every keycap except Esc is merged into one top and one side mesh per
+    // role: six draw calls instead of a hundred and sixty. Esc stays on its
+    // own because it lifts out of the board in the press scene.
     const capCache = new Map<number, THREE.ExtrudeGeometry>();
-    for (const k of KEYS) {
+    const tops: Record<KeyRole, THREE.BufferGeometry[]> = { alpha: [], mod: [], accent: [] };
+    const sides: Record<KeyRole, THREE.BufferGeometry[]> = { alpha: [], mod: [], accent: [] };
+    KEYS.forEach((k, idx) => {
       if (!capCache.has(k.w)) capCache.set(k.w, keycapGeometry(k.w));
       const g = capCache.get(k.w)!.clone();
       const cx = k.x + k.w / 2;
@@ -273,12 +290,26 @@ export class Keyboard {
       for (let i = 0; i < pos.count; i++) {
         uv.setXY(i, (cx + pos.getX(i)) / FIELD_W, 1 - (cz + pos.getZ(i)) / FIELD_D);
       }
-      const mesh = new THREE.Mesh(g, [this.legendMats[k.role], sideMats[k.role]]);
-      mesh.position.set(cx - FIELD_W / 2, CAP_Y, cz - FIELD_D / 2);
-      mesh.castShadow = mesh.receiveShadow = true;
-      mesh.userData.key = k;
-      this.keyMeshes.push(mesh);
-      this.layers.caps.add(mesh);
+      const x = cx - FIELD_W / 2;
+      const z = cz - FIELD_D / 2;
+      if (idx === 0) {
+        const mesh = new THREE.Mesh(g, [this.legendMats[k.role], sideMats[k.role]]);
+        mesh.position.set(x, CAP_Y, z);
+        mesh.castShadow = mesh.receiveShadow = true;
+        this.esc = mesh;
+        this.layers.caps.add(mesh);
+        return;
+      }
+      g.translate(x, CAP_Y, z);
+      tops[k.role].push(groupSlice(g, 0));
+      sides[k.role].push(groupSlice(g, 1));
+    });
+    for (const role of ['alpha', 'mod', 'accent'] as const) {
+      for (const [geos, mat] of [[tops[role], this.legendMats[role]], [sides[role], sideMats[role]]] as const) {
+        const mesh = new THREE.Mesh(mergeGeometries(geos), mat);
+        mesh.castShadow = mesh.receiveShadow = true;
+        this.layers.caps.add(mesh);
+      }
     }
 
     // ── knob ───────────────────────────────────────────────────────
@@ -344,10 +375,13 @@ export class Keyboard {
     this.explode = e;
   }
 
-  pressKey(index: number, hold = 0.09) {
-    const s = this.press[index];
-    if (!s) return;
-    s.until = performance.now() + hold * 1000;
+  /** An empty object sitting on a key, for camera focus points. */
+  keyAnchor(code: string) {
+    const k = KEYS.find((key) => key.code === code)!;
+    const o = new THREE.Object3D();
+    o.position.set(k.x + k.w / 2 - FIELD_W / 2, CAP_Y, k.z + 0.5 - FIELD_D / 2);
+    this.layers.caps.add(o);
+    return o;
   }
 
   /** Layer anchor at the right edge of a layer, in world space. */
@@ -357,9 +391,15 @@ export class Keyboard {
     return this.layers[name].localToWorld(out);
   }
 
-  update(dt: number, now: number) {
+  /** Advances colour tweens; returns true while anything is still changing. */
+  update(dt: number) {
     const k = 1 - Math.exp(-dt * 5);
-    for (const t of this.tweens) t.mat.color.lerp(t.target, k);
+    let moving = false;
+    for (const t of this.tweens) {
+      const c = t.mat.color;
+      if (Math.abs(c.r - t.target.r) + Math.abs(c.g - t.target.g) + Math.abs(c.b - t.target.b) > 0.002) moving = true;
+      c.lerp(t.target, k);
+    }
     for (const role of ['alpha', 'mod', 'accent'] as const) {
       const mat = this.legendMats[role];
       if (mat.userData.target) (mat.userData.legend as THREE.Color).lerp(mat.userData.target, k);
@@ -378,26 +418,6 @@ export class Keyboard {
       this.layers[name].position.y = LIFT[name] * eased;
     });
 
-    // key presses: a stiff spring so every press has a little rebound
-    const m = new THREE.Matrix4();
-    let dirty = false;
-    this.press.forEach((s, i) => {
-      const target = now < s.until ? 1 : 0;
-      if (target === 0 && s.p === 0 && s.v === 0) return;
-      const acc = (target - s.p) * 900 - s.v * 38;
-      s.v += acc * dt;
-      s.p += s.v * dt;
-      if (target === 0 && Math.abs(s.p) < 0.002 && Math.abs(s.v) < 0.02) {
-        s.p = 0;
-        s.v = 0;
-      }
-      const depth = THREE.MathUtils.clamp(s.p, -0.25, 1.1) * 0.17;
-      const mesh = this.keyMeshes[i];
-      mesh.position.y = CAP_Y - depth;
-      const key = KEYS[i];
-      this.stems.setMatrixAt(i, m.makeTranslation(key.x + key.w / 2 - FIELD_W / 2, 1.24 - depth, key.z + 0.5 - FIELD_D / 2));
-      dirty = true;
-    });
-    if (dirty) this.stems.instanceMatrix.needsUpdate = true;
+    return moving;
   }
 }

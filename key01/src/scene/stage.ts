@@ -96,12 +96,13 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     return null;
   }
   const mobile = matchMedia('(pointer: coarse)').matches || innerWidth < 760;
-  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.6 : 2));
+  // phones: fewer pixels and no shadow maps; the baked contact shadow carries it
+  renderer.setPixelRatio(Math.min(devicePixelRatio, mobile ? 1.25 : 2));
   renderer.setClearColor(0x000000, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 0.96;
-  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.enabled = !mobile;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
   const scene = new THREE.Scene();
@@ -120,7 +121,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   // studio light that travels with the board, so it always reads the same way
   const key = new THREE.DirectionalLight('#fffaf2', 1.35);
   key.position.set(-5, 14, 9);
-  key.castShadow = true;
+  key.castShadow = !mobile;
   key.shadow.mapSize.set(mobile ? 1024 : 2048, mobile ? 1024 : 2048);
   Object.assign(key.shadow.camera, { left: -10.5, right: 10.5, top: 7, bottom: -7, near: 1, far: 40 });
   key.shadow.bias = -0.0005;
@@ -131,7 +132,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   rim.position.set(8, 4, -10);
   kb.root.add(rim);
 
-  const esc = kb.keyMeshes[0];
+  const esc = kb.esc;
   const stemMat = kb.stems.material as THREE.Material;
   const macro = new MacroSwitch(esc, stemMat);
   macro.root.matrixAutoUpdate = false;
@@ -145,7 +146,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   // focus points for the macro detail frames, in board-local space
   kb.root.updateMatrixWorld(true);
   const local = (o: THREE.Object3D, offset = new THREE.Vector3()) => kb.root.worldToLocal(o.localToWorld(offset.clone()));
-  const hKey = kb.keyMeshes[KEYS.findIndex((k) => k.code === 'KeyH')];
+  const hKey = kb.keyAnchor('KeyH');
   const FOCUS = {
     knob: local(kb.knob, new THREE.Vector3(0, 0.25, 0)),
     legend: local(hKey, new THREE.Vector3(-0.6, 0.45, 0.1)),
@@ -155,17 +156,32 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   const escLocal = new THREE.Vector3(KEYS[0].x + 0.5 - FIELD_W / 2, 0, KEYS[0].z + 0.5 - FIELD_D / 2);
 
   // ── layout / sections ──────────────────────────────────────────────
+  let dirty = true;
+  // Height comes from a 100vh probe, not innerHeight: on phones the browser
+  // bars change innerHeight while scrolling, and resizing the canvas on every
+  // one of those is what made the scroll stutter.
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100vh;pointer-events:none;visibility:hidden';
+  document.body.appendChild(probe);
   let vw = innerWidth;
-  let vh = innerHeight;
+  let vh = probe.offsetHeight || innerHeight;
   let wide = vw / vh > 1.05;
+  let short = !wide && vh / vw < 2;
   let sections: Section[] = [];
+  let sizeKey = '';
   const measure = () => {
     vw = innerWidth;
-    vh = innerHeight;
+    vh = probe.offsetHeight || innerHeight;
     wide = vw / vh > 1.05;
-    renderer.setSize(vw, vh, false);
-    camera.aspect = vw / vh;
-    camera.updateProjectionMatrix();
+    short = !wide && vh / vw < 2;
+    const key = `${vw}x${vh}`;
+    if (key !== sizeKey) {
+      sizeKey = key;
+      renderer.setSize(vw, vh, false);
+      camera.aspect = vw / vh;
+      camera.updateProjectionMatrix();
+      dirty = true;
+    }
     sections = [...document.querySelectorAll<HTMLElement>('[data-scene]')].map((el) => ({
       id: el.dataset.scene!,
       el,
@@ -199,12 +215,12 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   const scenes: Record<string, (p: number) => State> = {
     hero: () =>
       base({
-        kb: wide ? P(0.13, -0.05, 0.58, 0.62, -0.46, 0.12) : P(0.04, -0.17, 1.32, 0.74, -0.42, 0.3),
+        kb: wide ? P(0.13, -0.05, 0.58, 0.62, -0.46, 0.12) : P(0.04, short ? -0.33 : -0.19, short ? 1.16 : 1.3, 0.74, -0.42, 0.3),
         bg: '#f4f2ee',
       }),
     form: (p) => {
-      const top = wide ? P(0.11, -0.01, 0.6 + p * 0.06, 1.3, 0, 0) : P(0, -0.16, 1.02, 1.3, 0, -Math.PI / 2);
-      const low = wide ? P(0.02, -0.08, 0.98, 0.1, -0.64, 0.02) : P(0.18, -0.2, 1.9, 0.12, -0.72, 0);
+      const top = wide ? P(0.11, -0.01, 0.6 + p * 0.06, 1.3, 0, 0) : P(0, short ? -0.25 : -0.16, short ? 0.8 : 1.02, 1.3, 0, -Math.PI / 2);
+      const low = wide ? P(0.02, -0.08, 0.98, 0.1, -0.64, 0.02) : P(0.18, short ? -0.27 : -0.2, 1.9, 0.12, -0.72, 0);
       return base({ kb: lerpPose(top, low, smooth(0.4, 0.62, p)), bg: '#ece6db' });
     },
     press: (p) => {
@@ -266,16 +282,19 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       }),
   };
 
-  const targetAt = (y: number): { state: State; active: string; progress: Record<string, number> } => {
+  const targetAt = (y: number): { state: State; active: string; pinned: boolean; progress: Record<string, number> } => {
     const progress: Record<string, number> = {};
     let state: State | null = null;
     let active = sections[0]?.id ?? 'hero';
+    let pinned = true;
+    // scroll maths follows the visible viewport (what sticky elements use)
+    const sv = innerHeight;
     for (let i = 0; i < sections.length; i++) {
       const s = sections[i];
-      const span = Math.max(1, s.height - vh);
+      const span = Math.max(1, s.height - sv);
       progress[s.id] = clamp01((y - s.top) / span);
       if (state) continue;
-      const pinnedEnd = s.top + s.height - vh;
+      const pinnedEnd = s.top + s.height - sv;
       if (y < s.top) {
         // only the very first section can be above us
         state = scenes[s.id](0);
@@ -288,9 +307,10 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
         const t = easeInOut(clamp01((y - pinnedEnd) / Math.max(1, n.top - pinnedEnd)));
         state = lerpState(scenes[s.id](1), scenes[n.id](0), t);
         active = t < 0.5 ? s.id : n.id;
+        pinned = false;
       }
     }
-    return { state: state ?? scenes[sections[sections.length - 1].id](1), active, progress };
+    return { state: state ?? scenes[sections[sections.length - 1].id](1), active, pinned, progress };
   };
 
   // ── live state ─────────────────────────────────────────────────────
@@ -382,24 +402,33 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   let last = performance.now();
   let raf = 0;
   let first = true;
+  let lastSig = '';
+  let lastHex = '';
+  let lastScrim = '';
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     const time = now / 1000;
 
-    const { state: target, active, progress } = targetAt(scrollY);
+    const { state: target, active, pinned, progress } = targetAt(scrollY);
     smoothState(target, first || reduce || still ? 1 : 1 - Math.exp(-dt * 7));
     first = false;
 
     // section progress → CSS, so the DOM choreography follows the same clock
+    // (only touched when the value actually changes, to keep style work low)
     for (const s of sections) {
-      const p = progress[s.id];
-      s.el.style.setProperty('--p', p.toFixed(4));
+      const p = progress[s.id].toFixed(4);
+      if (s.el.style.getPropertyValue('--p') !== p) s.el.style.setProperty('--p', p);
       const steps = Number(s.el.dataset.steps);
-      if (steps) s.el.dataset.step = String(Math.min(steps - 1, Math.floor(p * steps)));
+      if (steps) {
+        const step = String(Math.min(steps - 1, Math.floor(Number(p) * steps)));
+        if (s.el.dataset.step !== step) s.el.dataset.step = step;
+      }
     }
-    document.documentElement.dataset.active = active;
+    if (document.documentElement.dataset.active !== active) document.documentElement.dataset.active = active;
+    const pin = pinned ? '1' : '0';
+    if (document.documentElement.dataset.pinned !== pin) document.documentElement.dataset.pinned = pin;
 
     if (cur.colorway !== lastColor) {
       lastColor = cur.colorway;
@@ -416,15 +445,16 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     const calm = active === 'details' ? 0.25 : 1;
     pose.ry += px * 0.12 * calm + (active === 'colors' ? (1 - hop) * hop * 0.9 : 0);
     pose.rx += py * 0.08 * calm;
-    if (active === 'final') pose.rz += Math.sin(time * 0.35) * 0.04;
-    const bob = reduce ? 0 : Math.sin(time * 1.1) * 0.006 * calm;
+    if (active === 'final' && !mobile) pose.rz += Math.sin(time * 0.35) * 0.04;
+    // the idle float is a desktop nicety; on phones the board rests so frames can be skipped
+    const bob = reduce || mobile ? 0 : Math.sin(time * 1.1) * 0.006 * calm;
     applyPose(kb.root, pose, false, bob + hopLift);
     kb.assembly.position.y = 0;
     kb.setExplode(cur.explode);
     (kb.shadow.material as THREE.MeshBasicMaterial).opacity = 0.5 * cur.shadow;
     kb.shadow.visible = cur.shadow > 0.01;
 
-    kb.update(dt, now);
+    const tweening = kb.update(dt);
     kb.root.updateMatrixWorld(true);
 
     // macro switch: lifted from the Esc slot, then posed on its own
@@ -458,9 +488,16 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     // page tint follows the stage
     bgColor.lerp(new THREE.Color(cur.bg), still ? 1 : 1 - Math.exp(-dt * 6));
     const hex = '#' + bgColor.getHexString();
-    document.body.style.backgroundColor = hex;
-    document.documentElement.style.setProperty('--bg', hex);
-    document.documentElement.style.setProperty('--scrim', cur.scrim.toFixed(3));
+    if (hex !== lastHex) {
+      lastHex = hex;
+      document.body.style.backgroundColor = hex;
+      document.documentElement.style.setProperty('--bg', hex);
+    }
+    const scrim = cur.scrim.toFixed(3);
+    if (scrim !== lastScrim) {
+      lastScrim = scrim;
+      document.documentElement.style.setProperty('--scrim', scrim);
+    }
 
     // exploded-view labels
     if (active === 'layers' && leader) {
@@ -511,7 +548,17 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       measureEl.style.opacity = String(vis);
     }
 
-    renderer.render(scene, camera);
+    // skip the GPU work entirely when nothing on stage moved since last frame
+    const p0 = kb.root.position;
+    const q0 = kb.root.quaternion;
+    const sig = [p0.x, p0.y, p0.z, q0.x, q0.y, q0.z, q0.w, kb.root.scale.x, cur.explode, h, cur.mExplode, cur.mPress, macroTap.p]
+      .map((n) => n.toFixed(4))
+      .join('|');
+    if (dirty || tweening || sig !== lastSig) {
+      lastSig = sig;
+      dirty = false;
+      renderer.render(scene, camera);
+    }
     if (!canvas.classList.contains('ready')) canvas.classList.add('ready');
   };
   raf = requestAnimationFrame(frame);
@@ -524,13 +571,14 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       const s = sections.find((x) => x.id === 'colors');
       if (!s) return;
       const slot = COLOR_ORDER.indexOf(i);
-      const span = s.height - vh;
+      const span = s.height - innerHeight;
       scrollTo({ top: s.top + span * ((slot + 0.5) / 6), behavior: 'smooth' });
     },
     destroy: () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       removeEventListener('resize', measure);
+      probe.remove();
       removeEventListener('pointermove', onPointer);
       renderer.dispose();
     },

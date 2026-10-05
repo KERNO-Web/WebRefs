@@ -319,6 +319,17 @@ html[data-active='final'] .mark span { color: inherit; }
 .nav, .mark span { transition: color 0.6s; }
 
 .no-webgl .stage { display: none; }
+/* a pinned scene's copy only shows while that scene owns the stage, so text
+   never slides in over the board while it is still flying between scenes */
+[data-scene] > .sticky { opacity: 0; transition: opacity 0.45s ease; }
+html[data-active='form'] [data-scene='form'] > .sticky,
+html[data-active='press'] [data-scene='press'] > .sticky,
+html[data-active='layers'] [data-scene='layers'] > .sticky,
+html[data-active='colors'] [data-scene='colors'] > .sticky,
+html[data-active='details'] [data-scene='details'] > .sticky,
+.no-webgl [data-scene] > .sticky { opacity: 1; }
+/* and while the board travels between scenes, no copy at all */
+html[data-pinned='0'] [data-scene] > .sticky { opacity: 0; }
 
 /* ── tablet / phone recomposition ────────────────────────────────── */
 @media (max-width: 1100px) {
