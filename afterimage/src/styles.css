@@ -164,6 +164,10 @@ h2 {
   transform: translateX(calc(var(--p) * 10vw));
 }
 .w-image .word .ch { animation: drop 1.5s var(--d) var(--ease) both; }
+/* white + difference: ink on the paper, white where it crosses the dark shirt */
+.w-image:not(.trails) { color: #fff; mix-blend-mode: difference; }
+.w-image.trails { z-index: 2; }
+.w-image .spacer { visibility: hidden; }
 @keyframes rise { from { transform: translateY(0.42em); opacity: 0; filter: blur(12px); } }
 @keyframes drop { from { transform: translateY(-0.3em); opacity: 0; filter: blur(12px); } }
 
@@ -276,7 +280,7 @@ h2 {
 
 /* ── 3 image / persona ──────────────────────────────────────────── */
 .persona { position: relative; height: 230vh; }
-.persona-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+.persona-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: var(--paper); }
 .persona-stage { position: absolute; inset: 0; display: grid; place-items: center; }
 .persona-photo {
   width: min(38vw, 64vh);
@@ -289,7 +293,7 @@ h2 {
 }
 .in .persona-photo { opacity: 1; transform: scale(calc(1.06 - var(--pin) * 0.08)); }
 .persona-photo > img { filter: grayscale(1) contrast(1.12) brightness(1.04) blur(calc(max(0, 0.55 - var(--pin)) * 14px)); }
-.echo { position: absolute; inset: 0; mix-blend-mode: multiply; opacity: calc(0.42 - var(--pin) * 0.18); pointer-events: none; }
+.echo { position: absolute; inset: 0; mix-blend-mode: multiply; opacity: calc(0.4 - var(--pin) * 0.32); pointer-events: none; }
 .echo img { filter: grayscale(1) contrast(1.2) brightness(1.1); }
 .echo::after { content: ''; position: absolute; inset: 0; mix-blend-mode: screen; }
 .e-red::after { background: var(--crimson); }
@@ -308,11 +312,13 @@ h2 {
   font-size: 13vw;
   letter-spacing: -0.05em;
   color: transparent;
-  -webkit-text-stroke: 1.2px var(--ink);
+  /* a white outline in difference mode reads dark on paper and light on the print */
+  -webkit-text-stroke: 1.4px #fff;
+  mix-blend-mode: difference;
   pointer-events: none;
   transform: translateX(calc((0.5 - var(--pin)) * 22vw));
 }
-.persona-type .slash { font-style: normal; -webkit-text-stroke-color: var(--crimson); transform: rotate(calc(var(--pin) * 30deg)); display: inline-block; }
+.persona-type .slash { font-style: normal; transform: rotate(calc(var(--pin) * 30deg)); display: inline-block; }
 .persona-copy {
   position: absolute;
   left: var(--gutter);

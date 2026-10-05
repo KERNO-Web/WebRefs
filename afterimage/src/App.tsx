@@ -227,10 +227,14 @@ export default function App() {
           <figure className="cover-photo">
             <Img photo={PHOTOS.hero} eager />
           </figure>
-          <div className="w-image" aria-hidden="true">
-            <span className="word"><Letters word="image" delay={0.7} step={0.07} /></span>
+          {/* coloured trails sit under the word; the word inverts over the print */}
+          <div className="w-image trails" aria-hidden="true">
             <span className="ghost g1">image</span>
             <span className="ghost g2">image</span>
+            <span className="spacer">image</span>
+          </div>
+          <div className="w-image" aria-hidden="true">
+            <span className="word"><Letters word="image" delay={0.7} step={0.07} /></span>
           </div>
           <p className="cover-kicker">A$AP Rocky &nbsp;/&nbsp; Unofficial concept editorial &nbsp;/&nbsp; 2026</p>
           <div className="cover-foot">
