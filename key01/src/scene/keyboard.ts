@@ -18,30 +18,33 @@ const LIFT: Record<LayerName, number> = { case: 0, foam: 1.5, pcb: 3.0, plate: 4
 const LAYER_Y: Record<LayerName, number> = { case: 0.75, foam: 0.42, pcb: 0.64, plate: 0.95, switches: 1.05, caps: 1.5 };
 
 function roundedRect(w: number, d: number, r: number) {
+  // true circular corners, so the case stays smooth in the macro shots
   const s = new THREE.Shape();
-  const x = -w / 2;
-  const y = -d / 2;
-  s.moveTo(x + r, y);
-  s.lineTo(x + w - r, y);
-  s.quadraticCurveTo(x + w, y, x + w, y + r);
-  s.lineTo(x + w, y + d - r);
-  s.quadraticCurveTo(x + w, y + d, x + w - r, y + d);
-  s.lineTo(x + r, y + d);
-  s.quadraticCurveTo(x, y + d, x, y + d - r);
-  s.lineTo(x, y + r);
-  s.quadraticCurveTo(x, y, x + r, y);
+  const x0 = -w / 2;
+  const y0 = -d / 2;
+  const x1 = w / 2;
+  const y1 = d / 2;
+  s.moveTo(x0 + r, y0);
+  s.lineTo(x1 - r, y0);
+  s.absarc(x1 - r, y0 + r, r, -Math.PI / 2, 0, false);
+  s.lineTo(x1, y1 - r);
+  s.absarc(x1 - r, y1 - r, r, 0, Math.PI / 2, false);
+  s.lineTo(x0 + r, y1);
+  s.absarc(x0 + r, y1 - r, r, Math.PI / 2, Math.PI, false);
+  s.lineTo(x0, y0 + r);
+  s.absarc(x0 + r, y0 + r, r, Math.PI, Math.PI * 1.5, false);
   return s;
 }
 
 /** Extrude a shape upward (+y) with a soft chamfer. */
-function extrudeUp(shape: THREE.Shape, h: number, bevel: number, segs = 4) {
+function extrudeUp(shape: THREE.Shape, h: number, bevel: number, segs = 4, curveSegments = 10) {
   const g = new THREE.ExtrudeGeometry(shape, {
     depth: h - bevel * 2,
     bevelEnabled: true,
     bevelThickness: bevel,
     bevelSize: bevel,
     bevelSegments: segs,
-    curveSegments: 10,
+    curveSegments,
   });
   g.rotateX(-Math.PI / 2);
   g.computeBoundingBox();
@@ -147,8 +150,8 @@ export class Keyboard {
     const outer = roundedRect(OUT_W, OUT_D, 0.42);
     const frameShape = roundedRect(OUT_W, OUT_D, 0.42);
     frameShape.holes.push(roundedRect(FIELD_W + 0.16, FIELD_D + 0.16, 0.12) as unknown as THREE.Path);
-    const frame = extrudeUp(frameShape, CASE_H, 0.08, 5);
-    const floor = extrudeUp(outer, 0.3, 0.06, 3);
+    const frame = extrudeUp(frameShape, CASE_H, 0.08, 10, 40);
+    const floor = extrudeUp(outer, 0.3, 0.06, 6, 40);
     for (const g of [frame, floor]) {
       const p = g.attributes.position as THREE.BufferAttribute;
       for (let i = 0; i < p.count; i++) p.setY(i, p.getY(i) + -SLOPE * p.getZ(i) * (p.getY(i) / CASE_H));
@@ -347,6 +350,11 @@ export class Keyboard {
     s.until = performance.now() + hold * 1000;
   }
 
+  releaseKey(index: number) {
+    const s = this.press[index];
+    if (s) s.until = 0;
+  }
+
   pressCode(code: string) {
     const i = KEYS.findIndex((k) => k.code === code);
     if (i >= 0) this.pressKey(i);
@@ -371,10 +379,13 @@ export class Keyboard {
     this.caseMat.metalness += (this.metalTarget - this.caseMat.metalness) * k;
     this.badgeMat.color.copy(this.caseMat.color).multiplyScalar(0.6);
 
-    // staggered lift: each layer leaves a beat after the one below it
+    // staggered lift from the top down: the keycaps leave first and every
+    // layer starts after the one above it, so a layer can never pass through
+    // its neighbour (it also starts later and travels less far)
     const e = this.explode;
+    const top = LAYERS.length - 1;
     LAYERS.forEach((name, i) => {
-      const local = THREE.MathUtils.clamp(e * 1.6 - i * 0.12, 0, 1);
+      const local = THREE.MathUtils.clamp(e * 1.6 - (top - i) * 0.12, 0, 1);
       const eased = local < 0.5 ? 4 * local ** 3 : 1 - (-2 * local + 2) ** 3 / 2;
       this.layers[name].position.y = LIFT[name] * eased;
     });

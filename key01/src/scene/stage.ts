@@ -29,6 +29,8 @@ interface State {
   shadow: number;
   colorway: number;
   bg: string;
+  /** how much of the caption scrim is up (details scene only) */
+  scrim: number;
 }
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -68,6 +70,7 @@ function lerpState(a: State, b: State, t: number): State {
     handoff: lerp(a.handoff, b.handoff, t),
     shadow: lerp(a.shadow, b.shadow, t),
     colorway: t < 0.5 ? a.colorway : b.colorway,
+    scrim: lerp(a.scrim, b.scrim, t),
     bg: '#' + ca.lerp(new THREE.Color(b.bg), t).getHexString(),
   };
 }
@@ -190,6 +193,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     shadow: 1,
     colorway: 0,
     bg: '#f3f1ec',
+    scrim: 0,
     ...over,
   });
 
@@ -259,7 +263,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       const t = easeInOut(smooth(0.62, 1, fp - i));
       const pose = i < 3 ? lerpPose(frames[i], frames[i + 1], t) : frames[3];
       const under = i >= 2 ? (i === 2 ? t : 1) : 0;
-      return base({ kb: pose, colorway: 4, bg: '#f3efe8', shadow: (1 - under) * (i >= 2 ? 0 : 1) });
+      return base({ kb: pose, colorway: 4, bg: '#f3efe8', shadow: (1 - under) * (i >= 2 ? 0 : 1), scrim: 1 });
     },
     final: () =>
       base({
@@ -310,22 +314,40 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   addEventListener('pointermove', onPointer, { passive: true });
 
   const macroTap = { p: 0, v: 0, until: 0 };
+  const strokeOpts = (i: number) => {
+    const k = KEYS[i];
+    return k ? { x: ((k.x + k.w / 2) / FIELD_W) * 2 - 1, wide: k.w >= 2 } : {};
+  };
   const tapMacro = () => {
     macroTap.until = performance.now() + 110;
-    synth.play();
+    synth.tap({ x: -0.9 });
     dispatchEvent(new CustomEvent('key01:press'));
   };
 
   let activeId = 'hero';
+  // real typing: the board follows the physical key down and back up
+  const held = new Map<string, number>();
   const onKey = (e: KeyboardEvent) => {
     if (e.repeat || e.metaKey || e.ctrlKey) return;
-    const idx = kb.pressCode(e.code);
-    if (activeId === 'press') tapMacro();
-    else if (idx >= 0) {
-      synth.play();
-      dispatchEvent(new CustomEvent('key01:press'));
+    if (activeId === 'press') {
+      tapMacro();
+      return;
     }
+    const idx = kb.pressCode(e.code);
+    if (idx < 0) return;
+    kb.pressKey(idx, 5);
+    held.set(e.code, idx);
+    synth.down(strokeOpts(idx));
+    dispatchEvent(new CustomEvent('key01:press'));
   };
+  const onKeyUp = (e: KeyboardEvent) => {
+    const idx = held.get(e.code);
+    if (idx === undefined) return;
+    held.delete(e.code);
+    kb.releaseKey(idx);
+    synth.up(strokeOpts(idx));
+  };
+  addEventListener('keyup', onKeyUp);
   addEventListener('keydown', onKey);
 
   // colorway "hop": a little lift and turn every time the collection changes
@@ -335,16 +357,31 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
 
   // auto-typing for the sound scene
   let nextAuto = 0;
+  // the voice demo types a short line with a human rhythm on the 3D board
+  const PHRASES = ['built to be felt', 'every press refined', 'form you can hear', 'hello key one'];
+  let phrase = 0;
+  let demoTimers: number[] = [];
   const onDemo = () => {
-    const alphas = KEYS.map((k, i) => (k.role === 'alpha' && k.w === 1 ? i : -1)).filter((i) => i >= 0);
-    for (let n = 0; n < 7; n++) {
-      setTimeout(() => {
-        kb.pressKey(alphas[Math.floor(Math.random() * alphas.length)], 0.07);
-        synth.play();
-        dispatchEvent(new CustomEvent('key01:press'));
-      }, n * 115 + Math.random() * 40);
+    demoTimers.forEach(clearTimeout);
+    demoTimers = [];
+    const text = PHRASES[phrase++ % PHRASES.length];
+    let t = 0;
+    for (const ch of text) {
+      const code = ch === ' ' ? 'Space' : `Key${ch.toUpperCase()}`;
+      const idx = KEYS.findIndex((k) => k.code === code);
+      if (idx < 0) continue;
+      const hold = 0.065 + Math.random() * 0.05;
+      demoTimers.push(
+        window.setTimeout(() => {
+          kb.pressKey(idx, hold);
+          synth.tap(strokeOpts(idx), hold);
+          dispatchEvent(new CustomEvent('key01:press'));
+        }, t),
+      );
+      // faster inside a word, a breath after each space
+      t += (ch === ' ' ? 170 : 95) + Math.random() * 70;
     }
-    nextAuto = performance.now() + 1600;
+    nextAuto = performance.now() + t + 900;
   };
   addEventListener('key01:demo', onDemo);
 
@@ -393,6 +430,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     cur.handoff = lerp(cur.handoff, target.handoff, k);
     cur.shadow = lerp(cur.shadow, target.shadow, k);
     cur.colorway = target.colorway;
+    cur.scrim = target.scrim;
     cur.bg = target.bg;
   };
 
@@ -497,6 +535,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     const hex = '#' + bgColor.getHexString();
     document.body.style.backgroundColor = hex;
     document.documentElement.style.setProperty('--bg', hex);
+    document.documentElement.style.setProperty('--scrim', cur.scrim.toFixed(3));
 
     // exploded-view labels
     if (active === 'layers' && leader) {
@@ -565,6 +604,8 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       removeEventListener('resize', measure);
       removeEventListener('pointermove', onPointer);
       removeEventListener('keydown', onKey);
+      removeEventListener('keyup', onKeyUp);
+      demoTimers.forEach(clearTimeout);
       removeEventListener('key01:demo', onDemo);
       renderer.dispose();
     },

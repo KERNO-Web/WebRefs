@@ -47,12 +47,13 @@ export default function App() {
 
   const toggleSound = () => {
     synth.setEnabled(!synth.enabled);
-    if (synth.enabled) synth.play();
+    if (synth.enabled) synth.tap();
   };
 
   return (
     <>
       <canvas ref={canvas} className="stage" aria-hidden="true" />
+      <div className="scrim" aria-hidden="true" />
 
       <header className="nav">
         <a className="mark" href="#" onClick={(e) => { e.preventDefault(); scrollTo({ top: 0, behavior: 'smooth' }); }}>
@@ -239,9 +240,6 @@ export default function App() {
                   <p className="body">{b}</p>
                 </div>
               ))}
-            </div>
-            <div className="ticks" aria-hidden="true">
-              {DETAILS.map(([t], i) => <i key={t} data-slot={i} />)}
             </div>
           </div>
         </section>
