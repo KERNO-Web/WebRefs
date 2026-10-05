@@ -211,7 +211,17 @@ export default function App() {
           <p className="final-line">The image remains.</p>
           <footer className="colophon">
             <span>Afterimage — an unofficial editorial concept. Not affiliated with A$AP Rocky or his labels.</span>
-            {CREDITS.length > 0 && <span>Photography: {CREDITS.join(' · ')}</span>}
+            <span className="credits">
+              Photography via Wikimedia Commons, cropped and converted to black and white:{' '}
+              {CREDITS.map((c, i) => (
+                <span key={c.who}>
+                  <a href={c.url} target="_blank" rel="noopener noreferrer">{c.who}</a>, “{c.what}”,{' '}
+                  <a href={c.licenseUrl} target="_blank" rel="noopener noreferrer">{c.license}</a>
+                  {i < CREDITS.length - 1 ? ' · ' : '.'}
+                </span>
+              ))}{' '}
+              Derivatives of CC BY-SA images are shared under the same licence.
+            </span>
             <span className="colophon-links">
               <a href="#cover">Back to cover ↑</a>
               <a href="../">More work →</a>

@@ -229,13 +229,13 @@ h2 {
 }
 .in .persona-photo { opacity: 1; transform: none; }
 .persona-photo > img { filter: grayscale(1) contrast(1.08) brightness(1.05) blur(calc((1 - var(--pin)) * 6px)); }
-.echo { position: absolute; inset: 0; mix-blend-mode: multiply; opacity: calc(0.62 - var(--pin) * 0.22); pointer-events: none; }
+.echo { position: absolute; inset: 0; mix-blend-mode: multiply; opacity: calc(0.4 - var(--pin) * 0.16); pointer-events: none; }
 .echo img { filter: grayscale(1) contrast(1.2) brightness(1.1); }
 .echo::after { content: ''; position: absolute; inset: 0; mix-blend-mode: screen; }
 .e-red::after { background: var(--crimson); }
 .e-blue::after { background: var(--blue); }
-.e-red { transform: translate(calc((1 - var(--pin)) * -64px - 7px + var(--mx) * -18px), calc(var(--my) * -8px)); }
-.e-blue { transform: translate(calc((1 - var(--pin)) * 64px + 7px + var(--mx) * 18px), calc(var(--my) * 8px)); }
+.e-red { transform: translate(calc((1 - var(--pin)) * -44px - 5px + var(--mx) * -14px), calc(var(--my) * -6px)); }
+.e-blue { transform: translate(calc((1 - var(--pin)) * 44px + 5px + var(--mx) * 14px), calc(var(--my) * 6px)); }
 .persona-type {
   position: absolute;
   inset: 0;
@@ -314,8 +314,8 @@ figcaption em { margin-left: auto; font-style: normal; color: var(--muted); }
   height: 100%;
   background: var(--silver);
 }
-.tracks-photo img { opacity: 0.92; transform: translateY(calc((0.5 - var(--p)) * 8vh)) scale(1.1); transition: opacity 0.6s; }
-.tracks-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--paper), rgba(243, 242, 239, 0) 40%); }
+.tracks-photo img { opacity: 0.5; transform: translateY(calc((0.5 - var(--p)) * 8vh)) scale(1.1); transition: opacity 0.6s; }
+.tracks-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, var(--paper) 8%, rgba(243, 242, 239, 0.4) 55%, rgba(243, 242, 239, 0)); }
 .tracks-inner { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 4vw; align-items: start; }
 .tracks-head { position: sticky; top: 16vh; }
 .tracks-note { margin-top: 28px; max-width: 30ch; color: var(--muted); line-height: 1.8; }
@@ -391,8 +391,9 @@ blockquote { font-family: var(--display); font-style: italic; font-size: clamp(3
   pointer-events: none;
 }
 .final-title span { display: inline-block; transform: translateY(40%); opacity: 0; transition: transform 1.8s var(--ease), opacity 1.4s var(--ease); }
-.final-title span:first-child { text-transform: uppercase; font-weight: 500; }
-.final-title span:last-child { font-style: italic; color: var(--crimson); mix-blend-mode: multiply; transition-delay: 0.12s; }
+/* white + difference: near-black on the paper, light where it crosses the print */
+.final-title span:first-child { text-transform: uppercase; font-weight: 500; color: #fff; mix-blend-mode: difference; }
+.final-title span:last-child { font-style: italic; color: var(--crimson); transition-delay: 0.12s; }
 .final.in .final-title span { transform: none; opacity: 1; }
 .final-line {
   position: absolute;
@@ -469,11 +470,12 @@ blockquote { font-family: var(--display); font-style: italic; font-size: clamp(3
   .fashion-copy { grid-column: 1; grid-row: 2; padding: 0 var(--gutter); }
   .fashion-word { font-size: 40vw; top: 34%; }
 
-  .final { height: 100svh; min-height: 640px; }
-  .final-photo { top: 12svh; width: 76vw; height: 56svh; }
-  .final-title { top: 56svh; font-size: 22vw; flex-direction: column; align-items: center; }
-  .final-line { top: auto; bottom: 18svh; font-size: 19px; }
-  .colophon { flex-direction: column; align-items: center; text-align: center; bottom: 20px; }
+  /* the closing cover flows on phones so the colophon never collides */
+  .final { height: auto; min-height: 100svh; padding: 12svh 0 28px; }
+  .final-photo { position: relative; left: auto; top: auto; translate: none; margin: 0 auto; width: 76vw; height: 56svh; }
+  .final-title { position: relative; top: auto; margin-top: -9svh; font-size: 22vw; flex-direction: column; align-items: center; }
+  .final-line { position: relative; top: auto; bottom: auto; margin-top: 5svh; font-size: 19px; }
+  .colophon { position: relative; left: auto; right: auto; bottom: auto; margin: 7svh var(--gutter) 0; flex-direction: column; align-items: center; text-align: center; }
 }
 
 .reduce *, .reduce *::before, .reduce *::after { animation-duration: 0.001s !important; transition-duration: 0.001s !important; }
