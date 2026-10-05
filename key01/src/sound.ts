@@ -1,8 +1,7 @@
-// Keystroke sounds by modal synthesis. A key press is a short contact pulse
-// (keycap and stem hitting the plate) exciting the resonances of the case and
-// keycap; the release is a second, lighter event when the stem tops out.
-// Every profile is rendered into several slightly different variants up
-// front, so no two presses sound identical. No audio files, opt-in only.
+// Switch "voices" for the sound scene. Nothing is played: each voice is a
+// modal model of a keystroke (a contact pulse exciting the case and keycap
+// resonances, then a lighter release) rendered offline only to draw its
+// waveform, so the four voices visibly differ.
 
 type Mode = [freq: number, decay: number, amp: number];
 
@@ -77,8 +76,6 @@ export const PROFILES: Profile[] = [
     level: 0.85,
   },
 ];
-
-const VARIANTS = 8;
 
 /** Tiny deterministic PRNG so variants are stable between renders. */
 function rng(seed: number) {
@@ -158,25 +155,8 @@ function render(hits: Hit[], sr: number, seed: number, pitch: number, rattle: nu
   return out;
 }
 
-interface Bank {
-  down: Float32Array[];
-  up: Float32Array[];
-  spaceDown: Float32Array[];
-  spaceUp: Float32Array[];
-}
-
-export interface StrokeOpts {
-  /** -1 (left edge) … 1 (right edge) */
-  x?: number;
-  wide?: boolean;
-}
-
-class Synth {
-  enabled = false;
+class Voices {
   profile: Profile = PROFILES[0];
-  private ctx: AudioContext | null = null;
-  private out: GainNode | null = null;
-  private banks = new Map<string, Bank>();
   private listeners = new Set<() => void>();
   private previews = new Map<string, Float32Array>();
 
@@ -185,95 +165,12 @@ class Synth {
     return () => void this.listeners.delete(fn);
   }
 
-  private emit() {
+  setProfile(p: Profile) {
+    this.profile = p;
     this.listeners.forEach((f) => f());
   }
 
-  private bank(p: Profile): Bank {
-    let b = this.banks.get(p.id);
-    if (b || !this.ctx) return b!;
-    const sr = this.ctx.sampleRate;
-    const seedBase = p.id.length * 7919;
-    const make = (hits: Hit[], i: number, pitch: number, rattle: number) => render(hits, sr, seedBase + i * 104729, pitch, rattle, p.lowpass);
-    b = {
-      down: Array.from({ length: VARIANTS }, (_, i) => make(p.down, i, 1, 0)),
-      up: Array.from({ length: VARIANTS }, (_, i) => make(p.up, i + 50, 1, 0)),
-      spaceDown: Array.from({ length: 3 }, (_, i) => make(p.down, i + 100, 0.76, p.rattle)),
-      spaceUp: Array.from({ length: 3 }, (_, i) => make(p.up, i + 150, 0.8, p.rattle * 0.6)),
-    };
-    this.banks.set(p.id, b);
-    return b;
-  }
-
-  setEnabled(on: boolean) {
-    this.enabled = on;
-    if (on && !this.ctx) {
-      const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      const ctx = new Ctx();
-      this.ctx = ctx;
-      // a small, soft room: the desk and the wall behind it
-      const ir = ctx.createBuffer(2, Math.floor(ctx.sampleRate * 0.35), ctx.sampleRate);
-      for (let ch = 0; ch < 2; ch++) {
-        const d = ir.getChannelData(ch);
-        for (let n = 0; n < d.length; n++) d[n] = (Math.random() * 2 - 1) * Math.exp(-n / (ctx.sampleRate * 0.055));
-      }
-      const verb = ctx.createConvolver();
-      verb.buffer = ir;
-      const wet = ctx.createGain();
-      wet.gain.value = 0.16;
-      this.out = ctx.createGain();
-      this.out.gain.value = 0.55;
-      this.out.connect(ctx.destination);
-      this.out.connect(verb).connect(wet).connect(ctx.destination);
-    }
-    this.ctx?.resume();
-    if (on) this.bank(this.profile);
-    this.emit();
-  }
-
-  setProfile(p: Profile) {
-    this.profile = p;
-    if (this.ctx) this.bank(p);
-    this.emit();
-  }
-
-  private play(buf: Float32Array, opts: StrokeOpts, level: number) {
-    if (!this.enabled || !this.ctx || !this.out) return;
-    const ctx = this.ctx;
-    const ab = ctx.createBuffer(1, buf.length, ctx.sampleRate);
-    ab.copyToChannel(buf as Float32Array<ArrayBuffer>, 0);
-    const src = ctx.createBufferSource();
-    src.buffer = ab;
-    src.playbackRate.value = 0.985 + Math.random() * 0.03;
-    const g = ctx.createGain();
-    g.gain.value = level * this.profile.level * (0.82 + Math.random() * 0.3);
-    const pan = ctx.createStereoPanner();
-    pan.pan.value = Math.max(-1, Math.min(1, (opts.x ?? 0) * 0.45));
-    src.connect(g).connect(pan).connect(this.out);
-    src.start();
-  }
-
-  down(opts: StrokeOpts = {}) {
-    const b = this.bank(this.profile);
-    if (!b) return;
-    const set = opts.wide ? b.spaceDown : b.down;
-    this.play(set[Math.floor(Math.random() * set.length)], opts, 1);
-  }
-
-  up(opts: StrokeOpts = {}) {
-    const b = this.bank(this.profile);
-    if (!b) return;
-    const set = opts.wide ? b.spaceUp : b.up;
-    this.play(set[Math.floor(Math.random() * set.length)], opts, 1);
-  }
-
-  /** A full press for taps and demos: down, then up a human beat later. */
-  tap(opts: StrokeOpts = {}, hold = 0.08 + Math.random() * 0.05) {
-    this.down(opts);
-    setTimeout(() => this.up(opts), hold * 1000);
-  }
-
-  /** One keystroke (down + release) rendered for the waveform display. */
+  /** One keystroke (press + release) rendered for the waveform display. */
   preview(p: Profile) {
     let w = this.previews.get(p.id);
     if (w) return w;
@@ -290,4 +187,4 @@ class Synth {
   }
 }
 
-export const synth = new Synth();
+export const voices = new Voices();

@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { synth } from '../sound';
 import { COLORWAYS } from './colorways';
 import { Keyboard, LAYERS, OUT_D, OUT_W, type LayerName } from './keyboard';
 import { FIELD_D, FIELD_W, KEYS } from './layout';
@@ -314,13 +313,8 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
   addEventListener('pointermove', onPointer, { passive: true });
 
   const macroTap = { p: 0, v: 0, until: 0 };
-  const strokeOpts = (i: number) => {
-    const k = KEYS[i];
-    return k ? { x: ((k.x + k.w / 2) / FIELD_W) * 2 - 1, wide: k.w >= 2 } : {};
-  };
   const tapMacro = () => {
     macroTap.until = performance.now() + 110;
-    synth.tap({ x: -0.9 });
     dispatchEvent(new CustomEvent('key01:press'));
   };
 
@@ -337,7 +331,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     if (idx < 0) return;
     kb.pressKey(idx, 5);
     held.set(e.code, idx);
-    synth.down(strokeOpts(idx));
     dispatchEvent(new CustomEvent('key01:press'));
   };
   const onKeyUp = (e: KeyboardEvent) => {
@@ -345,7 +338,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     if (idx === undefined) return;
     held.delete(e.code);
     kb.releaseKey(idx);
-    synth.up(strokeOpts(idx));
   };
   addEventListener('keyup', onKeyUp);
   addEventListener('keydown', onKey);
@@ -374,7 +366,6 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
       demoTimers.push(
         window.setTimeout(() => {
           kb.pressKey(idx, hold);
-          synth.tap(strokeOpts(idx), hold);
           dispatchEvent(new CustomEvent('key01:press'));
         }, t),
       );

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { synth } from './sound';
+import { voices } from './sound';
 
 const W = 1200;
 const H = 260;
@@ -22,10 +22,10 @@ export default function Waveform() {
     // one strip = four strokes spaced like relaxed typing, built per voice
     const strips = new Map<string, Float32Array>();
     const strip = () => {
-      const p = synth.profile;
+      const p = voices.profile;
       let cols = strips.get(p.id);
       if (cols) return cols;
-      const stroke = synth.preview(p);
+      const stroke = voices.preview(p);
       const spacing = Math.floor(stroke.length * 1.25);
       const total = spacing * 4;
       cols = new Float32Array(COLS);

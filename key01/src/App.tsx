@@ -1,7 +1,7 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { COLORWAYS } from './scene/colorways';
 import { COLOR_ORDER, createStage, type StageHandles } from './scene/stage';
-import { PROFILES, synth } from './sound';
+import { PROFILES, voices } from './sound';
 import Waveform from './Waveform';
 
 const LAYER_COPY = [
@@ -20,10 +20,10 @@ const DETAILS = [
   ['Signed underneath.', 'Each case is engraved with its own number. Turn it over: this one is yours.'],
 ];
 
-function useSynth() {
+function useVoice() {
   return useSyncExternalStore(
-    (f) => synth.subscribe(f),
-    () => `${synth.enabled}|${synth.profile.id}`,
+    (f) => voices.subscribe(f),
+    () => voices.profile.id,
   );
 }
 
@@ -37,18 +37,13 @@ function scrollToScene(id: string, at = 0) {
 export default function App() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const stage = useRef<StageHandles | null>(null);
-  const synthKey = useSynth();
-  const soundOn = synthKey.startsWith('true');
+  const voice = useVoice();
 
   useEffect(() => {
     stage.current = createStage(canvas.current!);
     return () => stage.current?.destroy();
   }, []);
 
-  const toggleSound = () => {
-    synth.setEnabled(!synth.enabled);
-    if (synth.enabled) synth.tap();
-  };
 
   return (
     <>
@@ -67,10 +62,6 @@ export default function App() {
           <button onClick={() => scrollToScene('sound')}>Sound</button>
         </nav>
         <div className="nav-right">
-          <button className={`sound-toggle ${soundOn ? 'on' : ''}`} onClick={toggleSound} aria-pressed={soundOn}>
-            <span className="bars" aria-hidden="true"><i /><i /><i /></span>
-            {soundOn ? 'Sound on' : 'Sound off'}
-          </button>
           <a className="back" href="../">Portfolio</a>
         </div>
       </header>
@@ -205,17 +196,14 @@ export default function App() {
               <p className="eyebrow">05 · Sound</p>
               <h2>Pick a voice.</h2>
               <p className="body">Swap switches and foams in a minute, no solder. Four voices to start with:</p>
-              <button className={`btn ${soundOn ? 'ghost' : 'primary'} small`} onClick={toggleSound}>
-                {soundOn ? 'Sound is on' : 'Turn sound on'}
-              </button>
             </div>
             <div className="voices">
               {PROFILES.map((p) => (
                 <button
                   key={p.id}
-                  className={`voice ${synthKey.endsWith(p.id) ? 'active' : ''}`}
+                  className={`voice ${voice === p.id ? 'active' : ''}`}
                   onClick={() => {
-                    synth.setProfile(p);
+                    voices.setProfile(p);
                     dispatchEvent(new CustomEvent('key01:demo'));
                   }}
                 >
