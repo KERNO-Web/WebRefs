@@ -1,0 +1,164 @@
+/* ============================================================
+   Demo-only overrides on top of the real FACEMAIL base.css.
+   Nothing here changes the product look — it only adds the demo
+   ribbon, a theme toggle, a toast, and styles the few spots that
+   the live app fills from the backend (message body, empty pane).
+   ============================================================ */
+
+/* --- Demo ribbon: fixed full-width strip above the app shell --- */
+.demo-ribbon {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary), var(--primary-hover));
+  text-align: center;
+}
+.demo-ribbon a {
+  color: #fff;
+  text-decoration: underline;
+  white-space: nowrap;
+}
+
+/* Clear the fixed ribbon: push the whole shell down and keep the
+   sticky sidebar below the ribbon. */
+body.has-sidebar {
+  padding-top: 34px;
+}
+.sidebar {
+  top: 34px;
+  height: calc(100vh - 34px);
+}
+
+/* --- Topbar: theme toggle + account chrome (cosmetic in demo) --- */
+.sidebar-toggle {
+  display: none;
+}
+.theme-toggle-btn {
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  width: 38px;
+  height: 38px;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--primary);
+}
+.account-badge {
+  cursor: pointer;
+}
+.sidebar-nav a .unread-count {
+  margin-left: auto;
+}
+[data-demo-action] {
+  cursor: pointer;
+}
+
+/* --- Reading pane: body + empty state --- */
+.message-body-html {
+  margin-top: var(--space-4);
+  max-width: 680px;
+  line-height: 1.6;
+  color: var(--text);
+  font-size: 15px;
+}
+.message-body-html p {
+  margin: 0 0 var(--space-4);
+}
+.message-body-html a {
+  color: var(--primary);
+}
+.message-body-html .mb-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-weight: 600;
+}
+.message-body-html hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: var(--space-4) 0;
+}
+.message-body-html .mb-muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.empty-mascot {
+  width: 150px;
+  height: auto;
+  margin: 0 auto var(--space-3);
+  display: block;
+  opacity: 0.92;
+}
+
+/* --- Pin star (kept, cosmetic + reorders pinned first) --- */
+.pin-button {
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 6px 2px 0;
+}
+.pin-button.is-pinned {
+  color: var(--primary);
+}
+
+/* --- Toast for disabled demo actions --- */
+.demo-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%) translateY(8px);
+  z-index: 200;
+  background: var(--text);
+  color: var(--bg);
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.demo-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Attachment chip in the reading pane (cosmetic, demo) */
+.demo-attachment {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-3);
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  font-size: 13px;
+  color: var(--text);
+}

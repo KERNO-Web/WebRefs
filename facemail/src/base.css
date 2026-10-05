@@ -1,0 +1,2291 @@
+/* ===== Tokens ===== */
+
+/*
+  Light theme: flat #fff with the customer-supplied brand palette (explicit
+  site-wide decision, superseding the earlier warm-milky call — every tab,
+  not just the landing page). Dark theme: Telegram-like graphite (section
+  6) — soft dark neutrals, never pure #000; kept as-is, never flagged as an
+  issue. Both live as overrides of the same token set so every component
+  below (sidebar, tables, buttons, dialogs, ...) re-themes automatically
+  without its own dark-mode rules. Precedence, low to high: light (:root
+  default) -> OS preference (prefers-color-scheme) -> explicit user choice
+  (html[data-theme], set by static/js/theme.js) so an explicit toggle always
+  wins over the OS setting.
+*/
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-soft: #f1f5f9;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --primary: #0066ff;
+  --primary-hover: #0052cc;
+  --primary-soft: #e6f0ff;
+  --danger: #dc2626;
+  --danger-soft: #fcf0ef;
+  --success: #15803d;
+  --success-soft: #eef6ec;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.1);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --sidebar-width: 224px;
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1b1b1f;
+    --surface: #232327;
+    --surface-soft: #2b2b30;
+    --text: #e9e7e2;
+    --muted: #9c9891;
+    --border: #37373d;
+    --primary: #5b93f5;
+    --primary-hover: #7aa5f7;
+    --primary-soft: #22304a;
+    --danger: #f2695f;
+    --danger-soft: #3a2320;
+    --success: #4cbb6c;
+    --success-soft: #1f3327;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1b1b1f;
+  --surface: #232327;
+  --surface-soft: #2b2b30;
+  --text: #e9e7e2;
+  --muted: #9c9891;
+  --border: #37373d;
+  --primary: #5b93f5;
+  --primary-hover: #7aa5f7;
+  --primary-soft: #22304a;
+  --danger: #f2695f;
+  --danger-soft: #3a2320;
+  --success: #4cbb6c;
+  --success-soft: #1f3327;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== Reset / base ===== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* Author stylesheet rules beat the UA stylesheet's own [hidden]{display:
+   none} at equal selector specificity, regardless of source order — any
+   class that sets its own `display` (e.g. .btn's inline-flex, or a flex
+   utility class) silently wins over a plain hidden attribute otherwise.
+   One global override, so `el.hidden = true` always actually hides
+   things app-wide instead of needing a per-component [hidden] rule. */
+[hidden] {
+  display: none !important;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 var(--space-4);
+}
+
+h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: var(--space-5) 0 var(--space-3);
+}
+
+a {
+  color: var(--primary);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* ===== App shell (logged-in layout, D4) ===== */
+
+body.has-sidebar {
+  display: flex;
+  min-height: 100vh;
+  align-items: stretch;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: var(--space-4) var(--space-3);
+  gap: var(--space-4);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) 0;
+  text-decoration: none;
+}
+
+.sidebar-brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.sidebar-compose {
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-nav a,
+.sidebar-bottom a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sidebar-nav a svg {
+  flex-shrink: 0;
+}
+
+.sidebar-nav a:hover,
+.sidebar-bottom a:hover {
+  background: var(--surface-soft);
+}
+
+.sidebar-nav a.active,
+.sidebar-bottom a.active {
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  font-weight: 700;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-bottom .logout-form {
+  margin: 0;
+}
+
+.sidebar-bottom .logout-form button {
+  width: 100%;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.current-user {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fff;
+  flex-shrink: 0;
+  transition: background-color 0.15s;
+}
+
+.refresh-button:hover {
+  background: var(--primary-hover);
+}
+
+/* Theme/language toggles moved here from the sidebar footer (base.html) —
+   resized to match the refresh button and account badge next to them;
+   unscoped .theme-toggle/.lang-link stay their smaller size everywhere
+   else (auth pages, landing page). */
+body.has-sidebar .topbar .theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+body.has-sidebar .topbar .lang-link,
+body.has-sidebar .topbar .lang-current {
+  height: 32px;
+  padding: 0 10px;
+  display: inline-flex;
+  align-items: center;
+  font-size: 13px;
+}
+
+.account-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 5px 14px 5px 5px;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s;
+  /* A <button> now (opens the account-switcher dialog), not an <a> —
+     buttons don't inherit font or left-align text by default the way
+     anchors do, so those need an explicit reset; background/border above
+     already work unchanged since the selector is class-only. */
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.account-badge:hover {
+  border-color: var(--primary);
+}
+
+.account-badge-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.account-badge-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.account-badge-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.account-badge-name {
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.account-badge-email {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.settings-avatar-preview {
+  width: 80px;
+  height: 80px;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.settings-avatar-preview-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 32px;
+}
+
+.avatar-editor {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.avatar-editor-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.avatar-editor-controls .btn {
+  width: auto;
+}
+
+/* The real <input type="file"> stays in the DOM (its <label for="...">
+   above triggers it natively, no JS required) but is visually replaced by
+   that styled label — this is the standard accessible way to restyle a
+   file input: hidden off-screen, not display:none, so it stays reachable
+   by keyboard/screen readers rather than merely invisible. */
+.avatar-editor-controls input[type="file"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.avatar-editor-filename {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ===== Avatar crop dialog ===== */
+
+dialog.avatar-crop-dialog {
+  width: min(360px, calc(100vw - 32px));
+  border: none;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+}
+
+/* Same [open] + flex pairing as .legal-modal, for the same reason: an
+   unconditional `display` here would out-specificity the UA stylesheet's
+   `dialog:not([open]) { display: none }` and force the dialog visible
+   even before showModal() runs. */
+dialog.avatar-crop-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+dialog.avatar-crop-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+dialog.avatar-crop-dialog h2 {
+  margin: 0;
+}
+
+.avatar-crop-canvas {
+  align-self: center;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  cursor: grab;
+  touch-action: none;
+}
+
+.avatar-crop-canvas:active {
+  cursor: grabbing;
+}
+
+.avatar-crop-zoom-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.avatar-crop-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  margin-right: auto;
+  text-decoration: none;
+}
+
+.topbar-brand img {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+
+.admin-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.page {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-5);
+}
+
+/* Message lists benefit from the extra width next to the sidebar (the
+   list/pane split below uses all of it) — everything else (compose/
+   settings/message detail) reads better staying at the narrower default
+   above. */
+.page.page-wide {
+  max-width: none;
+  margin: 0;
+}
+
+/* Inbox/Sent: list on the left, reading pane on the right — clicking a
+   row loads it into the pane (mail-pane.js) instead of navigating away.
+   Equal flex-grow on both sides keeps this an even 50/50 split of
+   whatever width .page-wide has, on desktop — a fixed product decision,
+   not a size the pane should grow past on its own. Real mail's own
+   comfortable reading width (.mail-content, .message-body — both capped
+   at 680px) is a separate, independent cap: on a very wide monitor the
+   pane's own 50% share can still exceed 680px, in which case that
+   content just sits with its own margin inside its half rather than
+   stretching to fill it — expected, not a bug to chase by shrinking the
+   pane further. */
+.mail-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+}
+
+.mail-list-column {
+  flex: 1 1 0;
+  min-width: 380px;
+}
+
+.mail-pane-column {
+  flex: 1 1 0;
+  min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+}
+
+.message-pane-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .mail-columns {
+    flex-direction: column;
+  }
+
+  .mail-list-column {
+    max-width: none;
+    width: 100%;
+  }
+
+  .mail-pane-column {
+    width: 100%;
+  }
+}
+
+/* ===== Anonymous / auth shell (D5) ===== */
+
+body.auth-only {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+body.auth-only .topbar {
+  border-bottom: none;
+  background: transparent;
+}
+
+body.auth-only .main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+body.auth-only .page {
+  flex: 1;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-mascot-wrap {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin-bottom: var(--space-4);
+}
+
+.auth-mascot-wrap img,
+.auth-mascot-wrap canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-6) var(--space-5);
+}
+
+.auth-card h1 {
+  font-size: 19px;
+  margin-bottom: var(--space-4);
+}
+
+.auth-footer {
+  margin-top: var(--space-4);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Bigger, bolder fields/buttons on auth pages specifically — scoped to
+   .auth-card so the rest of the app (compose, settings, admin forms)
+   keeps its normal, denser sizing. */
+.auth-card label {
+  font-size: 14px;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="email"],
+.auth-card input[type="password"] {
+  max-width: none;
+  padding: 13px 14px;
+  font-size: 15px;
+  border-radius: var(--radius);
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  padding: 6px;
+  background: none;
+  border: none;
+  color: var(--muted);
+}
+
+.password-toggle:hover {
+  background: none;
+  color: var(--text);
+}
+
+.btn-auth-primary,
+.btn-auth-secondary {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  margin-top: var(--space-2);
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  text-decoration: none;
+}
+
+.btn-auth-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.btn-auth-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn-auth-secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn-auth-secondary:hover {
+  background: var(--surface-soft);
+  border-color: var(--border);
+  text-decoration: none;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: var(--space-5) 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ===== Messages / flash ===== */
+
+.messages {
+  list-style: none;
+  margin: 0;
+  padding: var(--space-3) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.message {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
+.message-success {
+  color: var(--success);
+  background: var(--success-soft);
+}
+
+.message-error {
+  color: var(--danger);
+  background: var(--danger-soft);
+}
+
+.errors {
+  color: var(--danger);
+  background: var(--danger-soft);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin: 0 0 var(--space-4);
+  list-style: none;
+}
+
+.errors li {
+  font-size: 14px;
+}
+
+/* ===== Forms ===== */
+
+form p {
+  margin: 0 0 var(--space-4);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: var(--space-1);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+  width: 100%;
+  max-width: 480px;
+  padding: 9px 11px;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary);
+}
+
+input:disabled,
+textarea:disabled {
+  background: var(--surface-soft);
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+/* Marks the <p> wrapping a form field that failed validation (login.html/
+   register.html/add_account.html: class="field-error" set from
+   field.errors, or — on login/add_account only — from a non-field
+   credential rejection that's deliberately not attributed to one
+   specific field; see _render_login's own comment). !important beats
+   input:focus's own border-color so the red outline survives while the
+   field is still focused/being retyped. */
+.field-error input,
+.field-error textarea {
+  border-color: var(--danger) !important;
+}
+
+textarea {
+  max-width: 100%;
+  min-height: 200px;
+  resize: vertical;
+}
+
+.error {
+  display: inline-block;
+  margin-top: var(--space-1);
+  color: var(--danger);
+  font-size: 13px;
+}
+
+.field-hint {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bot-link {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* ===== Buttons (D11) ===== */
+
+.btn,
+button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 9px 16px;
+  font: inherit;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 1.3;
+}
+
+.btn:hover,
+button:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+.btn:disabled,
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover,
+button:disabled:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+/* A bolder, bigger variant of the plain .btn/.btn-secondary treatment —
+   the same weight as the auth pages' .btn-auth-primary/-secondary, minus
+   their width:100% (auth cards are narrow enough that full-width buttons
+   fit naturally; ordinary pages like Settings have wider, 480px-capped
+   inputs a stretched button would look oversized next to). Combine with
+   .btn or .btn-secondary for color, e.g. class="btn btn-bold". */
+.btn-bold {
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: var(--radius);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-soft);
+  border-color: var(--border);
+}
+
+/* A <button> that reads as an inline text link — for a state-changing
+   action (needs a real POST + CSRF) sitting next to plain <a> links,
+   e.g. "Forward · Delete · Not spam". */
+.inline-form {
+  display: inline;
+}
+
+.link-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-button:hover {
+  color: var(--primary-hover);
+}
+
+.btn-danger {
+  background: var(--surface);
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-danger:hover {
+  background: var(--danger-soft);
+  border-color: var(--danger);
+}
+
+/* ===== Language switch ===== */
+
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.lang-form {
+  display: inline;
+  margin: 0;
+}
+
+.lang-link,
+.lang-current {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.lang-link {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.lang-link:hover {
+  background: var(--surface-soft);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.lang-current {
+  border: 1px solid transparent;
+  background: var(--primary-soft);
+  color: var(--primary-hover);
+}
+
+/* ===== Theme toggle (section 6) ===== */
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.theme-toggle:hover {
+  background: var(--surface-soft);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+/* ===== Tables / message list (D6) ===== */
+
+/* Party/subject/date are nowrap (below) and the snippet column adds real
+   width on top of them — on a narrower window this can need more room
+   than the page has. Scope the scrollbar to just the list, not the page:
+   the sidebar and everything else must stay put. */
+.message-list-scroll {
+  overflow-x: auto;
+}
+
+table.message-list {
+  width: 100%;
+  min-width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+table.message-list tr {
+  border-bottom: 1px solid var(--border);
+}
+
+table.message-list tr:last-child {
+  border-bottom: none;
+}
+
+table.message-list tr.row-link {
+  cursor: pointer;
+}
+
+table.message-list tr.row-link:hover {
+  background: var(--primary-soft);
+}
+
+table.message-list td {
+  padding: var(--space-3) var(--space-3);
+  vertical-align: top;
+  font-size: 14px;
+  /* table-layout:fixed splits width evenly across whatever columns a given
+     table actually has; a plain td with no more specific width/overflow
+     rule (unlike .message-list-party/-date/-subject below) needs this or
+     a long unbroken string (an email address, "FirstName LastName") just
+     paints straight past its column's edge into the next one instead of
+     wrapping — a real bug seen on adminpanel's accounts table. */
+  overflow-wrap: anywhere;
+}
+
+table.message-list th.message-list-checkbox,
+table.message-list td.message-list-checkbox {
+  width: 36px;
+  padding: var(--space-3) 0 var(--space-3) var(--space-3);
+  vertical-align: middle;
+}
+
+table.message-list td.message-list-party {
+  width: 130px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.message-list td.message-list-date {
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.message-list td.message-list-subject a {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+table.message-list tr.unread td {
+  font-weight: 700;
+}
+
+table.message-list tr.is-selected {
+  background: var(--primary-soft);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+table.message-list a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+table.message-list a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* Appears above the list once a checkbox is ticked (bulk-select.js toggles
+   [hidden]) — scoped to whatever's rendered in the table, i.e. this page
+   only, matching Gmail's own "select the page" default for its own
+   select-all rather than reaching into messages that aren't loaded yet. */
+.bulk-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-3);
+  background: var(--primary-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+/* ===== Status badges (D10) ===== */
+
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-active {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.badge-frozen {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.badge-used {
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+
+.badge-revoked,
+.badge-expired {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+/* ===== Admin dashboard summary cards (D10) ===== */
+
+.summary-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.summary-card {
+  flex: 1;
+  min-width: 160px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.summary-card .summary-count {
+  display: block;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.summary-card .summary-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.admin-dashboard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+/* ===== One-time secret callout ===== */
+
+.one-time-secret {
+  background: var(--primary-soft);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+  margin: 0 0 var(--space-4);
+  font-size: 14px;
+}
+
+.one-time-secret code {
+  display: inline-block;
+  margin-top: var(--space-1);
+  padding: 2px 6px;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+
+.copyable-code {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.copy-button {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+.copy-button.is-copied {
+  background: var(--success-soft);
+  border-color: var(--success);
+  color: var(--success);
+}
+
+/* ===== Message view (D7) ===== */
+
+.message-meta {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0 0 var(--space-1);
+}
+
+.message-frame {
+  width: 100%;
+  /* Just a pre-JS placeholder floor (message-frame-resize.js sizes it to
+     the real content right after load) — keep this small, since anything
+     bigger shows as dead space under a short message. */
+  min-height: 120px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.message-frame-template {
+  min-height: 1120px;
+}
+
+.message-body {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  max-width: 680px;
+  /* One step up the elevation scale from .mail-pane-column's own
+     background (var(--surface)) — identical colors made this box's own
+     border nearly invisible against its parent, which is what read as
+     "text floating with no boundary" rather than "message in a card". */
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+  font-family: inherit;
+}
+
+/* ===== Attachments ===== */
+
+.attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.attachments h2 {
+  width: 100%;
+  font-size: 16px;
+  margin: 0 0 var(--space-2);
+}
+
+.attachment {
+  max-width: 320px;
+}
+
+.attachment-image {
+  display: block;
+  max-width: 320px;
+  max-height: 240px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+
+.attachment-video {
+  max-width: 320px;
+  max-height: 240px;
+  border-radius: var(--radius);
+}
+
+.attachment audio {
+  max-width: 320px;
+}
+
+.attachment p {
+  margin: var(--space-1) 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ===== Confirm dialog (item 13) ===== */
+
+dialog.confirm-dialog {
+  width: 100%;
+  max-width: 420px;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-5);
+}
+
+dialog.confirm-dialog::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+dialog.confirm-dialog p {
+  margin: 0 0 var(--space-4);
+}
+
+dialog.confirm-dialog form,
+dialog.confirm-dialog .dialog-actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+/* ===== Account switcher ===== */
+
+/* Anchors the dropdown below-right of the badge — a plain toggled panel
+   (static/js/account-switcher.js), not a <dialog>: the badge sits inside
+   the topbar next to other content, so a modal takeover would cover
+   everything else on the page for what's meant to read as a small,
+   contextual menu (item 2, screenshot reference). */
+.account-switcher {
+  position: relative;
+}
+
+.account-switcher-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 20;
+  width: 300px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-3);
+}
+
+.account-switcher-current {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.account-switcher-current.row-link {
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.account-switcher-current.row-link:hover {
+  background: var(--surface-soft);
+}
+
+.account-switcher-current .account-badge-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-switcher-settings-icon {
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+.copy-email-button {
+  flex-shrink: 0;
+  padding: 6px;
+  background: none;
+  border: none;
+  color: var(--muted);
+}
+
+.copy-email-button:hover {
+  background: none;
+  color: var(--text);
+}
+
+.copy-email-button.is-copied {
+  color: var(--success);
+}
+
+.account-switcher-label {
+  margin: 0 0 var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.account-switcher-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  list-style: none;
+}
+
+.account-switcher-list form {
+  display: block;
+}
+
+.account-switcher-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-switcher-row:hover {
+  background: var(--surface-soft);
+  border-color: transparent;
+}
+
+.account-switcher-add-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.account-switcher-add-link:hover {
+  background: var(--surface-soft);
+}
+
+/* ===== Landing page ===== */
+
+body.landing-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+body.landing-page .topbar {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+body.landing-page .topbar-inner {
+  flex-wrap: wrap;
+  row-gap: var(--space-3);
+}
+
+body.landing-page .main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+body.landing-page .page {
+  flex: 1;
+  max-width: 1100px;
+}
+
+/* A wider content column next to the same nav/hero content would just
+   read as more empty margin, not a bigger page — so the nav links and
+   buttons (top nav and hero CTAs share .btn/.btn-secondary) scale up
+   proportionally with it, landing-page only. */
+body.landing-page .landing-nav a {
+  font-size: 16px;
+}
+
+body.landing-page .btn {
+  padding: 10px 18px;
+  font-size: 16px;
+}
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.landing-brand-logo {
+  height: 100px;
+  width: auto;
+  object-fit: contain;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.landing-nav a {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.landing-nav a:hover,
+.landing-nav a.active {
+  color: var(--text);
+}
+
+.landing-nav-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-left: auto;
+}
+
+.landing-hero {
+  padding: var(--space-6) 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.landing-hero-text {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+
+.landing-hero h1 {
+  font-size: 44px;
+  line-height: 1.15;
+  margin: 0 0 var(--space-4);
+}
+
+.landing-hero h1 .accent {
+  color: var(--primary);
+}
+
+.landing-lede {
+  color: var(--muted);
+  font-size: 16px;
+  margin: 0 0 var(--space-5);
+  max-width: 480px;
+}
+
+.landing-cta {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.landing-hero-image {
+  flex: 1 1 320px;
+  max-width: 380px;
+}
+
+.landing-hero-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.landing-features-section {
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+.landing-features-heading h2 {
+  font-size: 26px;
+  margin: 0 0 var(--space-2);
+}
+
+.landing-features-heading p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 auto;
+  max-width: 520px;
+}
+
+.landing-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.feature-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.feature-card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 15px;
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.landing-telegram-section {
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+.landing-telegram-heading h2 {
+  font-size: 26px;
+  margin: 0 0 var(--space-2);
+}
+
+.landing-telegram-heading p {
+  color: var(--muted);
+  font-size: 15px;
+  margin: 0 auto var(--space-5);
+  max-width: 520px;
+}
+
+.telegram-promo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+.telegram-promo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.telegram-promo-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.telegram-promo-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.telegram-promo-card h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 17px;
+}
+
+.telegram-promo-card p {
+  margin: 0 0 var(--space-4);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.telegram-notification-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-top: auto;
+}
+
+.telegram-notification-icon {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.telegram-notification-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.telegram-notification-body {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.telegram-notification-top {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.telegram-notification-time {
+  color: var(--muted);
+  font-weight: 400;
+  flex: 0 0 auto;
+}
+
+.telegram-notification-text {
+  margin: var(--space-1) 0 0;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.support-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-4);
+}
+
+.support-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text);
+  text-decoration: none;
+  font: inherit;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.support-link:hover {
+  background: var(--surface-soft);
+}
+
+/* ===== Landing footer ===== */
+
+.landing-footer {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.landing-footer-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-6);
+}
+
+.landing-footer-col h3 {
+  margin: 0 0 var(--space-3);
+  font-size: 14px;
+  color: var(--text);
+}
+
+.landing-footer-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.landing-footer-col a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.landing-footer-col a:hover {
+  color: var(--text);
+}
+
+.landing-footer-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.landing-footer-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.landing-footer-brand-col p {
+  margin: 0;
+  max-width: 380px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.landing-footer-bottom {
+  border-top: 1px solid var(--border);
+  padding: var(--space-4) var(--space-5);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ===== Legal modals ===== */
+
+dialog.legal-modal {
+  width: min(900px, calc(100vw - 32px));
+  max-height: min(80vh, 760px);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-md);
+  padding: 0;
+}
+
+/* Scoped to [open]: an unconditional `display` here would tie in
+   specificity with the UA stylesheet's `dialog:not([open]) { display:
+   none }` and, since author styles win ties over UA styles, would force
+   the dialog visible — in normal document flow, not centered, not
+   closeable — even before showModal() ever ran. */
+dialog.legal-modal[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+dialog.legal-modal::backdrop {
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.legal-modal-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+
+.legal-modal-header h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.legal-modal-close {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  /* The generic button {} rule (this file) sets display:inline-flex +
+     align-items:center globally but no justify-content — fine for a
+     button with visible label text sized by its own padding, but this
+     one has neither: without this, the × sits wherever that rule's own
+     9px/16px padding happens to push it instead of centered in the
+     32x32 box. */
+  justify-content: center;
+}
+
+.legal-modal-close:hover {
+  background: var(--border);
+}
+
+.legal-modal-body {
+  flex: 1;
+  min-height: 0;
+  padding: var(--space-5);
+  overflow-y: auto;
+}
+
+.legal-modal-body h3 {
+  margin: var(--space-5) 0 var(--space-2);
+  font-size: 16px;
+}
+
+.legal-modal-body h3:first-child {
+  margin-top: 0;
+}
+
+.legal-modal-body h4 {
+  margin: var(--space-4) 0 var(--space-1);
+  font-size: 14px;
+}
+
+.legal-modal-body p {
+  max-width: 68ch;
+  margin: 0 0 var(--space-3);
+  line-height: 1.6;
+}
+
+.legal-modal-body ul {
+  max-width: 68ch;
+  margin: 0 0 var(--space-3);
+  padding-left: 1.3em;
+  line-height: 1.6;
+}
+
+.legal-modal-body li {
+  margin: 0 0 var(--space-1);
+}
+
+.legal-modal-body a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.support-widget-fab {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 40;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+}
+
+.support-widget-fab:hover {
+  filter: brightness(1.08);
+}
+
+/* A plain fixed-position panel, not a <dialog>/showModal — deliberately
+   never blocks the rest of the page behind a modal backdrop, unlike the
+   confirm-dialog/legal-modal family elsewhere in this file. Anchored
+   just above the FAB (52px + a gap) rather than centered. */
+.support-widget-panel {
+  position: fixed;
+  right: var(--space-5);
+  bottom: calc(var(--space-5) + 52px + var(--space-3));
+  z-index: 41;
+  width: min(380px, calc(100vw - 32px));
+  height: min(560px, calc(100vh - 160px));
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+/* #id-strength match for dialog.confirm-dialog p's own specificity isn't
+   a concern here (this isn't a <p> inside .confirm-dialog any more), but
+   [hidden] still needs to outrank the unconditional display:flex above —
+   same reasoning as dialog.support-widget-dialog[open] used to need. */
+.support-widget-panel[hidden] {
+  display: none;
+}
+
+.support-widget-messages {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.support-widget-empty {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.support-widget-status-marker {
+  align-self: center;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.support-widget-message {
+  max-width: 85%;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.support-widget-message--in {
+  align-self: flex-end;
+  background: var(--primary);
+  color: #fff;
+}
+
+.support-widget-message--out {
+  align-self: flex-start;
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.support-widget-message-time {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+/* #id, not .class: dialog.confirm-dialog p { margin: 0 0 var(--space-4) }
+   outranks a plain class selector and was zeroing out the side margins
+   below. */
+#support-widget-status {
+  color: var(--danger);
+  font-weight: 700;
+  font-size: 13px;
+  margin: 0 var(--space-4) var(--space-2);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
+.support-widget-error {
+  color: var(--danger);
+  font-size: 13px;
+  margin: 0 var(--space-4);
+}
+
+.support-widget-form {
+  flex: none;
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-end;
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 1px solid var(--border);
+}
+
+.support-widget-form textarea {
+  flex: 1;
+  min-height: 40px;
+  max-height: 120px;
+  resize: vertical;
+}
+
+/* ===== Responsive (D14) ===== */
+
+@media (max-width: 768px) {
+  body.has-sidebar {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .sidebar {
+    position: static;
+    height: auto;
+    overflow-y: visible;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-brand {
+    padding: 0;
+  }
+
+  .sidebar-compose {
+    width: auto;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-bottom {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 0;
+    margin-left: auto;
+    border-top: none;
+    padding-top: 0;
+  }
+
+  .sidebar-bottom .logout-form button {
+    width: auto;
+  }
+
+  .page {
+    padding: var(--space-4);
+  }
+
+  .topbar {
+    padding: var(--space-2) var(--space-4);
+  }
+
+  body.landing-page .topbar {
+    justify-content: flex-start;
+  }
+
+  .landing-nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .landing-nav-right {
+    margin-left: auto;
+  }
+
+  .landing-brand-logo {
+    height: 64px;
+  }
+
+  .landing-hero {
+    flex-direction: column;
+  }
+
+  .landing-hero-text {
+    text-align: center;
+  }
+
+  .landing-cta {
+    justify-content: center;
+  }
+
+  .landing-hero-image {
+    flex-basis: auto;
+    max-width: 240px;
+  }
+
+  .landing-hero h1 {
+    font-size: 26px;
+  }
+
+  .landing-features {
+    grid-template-columns: 1fr;
+  }
+
+  .telegram-promo {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-footer-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .landing-footer-brand-col p {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  table.message-list,
+  table.message-list tbody,
+  table.message-list tr,
+  table.message-list td {
+    display: block;
+    width: 100%;
+  }
+
+  table.message-list tr {
+    padding: var(--space-2) 0;
+  }
+
+  table.message-list td {
+    padding: 2px var(--space-3);
+    border-bottom: none;
+  }
+
+  .summary-card {
+    min-width: 0;
+  }
+}
+
+/* Mail tools: keep the same controls and spacing as the account switcher. */
+.unread-count { display: inline-flex; min-width: 22px; justify-content: center; border-radius: 12px; padding: 2px 7px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.unread-count.has-unread { background: var(--primary); color: #fff; }
+.pin-button { background: none; border: 0; color: var(--muted); padding: 5px; cursor: pointer; font-size: 20px; line-height: 1; border-radius: 6px; }
+.pin-button.is-pinned { color: var(--primary); }
+.pin-button:focus-visible { outline: 2px solid var(--primary); }
+.mail-search-form { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
+.mail-search-form input { flex: 1; min-width: 0; max-width: none; margin: 0; }
+.mail-search-results { margin-bottom: 24px; }
+.mail-search-result { padding: 20px 0; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
+.mail-search-result p { margin: 6px 0; }
+.search-subject { font-size: 18px; font-weight: 700; text-align: left; }
+.undo-stack { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 100; width: min(520px, calc(100vw - 24px)); display: grid; gap: 8px; }
+.undo-toast { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 32px #0003; }
+.undo-toast small { display: block; color: var(--muted); overflow-wrap: anywhere; }
+.undo-toast form { flex-shrink: 0; margin: 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+.message-subject-content { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.message-subject-content form { flex-shrink: 0; margin: 0; }
+.message-subject-content a { flex: 1; min-width: 0; }
+.account-badge-text .unread-count { align-self: flex-start; }
+
+/* A document drop target shared by new messages and drafts. */
+.attachment-dropzone {
+  max-width: 480px;
+  padding: 16px;
+  margin: 16px 0;
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+}
+.attachment-dropzone.is-dragging { border-color: var(--primary); }
+.attachment-dropzone input[type="file"] { max-width: 100%; }
+.attachment-dropzone ul { padding-left: 20px; overflow-wrap: anywhere; }
+.attachment-dropzone ul:empty { display: none; }

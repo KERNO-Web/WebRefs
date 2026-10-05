@@ -26,7 +26,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -R _landing/. _site/
-          for p in afterimage key01 noctis null witcher ranked nexus route; do
+          for p in afterimage key01 noctis null witcher ranked nexus route facemail; do
             echo "::group::$p"
             (cd "$p" && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
             cp -R "$p/dist" "_site/$p"

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1b1b1f" />
+    <meta name="description" content="FACEMAIL — приватная почта. Демо-версия интерфейса." />
+    <title>FACEMAIL — приватная почта (демо)</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="has-sidebar">
+    <div class="demo-ribbon">
+      Демо-версия · письма вымышленные · бэкенд, база и секреты отключены ·
+      <a href="https://facemail.site" target="_blank" rel="noopener">живой сайт →</a>
+    </div>
+
+    <aside class="sidebar">
+      <a class="sidebar-brand" href="#" data-demo-action="Главная">
+        <img src="logo-wordmark.png" alt="FACEMAIL" class="sidebar-brand-logo" />
+      </a>
+      <a class="btn sidebar-compose" href="#" data-demo-action="Новое письмо">Написать</a>
+      <nav class="sidebar-nav" id="folder-nav">
+        <a href="#" data-folder="inbox" class="active">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+          <span class="nav-label">Входящие</span>
+          <span class="unread-count" data-folder-count="inbox"></span>
+        </a>
+        <a href="#" data-folder="sent">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span class="nav-label">Отправленные</span>
+        </a>
+        <a href="#" data-folder="drafts">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <span class="nav-label">Черновики</span>
+        </a>
+        <a href="#" data-folder="spam">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span class="nav-label">Спам</span>
+        </a>
+      </nav>
+      <div class="sidebar-bottom">
+        <a href="https://facemail.site" target="_blank" rel="noopener">На главный сайт</a>
+        <a href="#" data-demo-action="Настройки профиля">Настройки профиля</a>
+        <a href="#" data-demo-action="Поддержка">Связаться с поддержкой</a>
+        <a href="#" data-demo-action="Выход">Выйти</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Меню">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-actions">
+          <button class="theme-toggle-btn" id="theme-toggle" title="Светлая/тёмная тема" aria-label="Сменить тему"></button>
+          <div class="account-badge" data-demo-action="Профиль">
+            <span class="account-badge-avatar account-badge-avatar-fallback">А</span>
+            <span class="account-badge-text">
+              <span class="account-badge-name">Алекс Морган</span>
+              <span class="account-badge-email">alex@facemail.site</span>
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <div class="page page-wide">
+        <div class="mail-columns">
+          <div class="mail-list-column">
+            <h1 id="folder-title">Входящие</h1>
+            <div id="list-root"></div>
+          </div>
+          <div class="mail-pane-column" id="message-pane"></div>
+        </div>
+      </div>
+    </main>
+
+    <div class="demo-toast" id="toast" hidden></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
