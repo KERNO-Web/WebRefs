@@ -1,0 +1,20 @@
+Photography: Unsplash (free licence). Files in public/photos are cropped and re-encoded.
+The "before" state of the comparison (ba-before) is a graded copy of the same photo
+with simulated haze and swirl marks; the geometry of both states is identical.
+Plates and third-party studio branding were removed by cropping or blanking.
+
+slot         unsplash photo                         author
+hero         photo-1569929712408-ed9914033d52       Mohammad Aqhib
+ba-*         photo-1654522659334-06371e065ce6       Vladyslav Lytvyshchenko
+s-polish     photo-1658244546876-d82cbf1a1c9e       Vitali Adutskevich
+s-coat       photo-1665944956738-7bde2372622d       Winston Tjia
+s-film       photo-1632823469850-2f77dd9c7f93       Deniz Demirci
+s-interior   photo-1732357624591-f2137085659b       Muhammad Saad
+p-inspect    photo-1680005084654-b57c0f6e5b77       serjan midili
+p-correct    photo-1658244500543-47f32dc51dc2       Vitali Adutskevich
+p-protect    photo-1681163101469-5175a8925526       serjan midili
+w-bmw        photo-1714434087915-27cfbdd3b048       Rana Singh
+w-bmw-d      photo-1683791738119-5ab14dbaf79c       Eyosias G
+w-gle*       photo-1732427244178 / -1732347702763 / -1732347700557   Lukáš Parničan
+w-rs6*       photo-1655497520292-e445bffca81b       serjan midili
+cta          photo-1632823472829-5359d7455d53       Deniz Demirci
