@@ -252,6 +252,8 @@ button {
   white-space: nowrap;
   overflow: hidden;
   padding-block: 0.08em 0.02em;
+  /* the tight tracking pulls Ø's right edge outside the box; give it room */
+  padding-inline-end: 0.12em;
 }
 .word .ch {
   display: inline-block;
