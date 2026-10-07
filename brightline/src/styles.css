@@ -494,7 +494,9 @@ button {
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 5.5fr) minmax(0, 6.5fr);
-  min-height: max(640px, 100svh);
+  /* full screen, but on very tall windows the next section shows below
+     instead of the text column turning into an empty void */
+  min-height: max(640px, min(100svh, 1040px));
   padding-top: var(--hdr);
   background: var(--black);
   overflow: hidden;
@@ -512,22 +514,105 @@ button {
   background: var(--graphite);
 }
 .hero-img .ph {
-  transform: scale(1.07) translate3d(0, calc((var(--p, 0.5) - 0.5) * 8%), 0);
+  transform: scale(1.12) translate3d(0, calc((var(--p, 0.5) - 0.5) * 6%), 0);
   transition:
     opacity 1.2s var(--ease),
     transform 2.4s var(--ease);
 }
 .hero.ready .hero-img .ph {
-  transform: scale(1) translate3d(0, calc((var(--p, 0.5) - 0.5) * 8%), 0);
+  /* a little overscan so the parallax never uncovers an edge */
+  transform: scale(1.05) translate3d(0, calc((var(--p, 0.5) - 0.5) * 6%), 0);
 }
 .hero-body {
   grid-column: 1;
   grid-row: 1;
-  align-self: end;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 48px;
   position: relative;
-  padding-block: 56px clamp(48px, 9vh, 96px);
+  padding-block: clamp(40px, 6vh, 64px) clamp(48px, 9vh, 96px);
   padding-right: clamp(24px, 3.4vw, 56px);
   transform: translate3d(0, calc((var(--p, 0.5) - 0.5) * -90px), 0);
+}
+/* proof: rating and the next free slot, top of the text column */
+.hero-proof {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px 40px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translate3d(0, -8px, 0);
+  transition:
+    opacity 1s 0.9s var(--ease),
+    transform 1s 0.9s var(--ease);
+}
+.hero.ready .hero-proof {
+  opacity: 1;
+  transform: none;
+}
+.proof-rating {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: end;
+  gap: 8px 16px;
+}
+.proof-score {
+  grid-row: 1 / span 2;
+  font-family: var(--disp);
+  font-weight: 800;
+  font-size: clamp(64px, 5.6vw, 92px);
+  line-height: 0.8;
+  color: #f6f5f0;
+  font-variant-numeric: lining-nums;
+}
+.proof-stars {
+  display: flex;
+  gap: 3px;
+}
+.proof-stars svg {
+  width: 14px;
+  height: 14px;
+  fill: var(--accent);
+}
+.proof-src {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--metal);
+}
+.proof-slot {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+  padding: 2px 0;
+}
+.proof-label {
+  font-size: 14px;
+  color: var(--metal);
+}
+.proof-time {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  border-bottom: 1px solid rgba(241, 240, 235, 0.25);
+  padding-bottom: 4px;
+  transition: border-color 0.3s;
+}
+.proof-time i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(255, 77, 46, 0.18);
+}
+.proof-slot:hover .proof-time {
+  border-color: var(--accent);
 }
 .hero-meta {
   margin-bottom: 26px;
@@ -1363,10 +1448,24 @@ button {
     grid-column: 1;
     grid-row: 2;
     padding: 22px var(--pad) 40px;
+    gap: 0;
     transform: none;
   }
   .hero-meta {
     margin-bottom: 18px;
+  }
+  .hero-proof {
+    order: 2;
+    margin-top: 36px;
+  }
+  .proof-score {
+    font-size: 58px;
+  }
+  .proof-slot {
+    text-align: left;
+  }
+  .proof-time {
+    justify-content: flex-start;
   }
   .hero-title {
     font-size: clamp(48px, 13.6vw, 88px);

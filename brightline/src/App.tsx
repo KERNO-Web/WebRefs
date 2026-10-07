@@ -8,7 +8,15 @@ const STUDIO = {
   telegram: '@brightline_krsk',
   address: 'Красноярск, ул. Северное шоссе, 7, бокс 3',
   hours: 'Ежедневно, 9:00–21:00',
+  rating: 'Яндекс Карты',
+  reviews: '312 отзывов',
 };
+
+/** The next free slot, phrased the way an administrator would say it. */
+function nextSlot() {
+  const now = new Date();
+  return now.getHours() < 15 ? 'Сегодня, 18:00' : 'Завтра, 10:00';
+}
 
 function Img({
   photo,
@@ -155,6 +163,31 @@ function Hero({ onBook }: { onBook: () => void }) {
         </div>
       </div>
       <div className="hero-body wrap">
+        <div className="hero-proof">
+          <div className="proof-rating">
+            <span className="proof-score">4,9</span>
+            <span className="proof-stars" aria-hidden="true">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <svg key={i} viewBox="0 0 12 12">
+                  <path d="M6 .6 7.6 4l3.7.4-2.8 2.5.8 3.7L6 8.7 2.7 10.6l.8-3.7L.7 4.4 4.4 4z" />
+                </svg>
+              ))}
+            </span>
+            <span className="proof-src">
+              {STUDIO.rating}
+              <br />
+              {STUDIO.reviews}
+            </span>
+          </div>
+          <button type="button" className="proof-slot" onClick={onBook}>
+            <span className="proof-label">Ближайшее окно</span>
+            <span className="proof-time">
+              <i aria-hidden="true" />
+              {nextSlot()}
+            </span>
+          </button>
+        </div>
+        <div className="hero-main">
         <p className="hero-meta">
           <span>Красноярск</span>
           <span className="dot" aria-hidden="true" />
@@ -178,6 +211,7 @@ function Hero({ onBook }: { onBook: () => void }) {
           <button type="button" className="btn btn-ghost" onClick={onBook}>
             Записаться
           </button>
+        </div>
         </div>
       </div>
     </section>
@@ -577,7 +611,7 @@ function Contact({ onBook }: { onBook: () => void }) {
         </figure>
       </div>
       <footer className="foot wrap">
-        <span>© 2026 BRIGHTLINE — концепт для портфолио. Студия, адрес и телефон вымышлены.</span>
+        <span>© 2026 BRIGHTLINE — концепт для портфолио. Студия, адрес, телефон и рейтинг вымышлены.</span>
         <details>
           <summary>Фото: Unsplash</summary>
           <p>{CREDITS.join(', ')}.</p>
