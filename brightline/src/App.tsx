@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { lockScroll, scrollToId, startMotion } from './motion';
+import { lockScroll, navigateTo, startMotion } from './motion';
 import { CREDITS, PHOTOS, src, srcSet, type Photo } from './photos';
 
 const STUDIO = {
@@ -82,8 +82,10 @@ function Header({ theme, onBook }: { theme: 'dark' | 'light'; onBook: () => void
   useEffect(() => lockScroll(open), [open]);
   const go = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
+    // release the scroll lock before scrolling, not after the next render
+    lockScroll(false);
     setOpen(false);
-    scrollToId(id);
+    navigateTo(id);
   };
   return (
     <header className={`hdr ${theme} ${open ? 'open' : ''}`}>
@@ -120,17 +122,9 @@ function Header({ theme, onBook }: { theme: 'dark' | 'light'; onBook: () => void
               {n.label}
             </a>
           ))}
-          <button
-            type="button"
-            className="btn btn-accent"
-            tabIndex={open ? 0 : -1}
-            onClick={() => {
-              setOpen(false);
-              onBook();
-            }}
-          >
+          <a href="#contact" className="btn btn-accent" onClick={go('contact')} tabIndex={open ? 0 : -1}>
             Записаться
-          </button>
+          </a>
           <p className="hdr-sheet-meta">
             {STUDIO.phone}
             <br />
@@ -159,7 +153,6 @@ function Hero({ onBook }: { onBook: () => void }) {
             onLoad={() => setReady(true)}
           />
         </div>
-        <span className="grid-v hero-v" aria-hidden="true" />
       </div>
       <div className="hero-body wrap">
         <p className="hero-meta">
@@ -167,7 +160,6 @@ function Hero({ onBook }: { onBook: () => void }) {
           <span className="dot" aria-hidden="true" />
           <span>ежедневно</span>
         </p>
-        <span className="grid-h hero-h" aria-hidden="true" />
         <h1 className="display hero-title">
           <Lines lines={['Блеск,', 'который видно', 'сразу.']} delay={0.25} />
         </h1>
@@ -178,7 +170,7 @@ function Hero({ onBook }: { onBook: () => void }) {
             className="btn btn-accent"
             onClick={(e) => {
               e.preventDefault();
-              scrollToId('works');
+              navigateTo('works');
             }}
           >
             Смотреть работы
@@ -582,7 +574,6 @@ function Contact({ onBook }: { onBook: () => void }) {
         </div>
         <figure className="cta-media mask" data-reveal>
           <Img photo={PHOTOS.cta} sizes="(max-width: 860px) 100vw, 50vw" />
-          <span className="grid-v cta-v" aria-hidden="true" />
         </figure>
       </div>
       <footer className="foot wrap">

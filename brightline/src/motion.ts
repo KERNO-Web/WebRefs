@@ -11,12 +11,22 @@ export const HEADER_H = 68;
 
 let lenis: Lenis | null = null;
 
-export function scrollToId(id: string) {
+/** Height of the fixed header right now (it is shorter on phones). */
+const headerHeight = () => document.querySelector<HTMLElement>('.hdr')?.offsetHeight ?? HEADER_H;
+
+export function scrollToId(id: string, immediate = false) {
   const el = document.getElementById(id);
   if (!el) return;
-  const offset = id === 'top' ? 0 : -HEADER_H + 1;
-  if (lenis) lenis.scrollTo(el, { offset, duration: 1.2 });
-  else window.scrollTo({ top: el.getBoundingClientRect().top + scrollY + offset, behavior: reduceMotion() ? 'auto' : 'smooth' });
+  const top = id === 'top' ? 0 : el.getBoundingClientRect().top + scrollY - headerHeight() + 1;
+  if (lenis) lenis.scrollTo(top, { duration: 1.2, immediate, force: true });
+  else window.scrollTo({ top, behavior: immediate || reduceMotion() ? 'auto' : 'smooth' });
+}
+
+/** Anchor navigation: a real history entry, then a smooth scroll that clears the header. */
+export function navigateTo(id: string) {
+  const hash = id === 'top' ? location.pathname + location.search : `#${id}`;
+  if ((id === 'top' && location.hash) || (id !== 'top' && location.hash !== hash)) history.pushState(null, '', hash);
+  scrollToId(id);
 }
 
 export function lockScroll(lock: boolean) {
@@ -31,6 +41,11 @@ export function startMotion(onTheme: (theme: 'dark' | 'light') => void) {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   if (reduce) root.classList.add('reduce');
   else lenis = new Lenis({ lerp: 0.1, wheelMultiplier: 1 });
+
+  // back / forward between anchors scroll the page like a click would
+  const onPop = () => scrollToId(location.hash.slice(1) || 'top');
+  addEventListener('popstate', onPop);
+  if (location.hash) requestAnimationFrame(() => scrollToId(location.hash.slice(1), true));
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -77,6 +92,7 @@ export function startMotion(onTheme: (theme: 'dark' | 'light') => void) {
   return () => {
     cancelAnimationFrame(raf);
     io.disconnect();
+    removeEventListener('popstate', onPop);
     lenis?.destroy();
     lenis = null;
   };

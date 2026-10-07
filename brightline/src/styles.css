@@ -520,15 +520,6 @@ button {
 .hero.ready .hero-img .ph {
   transform: scale(1) translate3d(0, calc((var(--p, 0.5) - 0.5) * 8%), 0);
 }
-.hero-v {
-  left: 0;
-  top: 0;
-  bottom: 0;
-  color: rgba(241, 240, 235, 0.5);
-}
-.hero.ready .hero-v {
-  transform: none;
-}
 .hero-body {
   grid-column: 1;
   grid-row: 1;
@@ -539,6 +530,7 @@ button {
   transform: translate3d(0, calc((var(--p, 0.5) - 0.5) * -90px), 0);
 }
 .hero-meta {
+  margin-bottom: 26px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -555,17 +547,6 @@ button {
 }
 .hero.ready .hero-meta {
   opacity: 1;
-}
-/* a light line that starts under the meta and runs on across the photograph */
-.hero-h {
-  position: relative;
-  margin: 22px 0 30px;
-  width: calc(100% + var(--pad) + 60vw);
-  color: rgba(241, 240, 235, 0.32);
-  transition-delay: 0.3s;
-}
-.hero.ready .hero-h {
-  transform: none;
 }
 .hero-title {
   font-size: clamp(62px, 6.6vw, 124px);
@@ -1233,13 +1214,6 @@ button {
   position: absolute;
   inset: 0;
 }
-.cta-v {
-  left: 28px;
-  top: 0;
-  bottom: 0;
-  color: rgba(255, 255, 255, 0.5);
-  z-index: 2;
-}
 .foot {
   display: flex;
   flex-wrap: wrap;
@@ -1385,18 +1359,14 @@ button {
     height: min(50svh, 116vw);
     min-height: 320px;
   }
-  .hero-v {
-    display: none;
-  }
   .hero-body {
     grid-column: 1;
     grid-row: 2;
     padding: 22px var(--pad) 40px;
     transform: none;
   }
-  .hero-h {
-    width: calc(100% + var(--pad));
-    margin: 14px 0 20px;
+  .hero-meta {
+    margin-bottom: 18px;
   }
   .hero-title {
     font-size: clamp(48px, 13.6vw, 88px);
