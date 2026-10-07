@@ -1,43 +1,31 @@
-// The pinned project lives in one Supabase row (see README.md for the SQL).
-// Visitors only read it, with the public anon key and a plain REST call, so the
-// Supabase client is loaded only for the admin panel. Without configuration, or
-// if Supabase does not answer in time, the page uses DEFAULT_FEATURED.
-import type { SupabaseClient } from '@supabase/supabase-js';
-import { DEFAULT_FEATURED, bySlug } from './projects';
+// What the homepage shows is decided by one file in the repository,
+// src/site-settings.json: the pinned project and the hidden ones. It is baked
+// in at build time, so the page never waits for a network call. The hidden
+// admin edits that file through the GitHub API, and the Pages workflow
+// rebuilds the site.
+import raw from './site-settings.json';
+import { DEFAULT_FEATURED, PROJECTS, bySlug, type Project } from './projects';
 
-const URL = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
-
-export const supabaseConfigured = Boolean(URL && KEY);
-
-export async function readFeaturedSlug(timeoutMs = 2500): Promise<string> {
-  if (!supabaseConfigured) return DEFAULT_FEATURED;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
-  try {
-    const res = await fetch(`${URL}/rest/v1/portfolio_settings?id=eq.1&select=featured_project_slug`, {
-      headers: { apikey: KEY!, Authorization: `Bearer ${KEY}` },
-      signal: ctrl.signal,
-      cache: 'no-store',
-    });
-    if (!res.ok) throw new Error(String(res.status));
-    const rows = (await res.json()) as { featured_project_slug: string }[];
-    const slug = rows[0]?.featured_project_slug;
-    return bySlug(slug) ? slug! : DEFAULT_FEATURED;
-  } catch {
-    return DEFAULT_FEATURED;
-  } finally {
-    clearTimeout(timer);
-  }
+export interface SiteSettings {
+  featured: string;
+  hidden: string[];
 }
 
-let client: SupabaseClient | null = null;
+export const REPO = 'KERNO-Web/WebRefs';
+export const SETTINGS_PATH = '_landing/src/site-settings.json';
 
-export async function adminClient(): Promise<SupabaseClient> {
-  if (!supabaseConfigured) throw new Error('Supabase не настроен');
-  if (!client) {
-    const { createClient } = await import('@supabase/supabase-js');
-    client = createClient(URL!, KEY!, { auth: { persistSession: true, storageKey: 'kerno-admin' } });
-  }
-  return client;
+export function normalize(s: Partial<SiteSettings>): SiteSettings {
+  const hidden = (s.hidden ?? []).filter((slug) => bySlug(slug));
+  let featured = s.featured && bySlug(s.featured) && !hidden.includes(s.featured) ? s.featured : DEFAULT_FEATURED;
+  if (hidden.includes(featured)) featured = PROJECTS.find((p) => !hidden.includes(p.slug))?.slug ?? DEFAULT_FEATURED;
+  return { featured, hidden };
+}
+
+export const SETTINGS: SiteSettings = normalize(raw as Partial<SiteSettings>);
+
+/** Projects shown on the homepage, pinned one first. */
+export function visibleProjects(s: SiteSettings = SETTINGS): { featured: Project; rest: Project[] } {
+  const shown = PROJECTS.filter((p) => !s.hidden.includes(p.slug));
+  const featured = shown.find((p) => p.slug === s.featured) ?? shown[0];
+  return { featured, rest: shown.filter((p) => p !== featured) };
 }

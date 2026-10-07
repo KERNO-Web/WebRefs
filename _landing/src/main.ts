@@ -1,6 +1,6 @@
 import './styles.css';
-import { PROJECTS, bySlug, type Project } from './projects';
-import { readFeaturedSlug } from './settings';
+import type { Project } from './projects';
+import { visibleProjects } from './settings';
 
 const ADMIN_ROUTE = '#/kerno-admin';
 const ARROW =
@@ -9,62 +9,43 @@ const ARROW =
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const pad = (n: number) => String(n).padStart(2, '0');
-const linkAttrs = (p: Project) =>
-  `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
+const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
 const accent = (p: Project) => (p.accent ? ` style="--a:${p.accent}"` : '');
-const tags = (p: Project) => `<ul class="tags">${p.tags.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`;
-
-document.querySelectorAll('[data-count]').forEach((el) => (el.textContent = String(PROJECTS.length)));
 
 /* ---------- pinned project and the rest of the grid ---------- */
 
-function renderFeatured(p: Project) {
-  const el = document.getElementById('featured')!;
-  el.setAttribute('style', p.accent ? `--a:${p.accent}` : '');
-  el.innerHTML = `
+function render() {
+  const { featured: p, rest } = visibleProjects();
+  const feat = document.getElementById('featured')!;
+  feat.setAttribute('style', p.accent ? `--a:${p.accent}` : '');
+  feat.innerHTML = `
     <header class="feat-head">
       <span class="pin"><i aria-hidden="true"></i>Закреплено</span>
-      <span class="feat-idx">01 / ${pad(PROJECTS.length)}</span>
     </header>
     <a class="feat-card card" ${linkAttrs(p)}>
-      <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" /></div>
+      <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" fetchpriority="high" /></div>
       <div class="feat-info">
         <h2 class="card-title">${esc(p.title)}</h2>
         <p class="desc">${esc(p.description)}</p>
-        ${tags(p)}
         <span class="go">Открыть проект ${ARROW}</span>
       </div>
     </a>`;
-  el.classList.remove('is-loading');
-  requestAnimationFrame(() => el.classList.add('in'));
-}
 
-function renderGrid(featured: Project) {
-  const rest = PROJECTS.filter((p) => p.slug !== featured.slug);
-  document.getElementById('grid-range')!.textContent = `02 — ${pad(PROJECTS.length)}`;
   document.getElementById('grid')!.innerHTML = rest
     .map(
-      (p, i) => `
-      <a class="card rv" ${linkAttrs(p)}${accent(p)}>
-        <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)}" loading="lazy" width="1200" height="630" /></div>
+      (r, i) => `
+      <a class="card rv" ${linkAttrs(r)}${accent(r)}>
+        <div class="shot"><img src="${esc(r.thumbnail)}" alt="${esc(r.title)}" loading="lazy" width="1200" height="630" /></div>
         <div class="info">
-          <span class="num">${pad(i + 2)}</span>
-          <h3 class="card-title">${esc(p.title)}</h3>
-          <p class="desc">${esc(p.description)}</p>
-          ${tags(p)}
+          <span class="num">${pad(i + 1)}</span>
+          <h3 class="card-title">${esc(r.title)}</h3>
+          <p class="desc">${esc(r.description)}</p>
           <span class="go">Открыть проект ${ARROW}</span>
         </div>
       </a>`,
     )
     .join('');
   observeReveals();
-}
-
-export async function loadFeatured() {
-  const slug = await readFeaturedSlug();
-  const p = bySlug(slug)!;
-  renderFeatured(p);
-  renderGrid(p);
 }
 
 /* ---------- reveals ---------- */
@@ -106,11 +87,11 @@ async function route() {
     if (!adminMounted) {
       adminMounted = true;
       const { mountAdmin } = await import('./admin');
-      mountAdmin(admin, () => loadFeatured());
+      mountAdmin(admin);
     }
     window.scrollTo(0, 0);
   } else {
-    document.title = 'KERNØ — дизайн и разработка сайтов';
+    document.title = 'KERNØ — дизайн и разработка';
   }
 }
 
@@ -139,4 +120,4 @@ const spy = new IntersectionObserver(
 // two frames so the entrance transitions start from their initial state
 requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
 route();
-loadFeatured();
+render();
