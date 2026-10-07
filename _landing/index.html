@@ -1,264 +1,109 @@
 <!doctype html>
 <html lang="ru">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Избранные работы — 11 проектов</title>
-<meta name="description" content="Сайты, визуальные эксперименты и интерактивные проекты — каждый со своим стилем и задачей." />
-<meta property="og:type" content="website" />
-<meta property="og:locale" content="ru_RU" />
-<meta property="og:title" content="Избранные работы — 11 проектов" />
-<meta property="og:description" content="Сайты, визуальные эксперименты и интерактивные проекты — каждый со своим стилем и задачей." />
-<meta property="og:url" content="https://kerno-web.github.io/WebRefs/" />
-<meta property="og:image" content="https://kerno-web.github.io/WebRefs/og.jpg" />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="https://kerno-web.github.io/WebRefs/og.jpg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-<style>
-  :root {
-    --bg: #121214; --panel: #1a1a1d; --text: #f1eee8; --muted: #8b8a88; --dim: #5c5b5a;
-    --line: rgba(241, 238, 232, .1); --ease: cubic-bezier(.16, 1, .3, 1);
-    --pad: clamp(16px, 4.4vw, 64px);
-  }
-  * { box-sizing: border-box; }
-  html { -webkit-text-size-adjust: 100%; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/1.55 Onest, system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
-  a { color: inherit; text-decoration: none; }
-  .wrap { max-width: 1440px; margin: 0 auto; padding: 0 var(--pad); }
-  .meta { font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#121214" />
+    <title>KERNØ — дизайн и разработка сайтов</title>
+    <meta name="description" content="KERNØ — дизайн и разработка сайтов. Лендинги, интерфейсы и визуальные концепты: 11 работ, от персональных сайтов до сервисов с реальным функционалом." />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:title" content="KERNØ — дизайн и разработка сайтов" />
+    <meta property="og:description" content="Лендинги, интерфейсы и визуальные концепты. 11 работ — от персональных сайтов до сервисов с реальным функционалом." />
+    <meta property="og:url" content="https://kerno-web.github.io/WebRefs/" />
+    <meta property="og:image" content="https://kerno-web.github.io/WebRefs/og.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="https://kerno-web.github.io/WebRefs/og.jpg" />
+    <link rel="icon" type="image/svg+xml" href="kerno-avatar-dark.svg" />
+    <link rel="apple-touch-icon" href="kerno-avatar-dark.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <script>document.documentElement.classList.add('js')</script>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap top-in">
+        <a class="brand" href="#" aria-label="KERNØ — на главную">
+          <img src="kerno-avatar-dark.svg" width="36" height="36" alt="" />
+          <span>KERN<span class="o">Ø</span></span>
+        </a>
+        <nav class="top-nav" aria-label="Разделы">
+          <a href="#works">Работы</a>
+          <a href="#contact">Контакты</a>
+        </nav>
+        <a class="tg" href="https://t.me/KernoWeb" target="_blank" rel="noopener">
+          <svg class="tg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.94 4.32 18.66 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.31-8.41c.4-.36-.09-.56-.63-.2L5.9 13.29 1 11.75c-1.08-.34-1.1-1.08.23-1.6l19.03-7.34c.9-.33 1.68.21 1.68 1.51Z" /></svg>
+          <span>Написать</span>
+        </a>
+      </div>
+    </header>
 
-  /* top bar */
-  .bar { display: flex; justify-content: space-between; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--line); }
-  .bar b { font-weight: 600; font-size: 15px; letter-spacing: -.01em; }
-  .bar b i { display: inline-block; width: 8px; height: 8px; margin-right: 10px; border-radius: 50%; background: var(--text); font-style: normal; vertical-align: 1px; }
+    <main id="home">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <p class="hero-label"><i aria-hidden="true"></i>Портфолио / 2026</p>
+        <h1 class="word" id="hero-title" aria-label="KERNØ">
+          <span class="ch">K</span><span class="ch">E</span><span class="ch">R</span><span class="ch">N</span><span class="ch o">Ø</span>
+        </h1>
+        <div class="hero-row">
+          <p class="role">Дизайн<br />и разработка<br />сайтов</p>
+          <div class="hero-copy">
+            <p>
+              Лендинги, интерфейсы и визуальные концепты. <span data-count></span>&nbsp;работ&nbsp;— от персональных сайтов до
+              сервисов с реальным функционалом.
+            </p>
+            <div class="ctas">
+              <a class="btn btn-light" href="#works">Смотреть работы <span aria-hidden="true">↓</span></a>
+              <a class="btn btn-accent" href="https://t.me/KernoWeb" target="_blank" rel="noopener">
+                <svg class="tg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.94 4.32 18.66 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.31-8.41c.4-.36-.09-.56-.63-.2L5.9 13.29 1 11.75c-1.08-.34-1.1-1.08.23-1.6l19.03-7.34c.9-.33 1.68.21 1.68 1.51Z" /></svg>
+                Написать
+              </a>
+            </div>
+          </div>
+          <dl class="facts">
+            <div><dt>Работ</dt><dd data-count></dd></div>
+            <div><dt>Год</dt><dd>2026</dd></div>
+            <div><dt>Telegram</dt><dd><a href="https://t.me/KernoWeb" target="_blank" rel="noopener">@KernoWeb</a></dd></div>
+          </dl>
+        </div>
+      </section>
 
-  /* intro */
-  .intro { padding: clamp(56px, 9vw, 128px) 0 clamp(48px, 7vw, 96px); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 28px; }
-  .intro .meta { grid-column: 1 / -1; }
-  .intro h1 { grid-column: 1 / 11; margin: 0; font-weight: 700; font-size: clamp(42px, 7.6vw, 124px); line-height: .96; letter-spacing: -.045em; }
-  .intro h1 span { color: var(--muted); }
-  .intro p { grid-column: 1 / 6; margin: 8px 0 0; font-size: clamp(17px, 1.5vw, 20px); line-height: 1.5; color: #c9c6c0; max-width: 34ch; }
-  .intro dl { grid-column: 8 / 13; align-self: end; margin: 0; display: grid; grid-template-columns: repeat(3, auto); justify-content: end; gap: 0 clamp(20px, 3vw, 44px); }
-  .intro dt { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
-  .intro dd { margin: 0; font-weight: 500; font-size: 15px; }
+      <section id="works" class="works wrap" aria-label="Работы">
+        <article class="feat is-loading" id="featured" aria-live="polite"></article>
+        <div class="grid-head">
+          <h2>Все работы</h2>
+          <span class="grid-range" id="grid-range"></span>
+        </div>
+        <div class="grid" id="grid"></div>
+      </section>
 
-  /* cards */
-  .card { position: relative; display: block; --a: #fff; }
-  .shot { position: relative; overflow: hidden; border-radius: 14px; background: var(--panel); aspect-ratio: 1200 / 630; }
-  .shot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform: scale(1.001); transition: transform 1.1s var(--ease), opacity .6s; }
-  .shot::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; }
-  .card:hover .shot img { transform: scale(1.02); }
-  .info { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 18px; padding-top: 20px; }
-  .num { font-size: 13px; font-weight: 500; color: var(--dim); padding-top: .35em; font-variant-numeric: tabular-nums; }
-  .info h2 { margin: 0; font-weight: 700; font-size: clamp(26px, 2.6vw, 38px); line-height: 1.05; letter-spacing: -.035em; display: flex; align-items: center; gap: 12px; }
-  .info h2::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--a); opacity: 0; transform: scale(.4); transition: opacity .4s, transform .5s var(--ease); }
-  .card:hover .info h2::after { opacity: 1; transform: none; }
-  .desc { grid-column: 2; margin: 8px 0 0; color: #b4b1ab; font-size: 16px; max-width: 46ch; }
-  .tags { grid-column: 2; display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 0; padding: 0; list-style: none; }
-  .tags li { font-size: 12px; font-weight: 500; color: var(--muted); padding: 5px 10px; border: 1px solid var(--line); border-radius: 999px; }
-  .go { grid-column: 2; justify-self: start; margin-top: 18px; display: inline-flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; padding-bottom: 4px; background: linear-gradient(var(--a), var(--a)) 0 100% / 0 1px no-repeat; transition: background-size .6s var(--ease); }
-  .go svg { width: 16px; height: 16px; transition: transform .5s var(--ease); }
-  .card:hover .go { background-size: 100% 1px; }
-  .card:hover .go svg { transform: translate(4px, -4px); }
-  .card:focus-visible { outline: 2px solid var(--a); outline-offset: 6px; border-radius: 16px; }
+      <section id="contact" class="contact" aria-labelledby="contact-title">
+        <div class="wrap contact-in">
+          <img class="contact-mark" src="kerno-avatar-light.svg" width="120" height="120" alt="Знак KERNØ" />
+          <div class="contact-main">
+            <p class="contact-label">Контакты</p>
+            <h2 id="contact-title">Нужен сайт —<br />пишите в Telegram</h2>
+            <p class="contact-text">Расскажите, что за проект и к какому сроку. Отвечу сам и предложу, как его собрать.</p>
+          </div>
+          <div class="contact-actions">
+            <a class="btn btn-accent btn-lg" href="https://t.me/KernoWeb" target="_blank" rel="noopener">
+              <svg class="tg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.94 4.32 18.66 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.31-8.41c.4-.36-.09-.56-.63-.2L5.9 13.29 1 11.75c-1.08-.34-1.1-1.08.23-1.6l19.03-7.34c.9-.33 1.68.21 1.68 1.51Z" /></svg>
+              Написать в Telegram
+            </a>
+            <a class="contact-gh" href="https://github.com/KERNO-Web" target="_blank" rel="noopener">Исходники всех работ на GitHub ↗</a>
+          </div>
+        </div>
+        <footer class="wrap foot">
+          <span>© 2026 KERN<span class="o">Ø</span></span>
+          <span>Бренды, заказы и платежи в концептах вымышлены.</span>
+        </footer>
+      </section>
+    </main>
 
-  /* featured */
-  .featured { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 24px; padding-bottom: clamp(72px, 10vw, 150px); }
-  .featured .shot { grid-column: 1 / 10; border-radius: 18px; }
-  .featured .info { grid-column: 10 / 13; align-self: end; grid-template-columns: 1fr; padding: 0; }
-  .featured .info > * { grid-column: 1; }
-  .featured .badge { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; color: var(--a); }
-  .featured .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-  .featured h2 { font-size: clamp(32px, 3.6vw, 58px); letter-spacing: -.045em; line-height: .98; }
-  .featured .num { padding: 0 0 10px; }
+    <div id="admin" hidden></div>
 
-  /* grid */
-  .grid-head { display: flex; justify-content: space-between; align-items: baseline; padding: 0 0 28px; margin-bottom: clamp(32px, 4vw, 56px); border-bottom: 1px solid var(--line); }
-  .grid-head h3 { margin: 0; font-weight: 600; font-size: clamp(20px, 2vw, 26px); letter-spacing: -.025em; }
-  .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: clamp(56px, 6vw, 88px); }
-  .grid .card { grid-column: span 6; }
-
-  /* cta */
-  .cta { margin-top: clamp(110px, 14vw, 200px); padding: clamp(56px, 8vw, 110px) 0 clamp(40px, 5vw, 64px); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px 24px; }
-  .cta h3 { grid-column: 1 / 9; margin: 0; font-weight: 700; font-size: clamp(36px, 5.6vw, 88px); line-height: .98; letter-spacing: -.045em; }
-  .cta h3 span { color: var(--muted); }
-  .cta .side { grid-column: 9 / 13; align-self: end; display: grid; gap: 22px; justify-items: start; }
-  .cta .side p { margin: 0; color: #b4b1ab; }
-  .btn { display: inline-flex; align-items: center; gap: 12px; padding: 16px 24px; border-radius: 999px; background: var(--text); color: var(--bg); font-weight: 600; font-size: 15px; transition: transform .5s var(--ease), background .3s; }
-  .btn svg { width: 16px; height: 16px; transition: transform .5s var(--ease); }
-  .btn:hover { background: #fff; }
-  .btn:hover svg { transform: translate(4px, -4px); }
-  footer { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 28px 0 36px; border-top: 1px solid var(--line); font-size: 13px; color: var(--dim); }
-
-  /* reveal */
-  .js .rv { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease), transform 1.2s var(--ease); }
-  .js .rv .shot { clip-path: inset(8% 0 0 0 round 14px); transition: clip-path 1.4s var(--ease); }
-  .js .rv.in { opacity: 1; transform: none; }
-  .js .rv.in .shot { clip-path: inset(0 0 0 0 round 14px); }
-  .js .featured.rv .shot { clip-path: inset(6% 0 0 0 round 18px); }
-  .js .featured.rv.in .shot { clip-path: inset(0 0 0 0 round 18px); }
-  @media (prefers-reduced-motion: reduce) {
-    .js .rv, .js .rv .shot { opacity: 1; transform: none; clip-path: none; transition: none; }
-    .shot img, .go svg, .btn svg { transition: none; }
-  }
-
-  @media (max-width: 1080px) {
-    .featured .shot { grid-column: 1 / -1; }
-    .featured .info { grid-column: 1 / 9; }
-    .intro dl { grid-column: 1 / -1; justify-content: start; }
-    .intro p { grid-column: 1 / 9; }
-    .cta h3 { grid-column: 1 / -1; }
-    .cta .side { grid-column: 1 / 9; }
-  }
-  @media (max-width: 760px) {
-    .intro, .featured, .grid, .cta { grid-template-columns: minmax(0, 1fr); }
-    .intro > *, .featured > *, .featured .info, .grid .card:nth-child(n), .cta > *, .cta .side { grid-column: 1 / -1 !important; margin-top: 0 !important; }
-    .intro h1 { font-size: clamp(38px, 11.4vw, 64px); }
-    .intro dl { grid-template-columns: repeat(3, auto); justify-content: start; }
-    .featured .shot { border-radius: 14px; }
-    .grid { row-gap: 64px; }
-    .info { grid-template-columns: 1fr; }
-    .info > * { grid-column: 1 !important; }
-    .num { padding: 0 0 6px; }
-    .bar .meta:last-child { display: none; }
-  }
-</style>
-</head>
-<body>
-<script>document.documentElement.classList.add('js')</script>
-<div class="wrap">
-  <header class="bar">
-    <b><i></i>Портфолио</b>
-    <span class="meta">2026 · 11 проектов</span>
-  </header>
-
-  <section class="intro">
-    <span class="meta">Избранные работы</span>
-    <h1>11 проектов. <span>11 разных характеров.</span></h1>
-    <p>Сайты, визуальные эксперименты и интерактивные проекты — каждый со своим стилем и задачей.</p>
-    <dl>
-      <div><dt>Год</dt><dd>2026</dd></div>
-      <div><dt>Работ</dt><dd>11 проектов</dd></div>
-      <div><dt>Направления</dt><dd>Интерактив / визуал / веб</dd></div>
-    </dl>
-  </section>
-
-  <a class="card featured rv" href="https://kerno-web.github.io/portfolio/" style="--a:#e5383f">
-    <div class="shot"><img src="./previews/roman.jpg" alt="Сайт Романа Переверзева — первый экран" width="2000" height="1050" /></div>
-    <div class="info">
-      <span class="badge">Новый проект</span>
-      <span class="num">01</span>
-      <h2>Роман Переверзев</h2>
-      <p class="desc">Персональный сайт о контенте, событиях и коммуникациях — с реальными работами, фото и контактами.</p>
-      <ul class="tags"><li>Персональный бренд</li><li>React</li><li>Лендинг</li></ul>
-      <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span>
-    </div>
-  </a>
-
-  <div class="grid-head">
-    <h3>Остальные работы</h3>
-    <span class="meta">02 — 11</span>
-  </div>
-
-  <div class="grid">
-    <a class="card rv" href="./key01/" style="--a:#3d5bff">
-      <div class="shot"><img src="./key01/og.jpg" alt="KEY/01" loading="lazy" /></div>
-      <div class="info"><span class="num">02</span><h2>KEY/01</h2>
-        <p class="desc">Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.</p>
-        <ul class="tags"><li>Three.js</li><li>3D</li><li>Анимация</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./afterimage/" style="--a:#c9c9cf">
-      <div class="shot"><img src="./afterimage/og.jpg" alt="Afterimage" loading="lazy" /></div>
-      <div class="info"><span class="num">03</span><h2>Afterimage</h2>
-        <p class="desc">Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.</p>
-        <ul class="tags"><li>Editorial</li><li>Фотография</li><li>Типографика</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./noctis/" style="--a:#c8a27a">
-      <div class="shot"><img src="./noctis/og.jpg" alt="NOCTIS" loading="lazy" /></div>
-      <div class="info"><span class="num">04</span><h2>NOCTIS</h2>
-        <p class="desc">Визуальная кампания вымышленного парфюмерного бренда.</p>
-        <ul class="tags"><li>WebGL</li><li>Кампания</li><li>Моушн</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./null/" style="--a:#e9e6df">
-      <div class="shot"><img src="./null/og.jpg" alt="NULL" loading="lazy" /></div>
-      <div class="info"><span class="num">05</span><h2>NULL</h2>
-        <p class="desc">Абстрактный digital-объект и эксперимент с формой, движением и WebGL.</p>
-        <ul class="tags"><li>Three.js</li><li>Шейдеры</li><li>Эксперимент</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./witcher/" style="--a:#ff5a1f">
-      <div class="shot"><img src="./witcher/og.jpg" alt="Wild Hunt" loading="lazy" /></div>
-      <div class="info"><span class="num">06</span><h2>Wild Hunt</h2>
-        <p class="desc">Визуальный трибьют The Witcher 3.</p>
-        <ul class="tags"><li>Трибьют</li><li>Атмосфера</li><li>Два языка</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./ranked/" style="--a:#ffd447">
-      <div class="shot"><img src="./ranked/og.jpg" alt="RANKED" loading="lazy" /></div>
-      <div class="info"><span class="num">07</span><h2>RANKED</h2>
-        <p class="desc">Концепт игрового сервиса с акцентом на каталоге и визуальном стиле.</p>
-        <ul class="tags"><li>E-commerce</li><li>Каталог</li><li>UI</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./nexus/" style="--a:#5b8cff">
-      <div class="shot"><img src="./nexus/og.jpg" alt="NEXUS Card" loading="lazy" /></div>
-      <div class="info"><span class="num">08</span><h2>NEXUS Card</h2>
-        <p class="desc">Продуктовый лендинг виртуальной карты для оплаты криптовалютой.</p>
-        <ul class="tags"><li>Финтех</li><li>Продукт</li><li>UI</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./route/" style="--a:#2ca07a">
-      <div class="shot"><img src="./route/og.jpg" alt="ROUTE" loading="lazy" /></div>
-      <div class="info"><span class="num">09</span><h2>ROUTE</h2>
-        <p class="desc">Спокойный трекер посылок: реальная карта, фото товаров, статусы.</p>
-        <ul class="tags"><li>Сервис</li><li>Карта</li><li>Интерфейс</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./facemail/" style="--a:#5b93f5">
-      <div class="shot"><img src="./facemail/og.jpg" alt="FACEMAIL" loading="lazy" /></div>
-      <div class="info"><span class="num">10</span><h2>FACEMAIL</h2>
-        <p class="desc">Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Здесь — урезанная демо-версия, полная работает на facemail.site.</p>
-        <ul class="tags"><li>Демо-версия</li><li>Веб-почта</li><li>UI</li><li>Продукт</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-    <a class="card rv" href="./brightline/" style="--a:#ff4d2e">
-      <div class="shot"><img src="./brightline/og.jpg" alt="BRIGHTLINE" loading="lazy" /></div>
-      <div class="info"><span class="num">11</span><h2>BRIGHTLINE</h2>
-        <p class="desc">Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.</p>
-        <ul class="tags"><li>Детейлинг</li><li>Локальный бизнес</li><li>Интерфейс</li></ul>
-        <span class="go">Открыть проект <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></span></div>
-    </a>
-  </div>
-
-  <section class="cta rv">
-    <h3>Каждый проект — отдельный характер. <span>Код открыт.</span></h3>
-    <div class="side">
-      <p>Исходники всех работ лежат на GitHub — можно посмотреть, как всё устроено.</p>
-      <a class="btn" href="https://github.com/KERNO-Web">Все исходники на GitHub <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg></a>
-    </div>
-  </section>
-
-  <footer>
-    <span>© 2026 · Портфолио</span>
-    <span>Бренды, заказы и платежи в концептах вымышлены.</span>
-  </footer>
-</div>
-<script>
-  (function () {
-    var els = document.querySelectorAll('.rv');
-    if (!('IntersectionObserver' in window)) { els.forEach(function (e) { e.classList.add('in'); }); return; }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    els.forEach(function (e) { io.observe(e); });
-  })();
-</script>
-</body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

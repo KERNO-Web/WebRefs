@@ -23,9 +23,16 @@ jobs:
         with:
           node-version: 22
       - name: Build every project into _site/<name>
+        env:
+          # public by design (Row Level Security guards writes); empty = default pinned project
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
         run: |
           mkdir -p _site
-          cp -R _landing/. _site/
+          echo "::group::homepage"
+          (cd _landing && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
+          cp -R _landing/dist/. _site/
+          echo "::endgroup::"
           for p in afterimage key01 noctis null witcher ranked nexus route facemail brightline; do
             echo "::group::$p"
             (cd "$p" && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
