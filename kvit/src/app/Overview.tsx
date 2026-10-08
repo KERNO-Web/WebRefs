@@ -40,13 +40,15 @@ export function Overview() {
       />
 
       <section className="metrics" aria-label={t('ov_today')}>
-        <Metric accent label={t('ov_received_today')} value={o.received} format={(n) => f.rub(Math.round(n), lang)} delta={delta} foot={t('ov_no_compare')} />
-        <Metric label={t('ov_payments')} value={o.count} format={(n) => f.num(Math.round(n), lang)} foot={t('ov_success', { n: f.num(o.success * 100, lang, 0) })} />
-        <Metric label={t('ov_average')} value={o.average} format={(n) => f.rub(Math.round(n), lang)} foot={o.refundsToday ? t('ov_refunds_today', { amount: f.rub(o.refundsToday, lang) }) : t('ov_no_refunds')} />
+        <Metric tone="emerald" label={t('ov_received_today')} value={o.received} kind="rub" delta={delta} foot={t('ov_no_compare')} />
+        <Metric label={t('ov_payments')} value={o.count} kind="count" foot={t('ov_success', { n: f.num(o.success * 100, lang, 0) })} />
+        <Metric label={t('ov_average')} value={o.average} kind="rub" foot={o.refundsToday ? t('ov_refunds_today', { amount: f.rub(o.refundsToday, lang) }) : t('ov_no_refunds')} />
         <Metric
+          tone="mint"
           label={t('ov_to_settle')}
           value={o.current?.net ?? 0}
-          format={(n) => f.usdt(n, lang, { symbol: demo.merchant.settleAsset })}
+          kind="crypto"
+          symbol={demo.merchant.settleAsset}
           foot={o.current ? t('ov_payout', { when: f.time(o.current.payoutAt, lang) }) : t('ov_nothing_to_settle')}
         />
       </section>

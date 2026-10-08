@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import Lenis from 'lenis';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { overview } from '../lib/derive';
 import * as f from '../lib/format';
 import { useI18n } from '../lib/i18n';
-import type { AssetId, Payment } from '../lib/model';
+import type { AssetId, Invoice, Payment } from '../lib/model';
 import { assetById, invoiceTotal } from '../lib/model';
 import { quote, useRates } from '../lib/rates';
 import { absolute, href, navigate } from '../lib/router';
@@ -12,12 +13,41 @@ import { Checkout, type CheckoutPhase, type CheckoutProps } from '../product/Che
 import { InvoiceDocument } from '../product/InvoiceDocument';
 import { PosView } from '../product/PosView';
 import { Metric, PaymentRow, RevenueChart, SettlementBreakdown } from '../product/widgets';
-import { Icon } from '../ui/icons';
-import { Badge, Button, CopyButton, LangSwitch, LinkButton, Logo, QR, SandboxBadge, useNow } from '../ui/ui';
+import { Icon, type IconName } from '../ui/icons';
+import { Badge, LangSwitch, LinkButton, Logo, Money, QRFrame, SandboxBadge, useMedia, useNow } from '../ui/ui';
 
-const scrollTo = (id: string) => (e: React.MouseEvent) => {
+const DAY = 86_400_000;
+const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ---------- smooth scroll ----------
+
+let lenis: Lenis | null = null;
+
+function useSmoothScroll() {
+  useEffect(() => {
+    if (reducedMotion()) return;
+    const l = new Lenis({ lerp: 0.13, wheelMultiplier: 1, smoothWheel: true });
+    lenis = l;
+    let raf = 0;
+    const loop = (time: number) => {
+      l.raf(time);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      l.destroy();
+      lenis = null;
+    };
+  }, []);
+}
+
+const jump = (id: string) => (e: React.MouseEvent) => {
   e.preventDefault();
-  document.getElementById(id)?.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (lenis) lenis.scrollTo(el, { offset: -64, duration: 1.1 });
+  else el.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
 };
 
 function useReveal() {
@@ -36,16 +66,40 @@ function useReveal() {
           }
         }
       },
-      { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+      { rootMargin: '0px 0px -6% 0px', threshold: 0.06 },
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
 }
 
+const NAV = ['pos', 'checkout', 'invoices', 'dashboard'] as const;
+
+function useActiveSection() {
+  const [active, setActive] = useState<string | null>(null);
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setActive(e.target.id);
+      },
+      { rootMargin: '-40% 0px -55% 0px' },
+    );
+    for (const id of [...NAV, 'top', 'settlement', 'start']) {
+      const el = document.getElementById(id);
+      if (el) io.observe(el);
+    }
+    return () => io.disconnect();
+  }, []);
+  return active;
+}
+
+// ---------- page ----------
+
 export function Landing() {
   const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
+  const active = useActiveSection();
+  useSmoothScroll();
   useReveal();
 
   useEffect(() => {
@@ -59,33 +113,33 @@ export function Landing() {
     return () => window.removeEventListener('scroll', on);
   }, []);
 
+  const labels: Record<(typeof NAV)[number], string> = {
+    pos: t('sn_product'),
+    checkout: t('sn_payments'),
+    invoices: t('sn_invoices'),
+    dashboard: t('sn_dashboard'),
+  };
+
   return (
     <div className="site">
-      <a className="skip" href="#main" onClick={scrollTo('main')}>
+      <a className="skip" href="#main" onClick={jump('main')}>
         {t('skip')}
       </a>
       <header className={`site-head${scrolled ? ' is-scrolled' : ''}`}>
         <div className="wrap site-head-row">
-          <a href={href('/')} className="site-logo" aria-label="Kvit">
+          <a href={href('/')} className="site-logo" aria-label="KVIT" onClick={jump('top')}>
             <Logo />
           </a>
           <nav className="site-nav" aria-label={t('nav_site')}>
-            <a href="#how" onClick={scrollTo('how')}>
-              {t('sn_product')}
-            </a>
-            <a href="#checkout" onClick={scrollTo('checkout')}>
-              {t('sn_payments')}
-            </a>
-            <a href="#invoices" onClick={scrollTo('invoices')}>
-              {t('sn_invoices')}
-            </a>
-            <a href="#dashboard" onClick={scrollTo('dashboard')}>
-              {t('sn_dashboard')}
-            </a>
+            {NAV.map((id) => (
+              <a key={id} href={`#${id}`} onClick={jump(id)} className={active === id ? 'is-on' : ''} aria-current={active === id ? 'true' : undefined}>
+                {labels[id]}
+              </a>
+            ))}
           </nav>
           <div className="site-head-right">
             <LangSwitch />
-            <LinkButton variant="primary" size="sm" href={href('/app/overview')}>
+            <LinkButton variant="primary" size="sm" href={href('/app/overview')} iconRight="arrow">
               {t('open_demo')}
             </LinkButton>
           </div>
@@ -94,11 +148,11 @@ export function Landing() {
 
       <main id="main">
         <Hero />
-        <How />
-        <CheckoutSection />
-        <LinksInvoices />
+        <PosStory />
+        <TrySection />
+        <InvoiceStory />
         <DashboardSection />
-        <RefundsSettlement />
+        <SettleSection />
         <FinalCta />
       </main>
 
@@ -123,46 +177,47 @@ export function Landing() {
 function Hero() {
   const { t, lang } = useI18n();
   const rates = useRates();
+  const [l1, l2] = t('hero_title').split(/(?<=\.)\s/);
   return (
     <section className="hero" id="top">
       <div className="wrap hero-grid">
         <div className="hero-copy">
-          <p className="eyebrow">
-            <SandboxBadge small /> {t('hero_eyebrow')}
+          <p className="hero-eyebrow">
+            <SandboxBadge small />
+            <span>{t('hero_eyebrow')}</span>
           </p>
           <h1 className="hero-title">
-            {t('hero_title')
-              .split(/(?<=\.)\s/)
-              .map((line) => (
-                <span key={line}>{line}</span>
-              ))}
+            <span>{l1}</span>
+            <span className="is-accent">{l2}</span>
           </h1>
           <p className="hero-sub">{t('hero_sub')}</p>
           <div className="hero-ctas">
             <LinkButton variant="primary" size="lg" href={href('/app/overview')} iconRight="arrow">
               {t('open_demo')}
             </LinkButton>
-            <LinkButton variant="secondary" size="lg" href="#how" onClick={scrollTo('how')}>
-              {t('explore_product')}
+            <LinkButton variant="secondary" size="lg" href="#pos" onClick={jump('pos')}>
+              {t('hero_cta_2')}
             </LinkButton>
           </div>
-          <dl className="hero-facts">
+          <dl className="hero-proof">
             <div>
-              <dt>{t('hero_fact_rate')}</dt>
-              <dd className="num">
-                1 USDT = {f.rate(rates.rub.usdt, lang)}
-                <span className={`rates-dot${rates.source === 'live' ? ' is-live' : ''}`} aria-hidden="true" />
-              </dd>
+              <dt>{t('proof_1_v')}</dt>
+              <dd>{t('proof_1_l')}</dd>
             </div>
             <div>
-              <dt>{t('hero_fact_time')}</dt>
-              <dd>{t('hero_fact_time_v')}</dd>
+              <dt>{t('proof_2_v')}</dt>
+              <dd>{t('proof_2_l')}</dd>
             </div>
             <div>
-              <dt>{t('hero_fact_payout')}</dt>
-              <dd>{t('hero_fact_payout_v')}</dd>
+              <dt>{t('proof_3_v')}</dt>
+              <dd>{t('proof_3_l')}</dd>
             </div>
           </dl>
+          <p className="hero-rate">
+            <span className={`rates-dot${rates.source === 'live' ? ' is-live' : ''}`} aria-hidden="true" />
+            <b className="num">1 USDT = {f.rate(rates.rub.usdt, lang)}</b>
+            <span>{rates.source === 'live' ? t('rates_live', { time: f.time(rates.updatedAt, lang) }) : t('rates_reference')}</span>
+          </p>
         </div>
         <HeroStage />
       </div>
@@ -171,21 +226,23 @@ function Hero() {
 }
 
 type HeroPhase = 'typing' | 'pending' | 'processing' | 'paid';
+const PHASES: HeroPhase[] = ['typing', 'pending', 'processing', 'paid'];
+const HERO_AMOUNT = 2490;
+const BEANS = { ru: 'Бразилия Серрадо, 1 кг', en: 'Brazil Cerrado, 1 kg' };
 
 function HeroStage() {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const demo = useDemo();
   const rates = useRates();
   const [phase, setPhase] = useState<HeroPhase>('typing');
   const [digits, setDigits] = useState('');
   const [paidAt, setPaidAt] = useState<number | null>(null);
   const [cycle, setCycle] = useState(0);
-  const reduced = useMemo(() => matchMedia('(prefers-reduced-motion: reduce)').matches, []);
-  const AMOUNT = 2490;
   const now = useNow(1000);
+  const sessionStart = useRef(Date.now());
 
   useEffect(() => {
-    if (reduced) {
+    if (reducedMotion()) {
       setDigits('2490');
       setPhase('pending');
       return;
@@ -195,101 +252,204 @@ function HeroStage() {
     setPhase('typing');
     setDigits('');
     setPaidAt(null);
-    ['2', '24', '249', '2490'].forEach((d, i) => at(500 + i * 240, () => setDigits(d)));
-    at(1900, () => setPhase('pending'));
-    at(4700, () => setPhase('processing'));
-    at(6500, () => {
+    sessionStart.current = Date.now();
+    ['2', '24', '249', '2490'].forEach((d, i) => at(450 + i * 230, () => setDigits(d)));
+    at(1800, () => setPhase('pending'));
+    at(4600, () => setPhase('processing'));
+    at(6300, () => {
       setPhase('paid');
       setPaidAt(Date.now());
     });
-    at(10200, () => setCycle((c) => c + 1));
+    at(10400, () => setCycle((c) => c + 1));
     return () => timers.forEach(clearTimeout);
-  }, [cycle, reduced]);
+  }, [cycle]);
 
-  const q = quote(AMOUNT, 'usdt_ton', rates);
-  const sessionStart = useRef(Date.now());
-  if (phase === 'typing') sessionStart.current = Date.now();
-  const expiresAt = sessionStart.current + 15 * 60_000;
-
+  const q = quote(HERO_AMOUNT, 'usdt_ton', rates);
   const recent = demo.payments.filter((p) => p.status === 'paid').slice(0, 3);
   const fresh: Payment | null =
     phase === 'paid' && paidAt
-      ? {
-          id: 'pay_HERO',
-          amount: AMOUNT,
-          description: { ru: 'Бразилия Серрадо, 1 кг', en: 'Brazil Cerrado, 1 kg' },
-          source: 'pos',
-          status: 'paid',
-          createdAt: paidAt - 8000,
-          expiresAt,
-          paidAt,
-          asset: 'usdt_ton',
-          crypto: q.crypto,
-          refunds: [],
-        }
+      ? { id: 'pay_HERO', amount: HERO_AMOUNT, description: BEANS, source: 'pos', status: 'paid', createdAt: paidAt - 8000, expiresAt: paidAt, paidAt, asset: 'usdt_ton', crypto: q.crypto, refunds: [] }
       : null;
+  const labels = [t('ph_amount'), 'QR', t('ph_pay'), t('ph_paid')];
 
   return (
     <div className="hero-stage" aria-label={t('hero_stage_label')}>
-      <div className="device">
-        <div className="device-bar">
-          <span className="device-merchant">KERN Coffee Roasters</span>
-          <span className="device-label">{t('nav_pos')}</span>
-        </div>
-        <div className="device-screen">
+      <ol className="hero-phases" aria-hidden="true">
+        {PHASES.map((p, i) => (
+          <li key={p} className={`${p === phase ? 'is-on' : ''}${PHASES.indexOf(phase) > i ? ' is-done' : ''}`}>
+            {labels[i]}
+          </li>
+        ))}
+      </ol>
+      <div className="hero-scene">
+        <Device label={t('nav_pos')}>
           {phase === 'typing' ? (
-            <div className="hero-entry">
-              <p className="pos-entry-label">{t('pos_amount_due')}</p>
-              <p className={`pos-entry-amount num${digits ? '' : ' is-empty'}`}>
-                {f.rub(digits ? parseInt(digits, 10) : 0, lang)}
-                <span className="caret" aria-hidden="true" />
-              </p>
-              <p className="pos-entry-approx num">{digits ? `≈ ${f.usdt(parseInt(digits, 10) / rates.rub.usdt, lang)}` : t('pos_enter_amount')}</p>
-              <div className="keypad is-mini" aria-hidden="true">
-                {['1', '2', '3', '4', '5', '6', '7', '8', '9', '00', '0', 'back'].map((k) => (
-                  <span key={k} className={`key${digits.endsWith(k) && k !== '0' && k !== '00' ? ' is-pressed' : ''}`}>
-                    {k === 'back' ? <Icon name="backspace" size={20} /> : k}
-                  </span>
-                ))}
-              </div>
-              <span className={`btn btn-primary btn-lg btn-block${digits.length === 4 ? '' : ' is-disabled'}`} aria-hidden="true">
-                {t('create_payment')}
-              </span>
-            </div>
+            <EntryPreview digits={digits} />
           ) : (
             <PosView
               id="pay_7QK2M4XH9D"
-              amount={AMOUNT}
-              description={{ ru: 'Бразилия Серрадо, 1 кг', en: 'Brazil Cerrado, 1 kg' }}
+              amount={HERO_AMOUNT}
+              description={BEANS}
               status={phase === 'pending' ? 'pending' : phase === 'processing' ? 'processing' : 'paid'}
-              expiresAt={expiresAt}
-              approx={AMOUNT / rates.rub.usdt}
-              qrValue={absolute('/app/overview')}
+              expiresAt={sessionStart.current + 15 * 60_000}
+              approx={HERO_AMOUNT / rates.rub.usdt}
+              qrValue={absolute('/app/pos')}
               now={now}
               asset="usdt_ton"
               crypto={q.crypto}
               paidAt={paidAt ?? undefined}
             />
           )}
+        </Device>
+        <div className="hero-feed">
+          <div className="hero-feed-head">
+            <span>{t('ov_recent')}</span>
+            <span className="hero-feed-live">
+              <span className="live-dot" />
+              {t('hero_live')}
+            </span>
+          </div>
+          <div className="plist">
+            {fresh && (
+              <div className="hero-feed-new" key={paidAt}>
+                <PaymentRow p={fresh} />
+              </div>
+            )}
+            {recent.slice(0, fresh ? 2 : 3).map((p) => (
+              <PaymentRow key={p.id} p={p} />
+            ))}
+          </div>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <div className="hero-feed" aria-live="off">
-        <div className="hero-feed-head">
-          <span>{t('ov_recent')}</span>
-          <span className="hero-feed-live">
-            <span className="badge-dot is-live" />
-            {t('hero_live')}
+function Device({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="device">
+      <div className="device-bar">
+        <span className="device-merchant">KERN Coffee Roasters</span>
+        <span className="device-label">{label}</span>
+      </div>
+      <div className="device-screen">{children}</div>
+    </div>
+  );
+}
+
+function EntryPreview({ digits, pressed }: { digits: string; pressed?: boolean }) {
+  const { t, lang } = useI18n();
+  const rates = useRates();
+  const amount = digits ? parseInt(digits, 10) : 0;
+  const last = digits.slice(-1);
+  return (
+    <div className="entry-preview">
+      <p className="pos-entry-label">{t('pos_amount_due')}</p>
+      <p className={`pos-entry-amount${digits ? '' : ' is-empty'}`}>
+        <Money value={amount} />
+        {!pressed && <span className="caret" aria-hidden="true" />}
+      </p>
+      <p className="pos-entry-approx num">{digits ? `≈ ${f.usdt(amount / rates.rub.usdt, lang)}` : t('pos_enter_amount')}</p>
+      <div className="keypad is-mini" aria-hidden="true">
+        {['1', '2', '3', '4', '5', '6', '7', '8', '9', '00', '0', 'back'].map((k) => (
+          <span key={k} className={`key${k === last && !pressed ? ' is-pressed' : ''}`}>
+            {k === 'back' ? <Icon name="backspace" size={20} /> : k}
           </span>
-        </div>
-        <div className="plist">
-          {fresh && (
-            <div className="hero-feed-new" key={paidAt}>
-              <PaymentRow p={fresh} />
+        ))}
+      </div>
+      <span className={`btn btn-primary btn-lg btn-block${digits.length === 4 ? '' : ' is-disabled'}${pressed ? ' is-pressed' : ''}`} aria-hidden="true">
+        {t('create_payment')}
+      </span>
+    </div>
+  );
+}
+
+// ---------- sticky story ----------
+
+interface StoryStep {
+  title: string;
+  text: string;
+}
+
+function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) => ReactNode; tone: 'dark' | 'light' }) {
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const sticky = useMedia('(min-width: 1024px)');
+  const ref = useRef<HTMLDivElement>(null);
+  const n = steps.length;
+
+  useEffect(() => {
+    if (!sticky) return;
+    const on = () => {
+      const el = ref.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const run = r.height - window.innerHeight;
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, run)));
+      setProgress(p);
+      setActive(Math.min(n - 1, Math.floor(p * n * 0.999)));
+    };
+    on();
+    window.addEventListener('scroll', on, { passive: true });
+    window.addEventListener('resize', on);
+    return () => {
+      window.removeEventListener('scroll', on);
+      window.removeEventListener('resize', on);
+    };
+  }, [sticky, n]);
+
+  const goTo = (i: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    const run = el.offsetHeight - window.innerHeight;
+    const y = top + ((i + 0.5) / n) * run;
+    if (lenis) lenis.scrollTo(y, { duration: 0.9 });
+    else window.scrollTo({ top: y, behavior: reducedMotion() ? 'auto' : 'smooth' });
+  };
+
+  if (!sticky) {
+    return (
+      <ol className={`story-flow is-${tone}`}>
+        {steps.map((s, i) => (
+          <li key={i} className="story-flow-step">
+            <span className="story-n">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{s.title}</h3>
+            <p>{s.text}</p>
+            <div className="story-inline">{frame(i)}</div>
+          </li>
+        ))}
+      </ol>
+    );
+  }
+
+  const local = Math.min(1, Math.max(0, progress * n - active));
+  return (
+    <div ref={ref} className={`story is-${tone}`} style={{ height: `calc(${n * 48}vh + 100vh)` }}>
+      <div className="story-pin">
+        <ol className="story-steps">
+          {steps.map((s, i) => (
+            <li key={i} className={`story-step${i === active ? ' is-active' : ''}${i < active ? ' is-done' : ''}`}>
+              <button type="button" onClick={() => goTo(i)} aria-current={i === active ? 'step' : undefined}>
+                <span className="story-n">
+                  {String(i + 1).padStart(2, '0')}
+                  <span className="story-bar">
+                    <span style={{ transform: `scaleX(${i < active ? 1 : i === active ? local : 0})` }} />
+                  </span>
+                </span>
+                <h3>{s.title}</h3>
+              </button>
+              <div className="story-text">
+                <p>{s.text}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="story-frame">
+          {steps.map((_, i) => (
+            <div key={i} className={`story-layer${i === active ? ' is-on' : ''}${i < active ? ' is-past' : ''}`} aria-hidden={i !== active}>
+              {frame(i)}
             </div>
-          )}
-          {recent.slice(0, fresh ? 2 : 3).map((p) => (
-            <PaymentRow key={p.id} p={p} />
           ))}
         </div>
       </div>
@@ -297,80 +457,106 @@ function HeroStage() {
   );
 }
 
-// ---------- how it works ----------
-
-function How() {
-  const { t, lang } = useI18n();
-  const rates = useRates();
-  const q = quote(2490, 'usdt_ton', rates);
+function StoryHead({ eyebrow, title, lead }: { eyebrow: string; title: string; lead: string }) {
+  const lines = title.split('|');
   return (
-    <section className="section" id="how">
+    <header className="story-head" data-reveal>
+      <p className="eyebrow">{eyebrow}</p>
+      <h2>
+        {lines.map((l, i) => (
+          <span key={i} className={lines.length > 1 && i === lines.length - 1 ? 'is-accent' : ''}>
+            {l}
+          </span>
+        ))}
+      </h2>
+      <p className="lead">{lead}</p>
+    </header>
+  );
+}
+
+// ---------- story 1: terminal ----------
+
+function PosStory() {
+  const { t } = useI18n();
+  const rates = useRates();
+  const q = quote(HERO_AMOUNT, 'usdt_ton', rates);
+  const [base] = useState(() => Date.now());
+  const now = useNow(1000);
+  const pos = (status: 'pending' | 'paid') => (
+    <PosView
+      id="pay_9H3XQ7LM2C"
+      amount={HERO_AMOUNT}
+      description={BEANS}
+      status={status}
+      expiresAt={base + 15 * 60_000}
+      approx={HERO_AMOUNT / rates.rub.usdt}
+      qrValue={absolute('/app/pos')}
+      now={status === 'pending' ? now : base}
+      asset="usdt_ton"
+      crypto={q.crypto}
+      paidAt={base + 42_000}
+    />
+  );
+
+  const frames = [
+    <Device key="0" label={t('frame_merchant')}>
+      <EntryPreview digits="2490" pressed />
+    </Device>,
+    <Device key="1" label={t('frame_merchant')}>
+      {pos('pending')}
+    </Device>,
+    <div key="2" className="phone-frame">
+      <p className="frame-tag">{t('frame_customer')}</p>
+      <Checkout
+        merchant="KERN Coffee Roasters"
+        amount={HERO_AMOUNT}
+        description={BEANS}
+        phase="open"
+        expiresAt={base + 14 * 60_000}
+        accepted={['usdt_ton', 'ton', 'btc']}
+        onPay={() => navigate('/app/pos')}
+        seed="story"
+        compact
+      />
+    </div>,
+    <div key="3" className="paid-frame">
+      <Device label={t('frame_merchant')}>{pos('paid')}</Device>
+      <div className="frame-toast">
+        <Icon name="check" size={16} strokeWidth={2.6} />
+        <span>
+          {t('st_paid')} · <Money value={HERO_AMOUNT} />
+        </span>
+      </div>
+    </div>,
+  ];
+
+  return (
+    <section className="panel panel-dark" id="pos">
       <div className="wrap">
-        <SectionHead eyebrow={t('how_eyebrow')} title={t('how_title')} lead={t('how_lead')} />
-        <ol className="steps" data-reveal>
-          <li className="step">
-            <span className="step-n">01</span>
-            <h3>{t('how_1_t')}</h3>
-            <p>{t('how_1_p')}</p>
-            <div className="step-ui">
-              <p className="step-amount num">{f.rub(2490, lang)}</p>
-              <span className="btn btn-primary btn-sm btn-block" aria-hidden="true">
-                {t('create_payment')}
-              </span>
-            </div>
-          </li>
-          <li className="step">
-            <span className="step-n">02</span>
-            <h3>{t('how_2_t')}</h3>
-            <p>{t('how_2_p')}</p>
-            <div className="step-ui step-ui-row">
-              <QR value={absolute('/app/pos')} size={76} label="QR" />
-              <div className="step-ui-col">
-                <span className="step-ui-k">USDT · TON</span>
-                <span className="btn btn-primary btn-sm" aria-hidden="true">
-                  {t('co_pay_btn', { amount: f.crypto(q.total, 'usdt_ton', lang) })}
-                </span>
-              </div>
-            </div>
-          </li>
-          <li className="step">
-            <span className="step-n">03</span>
-            <h3>{t('how_3_t')}</h3>
-            <p>{t('how_3_p')}</p>
-            <div className="step-ui">
-              <div className="step-paid">
-                <span className="step-paid-icon">
-                  <Icon name="check" size={16} strokeWidth={2.6} />
-                </span>
-                <span className="step-paid-text">
-                  <b>{t('st_paid')}</b>
-                  <span className="num">
-                    {f.crypto(q.crypto, 'usdt_ton', lang)} · 14:42
-                  </span>
-                </span>
-                <b className="num">{f.rub(2490, lang)}</b>
-              </div>
-            </div>
-          </li>
-        </ol>
+        <StoryHead eyebrow={t('s1_eyebrow')} title={t('s1_title')} lead={t('s1_lead')} />
+        <Story
+          tone="dark"
+          steps={[
+            { title: t('s1_1_t'), text: t('s1_1_p') },
+            { title: t('s1_2_t'), text: t('s1_2_p') },
+            { title: t('s1_3_t'), text: t('s1_3_p') },
+            { title: t('s1_4_t'), text: t('s1_4_p') },
+          ]}
+          frame={(i) => frames[i]}
+        />
+        <div className="story-cta" data-reveal>
+          <LinkButton variant="bright" size="lg" href={href('/app/pos')} iconRight="arrow">
+            {t('s1_cta')}
+          </LinkButton>
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionHead({ eyebrow, title, lead, id }: { eyebrow: string; title: string; lead?: string; id?: string }) {
-  return (
-    <div className="section-head" data-reveal>
-      <p className="section-eyebrow">{eyebrow}</p>
-      <h2 id={id}>{title}</h2>
-      {lead && <p className="section-lead">{lead}</p>}
-    </div>
-  );
-}
+// ---------- try checkout ----------
 
-// ---------- checkout ----------
-
-function CheckoutSection() {
+function TrySection() {
   const { t } = useI18n();
   const [phase, setPhase] = useState<CheckoutPhase>('open');
   const [charge, setCharge] = useState<CheckoutProps['charge']>();
@@ -380,7 +566,7 @@ function CheckoutSection() {
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const onPay = (asset: AssetId, fail: boolean) => {
-    const q = quote(2490, asset);
+    const q = quote(HERO_AMOUNT, asset);
     const start = Date.now();
     const end = start + (assetById(asset).eta > 30 ? 4200 : 3000);
     setCharge({ asset, crypto: q.crypto, fee: q.fee, startedAt: start, resolveAt: end, id: 'pay_TRYITHERE1' });
@@ -398,129 +584,185 @@ function CheckoutSection() {
     setExpiresAt(Date.now() + 15 * 60_000);
   };
 
+  const points: [IconName, string, string][] = [
+    ['check', t('co_p1_t'), t('co_p1_p')],
+    ['alert', t('co_p2_t'), t('co_p2_p')],
+    ['qr', t('co_p3_t'), t('co_p3_p')],
+  ];
+
   return (
-    <section className="section section-tint" id="checkout">
-      <div className="wrap split">
-        <div className="split-copy">
-          <SectionHead eyebrow={t('co_eyebrow')} title={t('co_title')} lead={t('co_lead')} />
-          <ul className="points" data-reveal>
-            <li>
-              <Icon name="check" size={18} />
-              <span>
-                <b>{t('co_p1_t')}</b> {t('co_p1_p')}
-              </span>
-            </li>
-            <li>
-              <Icon name="check" size={18} />
-              <span>
-                <b>{t('co_p2_t')}</b> {t('co_p2_p')}
-              </span>
-            </li>
-            <li>
-              <Icon name="check" size={18} />
-              <span>
-                <b>{t('co_p3_t')}</b> {t('co_p3_p')}
-              </span>
-            </li>
+    <section className="panel panel-mint" id="checkout">
+      <div className="wrap try">
+        <div className="try-copy">
+          <header className="story-head" data-reveal>
+            <p className="eyebrow">{t('try_eyebrow')}</p>
+            <h2>
+              <span>{t('try_title')}</span>
+            </h2>
+            <p className="lead">{t('try_lead')}</p>
+          </header>
+          <ul className="try-points" data-reveal>
+            {points.map(([icon, title, text]) => (
+              <li key={title}>
+                <span className="try-icon">
+                  <Icon name={icon} size={18} />
+                </span>
+                <span>
+                  <b>{title}</b> {text}
+                </span>
+              </li>
+            ))}
           </ul>
-          <p className="try-note" data-reveal>
-            <Icon name="bolt" size={16} />
-            {t('co_try_note')}
-          </p>
         </div>
-        <div className="split-ui" data-reveal>
-          <div className="phone">
-            <Checkout
-              merchant="KERN Coffee Roasters"
-              amount={2490}
-              description={{ ru: 'Бразилия Серрадо, 1 кг', en: 'Brazil Cerrado, 1 kg' }}
-              phase={phase}
-              charge={charge}
-              expiresAt={expiresAt}
-              accepted={['usdt_ton', 'usdt_tron', 'ton', 'usdc_sol', 'btc', 'eth_base']}
-              onPay={onPay}
-              onRetry={reset}
-              done={{ label: t('co_try_again'), onClick: reset }}
-              seed="landing"
-              compact
-            />
-          </div>
+        <div className="try-ui" data-reveal>
+          <span className="try-tag">
+            <Icon name="bolt" size={15} />
+            {t('try_tag')}
+          </span>
+          <Checkout
+            merchant="KERN Coffee Roasters"
+            amount={HERO_AMOUNT}
+            description={BEANS}
+            phase={phase}
+            charge={charge}
+            expiresAt={expiresAt}
+            accepted={['usdt_ton', 'usdt_tron', 'ton', 'usdc_sol', 'btc', 'eth_base']}
+            onPay={onPay}
+            onRetry={reset}
+            done={{ label: t('co_try_again'), onClick: reset }}
+            seed="landing"
+            compact
+          />
         </div>
       </div>
     </section>
   );
 }
 
-// ---------- links & invoices ----------
+// ---------- story 2: invoice → link → payment → dashboard ----------
 
-function LinksInvoices() {
+function InvoiceStory() {
   const { t, lang, tx } = useI18n();
   const demo = useDemo();
-  const link = demo.links.find((l) => l.active && l.reusable) ?? demo.links[0];
-  const inv = demo.invoices.find((i) => i.status === 'pending') ?? demo.invoices[0];
-  const linkPaid = link ? demo.payments.filter((p) => p.sourceId === link.id && (p.status === 'paid' || p.status === 'partial_refund')) : [];
-  const url = link ? absolute(`/pay/${link.id}`) : '';
+  const [base] = useState(() => Date.now());
+  const inv: Invoice = useMemo(
+    () => ({
+      id: 'inv_SAMPLE',
+      number: 'KC-0146',
+      customer: { ru: 'Кофейня «Сезон»', en: 'Sezon Coffee' },
+      email: 'orders@sezon.cafe',
+      items: [
+        { title: { ru: 'Эспрессо-смесь «Утро», 1 кг', en: 'Morning espresso blend, 1 kg' }, qty: 10, price: 1590 },
+        { title: { ru: 'Гватемала Антигуа, 1 кг', en: 'Guatemala Antigua, 1 kg' }, qty: 4, price: 3290 },
+      ],
+      status: 'pending',
+      createdAt: base - 2 * DAY,
+      sentAt: base - 2 * DAY,
+      dueAt: base + 5 * DAY,
+    }),
+    [base],
+  );
+  const total = invoiceTotal(inv);
+  const url = absolute('/app/invoices');
+  const crypto = quote(total, 'usdt_tron').crypto;
+  const o = useMemo(() => overview(demo, base), [demo, base]);
+  const quiet = o.count < 5;
+  const before = quiet ? overview(demo, startOfDay(base) - 60_000).received : o.received;
+  const paidRow: Payment = {
+    id: 'pay_INVOICE146',
+    amount: total,
+    description: { ru: `Счёт ${inv.number}`, en: `Invoice ${inv.number}` },
+    source: 'invoice',
+    customer: inv.customer,
+    status: 'paid',
+    createdAt: base,
+    expiresAt: base,
+    paidAt: base,
+    asset: 'usdt_tron',
+    crypto,
+    refunds: [],
+  };
+
+  const frames = [
+    <div key="0" className="doc-frame">
+      <InvoiceDocument inv={inv} merchant={demo.merchant.name} />
+    </div>,
+    <div key="1" className="share-frame">
+      <div className="share-card">
+        <div className="share-card-head">
+          <span className="share-card-kind">{t('frame_link_title')}</span>
+          <Badge tone="warning" live>
+            {t('inv_pending')}
+          </Badge>
+        </div>
+        <p className="share-card-title">
+          {t('inv_doc_title')} {inv.number} · {tx(inv.customer)}
+        </p>
+        <p className="share-card-amount">
+          <Money value={total} />
+        </p>
+        <QRFrame value={url} size={150} label={t('inv_share')} caption={<span className="mono">…/pay/inv_KC0146</span>} />
+        <div className="share-card-sent">
+          <Icon name="send" size={16} />
+          {t('frame_sent', { email: inv.email })}
+        </div>
+      </div>
+    </div>,
+    <div key="2" className="phone-frame">
+      <p className="frame-tag">{t('frame_customer')}</p>
+      <Checkout
+        merchant={demo.merchant.name}
+        amount={total}
+        title={{ ru: `Счёт ${inv.number}`, en: `Invoice ${inv.number}` }}
+        lines={inv.items}
+        phase="paid"
+        charge={{ asset: 'usdt_tron', crypto, fee: assetById('usdt_tron').fee, at: base, id: 'pay_INVOICE146' }}
+        accepted={demo.merchant.accepted}
+        onPay={() => undefined}
+        seed="story2"
+        compact
+      />
+    </div>,
+    <div key="3" className="mini-db">
+      <Metric tone="emerald" label={quiet ? t('ov_received_yesterday') : t('ov_received_today')} value={before + total} kind="rub" foot={t('frame_plus', { amount: f.rub(total, lang) })} />
+      <div className="mini-db-list">
+        <p className="mini-db-head">{t('ov_recent')}</p>
+        <div className="plist">
+          <div className="hero-feed-new">
+            <PaymentRow p={paidRow} />
+          </div>
+          {demo.payments
+            .filter((p) => p.status === 'paid')
+            .slice(0, 2)
+            .map((p) => (
+              <PaymentRow key={p.id} p={p} />
+            ))}
+        </div>
+      </div>
+    </div>,
+  ];
 
   return (
     <section className="section" id="invoices">
       <div className="wrap">
-        <SectionHead eyebrow={t('li_eyebrow')} title={t('li_title')} lead={t('li_lead')} />
-        <div className="li-grid">
-          {link && (
-            <article className="li-card" data-reveal>
-              <div className="li-card-copy">
-                <h3>{t('li_link_t')}</h3>
-                <p>{t('li_link_p')}</p>
-              </div>
-              <div className="li-ui">
-                <div className="li-link">
-                  <div className="li-link-top">
-                    <Badge tone="success">{t('lnk_active')}</Badge>
-                    <span className="link-card-type">{t('lnk_reusable')}</span>
-                  </div>
-                  <div className="li-link-body">
-                    <div>
-                      <p className="li-link-title">{tx(link.title)}</p>
-                      <p className="li-link-amount num">{f.rub(link.amount, lang)}</p>
-                      <p className="li-link-stats">{t('lnk_stats', { n: linkPaid.length, total: f.rub(linkPaid.reduce((s, p) => s + p.amount, 0), lang) })}</p>
-                    </div>
-                    <QR value={url} size={96} label={t('lnk_share')} />
-                  </div>
-                  <div className="li-link-url">
-                    <span className="mono">{url.replace(/^https?:\/\//, '').replace(/#\/pay\//, '…/pay/')}</span>
-                    <CopyButton text={url} />
-                  </div>
-                </div>
-                <div className="li-link-recent">
-                  <p className="li-link-recent-head">{t('lnk_payments')}</p>
-                  <div className="plist">
-                    {linkPaid.slice(0, 3).map((p) => (
-                      <PaymentRow key={p.id} p={p} showDate />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <a className="text-link" href={href('/app/links/new')}>
-                {t('li_link_cta')}
-                <Icon name="arrow" size={15} />
-              </a>
-            </article>
-          )}
-          {inv && (
-            <article className="li-card" data-reveal>
-              <div className="li-card-copy">
-                <h3>{t('li_inv_t')}</h3>
-                <p>{t('li_inv_p')}</p>
-              </div>
-              <div className="li-ui li-ui-doc">
-                <InvoiceDocument inv={inv} merchant={demo.merchant.name} />
-              </div>
-              <a className="text-link" href={href('/app/invoices/new')}>
-                {t('li_inv_cta', { amount: f.rub(invoiceTotal(inv), lang) })}
-                <Icon name="arrow" size={15} />
-              </a>
-            </article>
-          )}
+        <StoryHead eyebrow={t('s2_eyebrow')} title={t('s2_title')} lead={t('s2_lead')} />
+        <Story
+          tone="light"
+          steps={[
+            { title: t('s2_1_t'), text: t('s2_1_p') },
+            { title: t('s2_2_t'), text: t('s2_2_p') },
+            { title: t('s2_3_t'), text: t('s2_3_p') },
+            { title: t('s2_4_t'), text: t('s2_4_p') },
+          ]}
+          frame={(i) => frames[i]}
+        />
+        <div className="story-cta" data-reveal>
+          <LinkButton variant="primary" size="lg" href={href('/app/invoices/new')} iconRight="arrow">
+            {t('s2_cta')}
+          </LinkButton>
+          <LinkButton variant="secondary" size="lg" href={href('/app/links/new')}>
+            {t('s2_cta2')}
+          </LinkButton>
         </div>
       </div>
     </section>
@@ -540,25 +782,20 @@ function DashboardSection() {
   const delta = !quiet && o.receivedPrev > 0 ? o.received / o.receivedPrev - 1 : null;
 
   return (
-    <section className="section section-tint" id="dashboard">
+    <section className="panel panel-dark" id="dashboard">
       <div className="wrap">
-        <SectionHead eyebrow={t('db_eyebrow')} title={t('db_title')} lead={t('db_lead')} />
+        <StoryHead eyebrow={t('db_eyebrow')} title={t('db_title')} lead={t('db_lead')} />
         <div className="db-frame" data-reveal>
           <div className="metrics">
+            <Metric tone="emerald" label={quiet ? t('ov_received_yesterday') : t('ov_received_today')} value={o.received} kind="rub" delta={delta} foot={quiet ? t('ov_yesterday_full') : t('ov_no_compare')} />
+            <Metric label={t('ov_payments')} value={o.count} kind="count" foot={t('ov_success', { n: f.num(o.success * 100, lang, 0) })} />
+            <Metric label={t('ov_average')} value={o.average} kind="rub" foot={quiet ? t('ov_yesterday_label') : t('ov_today_label')} />
             <Metric
-              accent
-              label={quiet ? t('ov_received_yesterday') : t('ov_received_today')}
-              value={o.received}
-              format={(n) => f.rub(Math.round(n), lang)}
-              delta={delta}
-              foot={quiet ? t('ov_yesterday_full') : t('ov_no_compare')}
-            />
-            <Metric label={t('ov_payments')} value={o.count} format={(n) => f.num(Math.round(n), lang)} foot={t('ov_success', { n: f.num(o.success * 100, lang, 0) })} />
-            <Metric label={t('ov_average')} value={o.average} format={(n) => f.rub(Math.round(n), lang)} foot={quiet ? t('ov_yesterday_label') : t('ov_today_label')} />
-            <Metric
+              tone="mint"
               label={t('ov_to_settle')}
               value={(quiet ? live.upcoming?.net : o.current?.net) ?? 0}
-              format={(n) => f.usdt(n, lang, { symbol: demo.merchant.settleAsset })}
+              kind="crypto"
+              symbol={demo.merchant.settleAsset}
               foot={quiet && live.upcoming ? t('ov_payout_today', { when: f.time(live.upcoming.payoutAt, lang) }) : o.current ? t('ov_payout', { when: f.time(o.current.payoutAt, lang) }) : t('ov_nothing_to_settle')}
             />
           </div>
@@ -587,7 +824,7 @@ function DashboardSection() {
           </div>
         </div>
         <p className="db-note" data-reveal>
-          <Icon name="info" size={16} />
+          <span className="live-dot" />
           {t('db_note')}
         </p>
       </div>
@@ -597,23 +834,36 @@ function DashboardSection() {
 
 // ---------- refunds & settlement ----------
 
-function RefundsSettlement() {
+function SettleSection() {
   const { t, lang, tx } = useI18n();
   const demo = useDemo();
   const o = useMemo(() => overview(demo), [demo]);
-  const stl = o.current ?? o.upcoming ?? o.lastPaid;
+  const stl = o.current && o.current.count >= 5 ? o.current : (o.upcoming ?? o.lastPaid ?? o.current);
   const refunded = demo.payments.find((p) => p.refunds.some((r) => r.status === 'completed'));
   const r = refunded?.refunds.find((x) => x.status === 'completed');
   const a = refunded ? assetById(refunded.asset) : null;
 
   return (
-    <section className="section" id="settlement">
+    <section className="panel panel-emerald" id="settlement">
       <div className="wrap">
-        <SectionHead eyebrow={t('rs_eyebrow')} title={t('rs_title')} lead={t('rs_lead')} />
+        <StoryHead eyebrow={t('rs_eyebrow')} title={t('rs_title')} lead={t('rs_lead')} />
         <div className="rs-grid">
+          {stl && (
+            <article className="rs-card is-settle" data-reveal>
+              <div className="rs-card-copy">
+                <h3>{t('rs_settle_t')}</h3>
+                <p>{t('rs_settle_p', { asset: demo.merchant.settleAsset })}</p>
+              </div>
+              <SettlementBreakdown st={stl} feeRate={demo.merchant.feeRate} wallet={demo.merchant.payoutWallet} asset={demo.merchant.settleAsset} />
+              <a className="text-link" href={href('/app/overview')}>
+                {t('rs_settle_cta')}
+                <Icon name="arrow" size={15} />
+              </a>
+            </article>
+          )}
           {refunded && r && a && (
-            <article className="li-card" data-reveal>
-              <div className="li-card-copy">
+            <article className="rs-card" data-reveal>
+              <div className="rs-card-copy">
                 <h3>{t('rs_refund_t')}</h3>
                 <p>{t('rs_refund_p')}</p>
               </div>
@@ -626,10 +876,9 @@ function RefundsSettlement() {
                       {f.crypto(refunded.crypto ?? 0, a.id, lang)} · {a.network}
                     </p>
                   </div>
-                  <p className="rf-amount num">{f.rub(refunded.amount, lang)}</p>
-                </div>
-                <div className="rs-refund-arrow" aria-hidden="true">
-                  <Icon name="refund" size={18} />
+                  <p className="rf-amount">
+                    <Money value={refunded.amount} />
+                  </p>
                 </div>
                 <div className="rs-refund-row is-refund">
                   <div>
@@ -638,7 +887,9 @@ function RefundsSettlement() {
                     <p className="rf-meta">{tx(r.reason)}</p>
                   </div>
                   <div className="rs-refund-right">
-                    <p className="rf-amount num">{f.rub(-r.amount, lang)}</p>
+                    <p className="rf-amount">
+                      <Money value={-r.amount} />
+                    </p>
                     <Badge tone="refund">{t('rf_completed')}</Badge>
                   </div>
                 </div>
@@ -663,21 +914,6 @@ function RefundsSettlement() {
               </a>
             </article>
           )}
-          {stl && (
-            <article className="li-card" data-reveal>
-              <div className="li-card-copy">
-                <h3>{t('rs_settle_t')}</h3>
-                <p>{t('rs_settle_p', { asset: demo.merchant.settleAsset })}</p>
-              </div>
-              <div className="rs-settle">
-                <SettlementBreakdown st={stl} feeRate={demo.merchant.feeRate} wallet={demo.merchant.payoutWallet} asset={demo.merchant.settleAsset} />
-              </div>
-              <a className="text-link" href={href('/app/overview')}>
-                {t('rs_settle_cta')}
-                <Icon name="arrow" size={15} />
-              </a>
-            </article>
-          )}
         </div>
       </div>
     </section>
@@ -686,23 +922,34 @@ function RefundsSettlement() {
 
 function FinalCta() {
   const { t } = useI18n();
+  const actions: [string, string, string, IconName][] = [
+    ['/app/pos', t('cta_a1'), t('cta_a1_s'), 'terminal'],
+    ['/app/invoices/new', t('cta_a2'), t('cta_a2_s'), 'invoice'],
+    ['/app/links/new', t('cta_a3'), t('cta_a3_s'), 'link'],
+  ];
   return (
-    <section className="section cta-section">
-      <div className="wrap">
-        <div className="cta" data-reveal>
-          <div>
-            <h2>{t('cta_title')}</h2>
-            <p>{t('cta_text')}</p>
-          </div>
-          <div className="cta-actions">
-            <LinkButton variant="primary" size="lg" href={href('/app/pos')} iconRight="arrow">
-              {t('cta_btn')}
-            </LinkButton>
-            <Button variant="ghost" size="lg" onClick={() => navigate('/app/overview')}>
-              {t('cta_btn_2')}
-            </Button>
-          </div>
+    <section className="section cta-section" id="start">
+      <div className="wrap cta">
+        <div className="cta-copy" data-reveal>
+          <h2>{t('cta_title')}</h2>
+          <p>{t('cta_text')}</p>
         </div>
+        <ul className="cta-actions" data-reveal>
+          {actions.map(([to, title, sub, icon], i) => (
+            <li key={to}>
+              <a href={href(to)} className={i === 0 ? 'is-primary' : ''}>
+                <span className="cta-icon">
+                  <Icon name={icon} size={20} />
+                </span>
+                <span className="cta-text">
+                  <b>{title}</b>
+                  <span>{sub}</span>
+                </span>
+                <Icon name="arrow" size={20} />
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

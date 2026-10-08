@@ -7,7 +7,7 @@ import * as f from '../lib/format';
 import type { AssetId, PaymentStatus, Text } from '../lib/model';
 import { SESSION_MINUTES, assetById } from '../lib/model';
 import { Icon } from '../ui/icons';
-import { PaymentBadge, QR, Spinner } from '../ui/ui';
+import { Money, PaymentBadge, QRFrame, Spinner } from '../ui/ui';
 import { SuccessMark } from './Checkout';
 
 export interface PosViewProps {
@@ -36,13 +36,13 @@ export function PosView(p: PosViewProps) {
     <div className="pos-view" data-status={p.status}>
       <div className="pos-view-head">
         <span className="pos-view-id mono">{p.id ? p.id : t('pos_new_session')}</span>
-        <PaymentBadge status={p.status} />
+        <PaymentBadge status={p.status} strong />
       </div>
 
       <div className="pos-view-stage">
         {(waiting || p.status === 'processing') && (
           <div className={`pos-qr${p.status === 'processing' ? ' is-busy' : ''}`}>
-            <QR value={p.qrValue} size={208} label={t('pos_qr_label')} />
+            <QRFrame value={p.qrValue} size={196} label={t('pos_qr_label')} />
             {p.status === 'processing' && (
               <div className="pos-qr-cover" aria-live="polite">
                 <Spinner size={26} />
@@ -73,7 +73,9 @@ export function PosView(p: PosViewProps) {
       </div>
 
       <div className="pos-view-sum">
-        <p className="pos-view-amount num">{f.rub(p.amount, lang)}</p>
+        <p className="pos-view-amount">
+          <Money value={p.amount} />
+        </p>
         {p.status === 'paid' && a && p.crypto !== undefined ? (
           <p className="pos-view-sub num">
             {f.crypto(p.crypto, a.id, lang)} · {a.network}

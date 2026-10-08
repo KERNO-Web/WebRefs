@@ -9,7 +9,7 @@ import { startOfDay } from '../lib/seed';
 import { PosView } from '../product/PosView';
 import { PaymentRow } from '../product/widgets';
 import { Icon } from '../ui/icons';
-import { Button, Empty, toast, useNow } from '../ui/ui';
+import { Button, Empty, Money, toast, useNow } from '../ui/ui';
 import { PageHead } from './AppShell';
 
 const MAX_DIGITS = 7;
@@ -84,8 +84,8 @@ function Entry() {
   return (
     <div className="pos-entry">
       <p className="pos-entry-label">{t('pos_amount_due')}</p>
-      <p className={`pos-entry-amount num${digits ? '' : ' is-empty'}`} aria-live="polite">
-        {shown}
+      <p className={`pos-entry-amount${digits ? '' : ' is-empty'}`} aria-live="polite" aria-label={shown}>
+        <Money value={amount} />
       </p>
       <p className="pos-entry-approx num">{amount ? `≈ ${f.usdt(approx, lang)}` : t('pos_enter_amount')}</p>
 

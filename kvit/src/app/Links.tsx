@@ -7,7 +7,7 @@ import { absolute, href, navigate } from '../lib/router';
 import { createLink, setLinkActive, useDemo } from '../lib/store';
 import { PaymentRow } from '../product/widgets';
 import { Icon } from '../ui/icons';
-import { Badge, Button, CopyButton, Empty, Field, Input, Modal, QR, Toggle, toast } from '../ui/ui';
+import { Badge, Button, CopyButton, Empty, Field, Input, Modal, Money, QRFrame, Toggle, copyText, toast, useMedia } from '../ui/ui';
 import { PageHead } from './AppShell';
 
 export function linkStats(demo: DemoState, id: string) {
@@ -16,62 +16,88 @@ export function linkStats(demo: DemoState, id: string) {
   return { list, count: paid.length, total: paid.reduce((s, p) => s + p.amount, 0), last: paid[0]?.paidAt };
 }
 
-export function LinkStatus({ link }: { link: PaymentLink }) {
+type LinkState = 'active' | 'paused' | 'completed';
+const stateOf = (l: PaymentLink): LinkState => (l.completedAt ? 'completed' : l.active ? 'active' : 'paused');
+
+export function LinkStatus({ link, strong }: { link: PaymentLink; strong?: boolean }) {
   const { t } = useI18n();
-  if (link.completedAt) return <Badge tone="neutral">{t('lnk_completed')}</Badge>;
-  return link.active ? <Badge tone="success">{t('lnk_active')}</Badge> : <Badge tone="draft">{t('lnk_paused')}</Badge>;
+  const s = stateOf(link);
+  if (s === 'completed') return <Badge tone="success" strong={strong}>{t('lnk_completed')}</Badge>;
+  return s === 'active' ? <Badge tone="success" live>{t('lnk_active')}</Badge> : <Badge tone="draft">{t('lnk_paused')}</Badge>;
+}
+
+async function shareLink(title: string, url: string, t: (k: 'toast_link_copied') => string) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, url });
+      return;
+    } catch {
+      /* cancelled: fall back to copying */
+    }
+  }
+  if (await copyText(url)) toast(t('toast_link_copied'));
 }
 
 export function Links({ id }: { id?: string }) {
-  const [creating, setCreating] = useState(id === 'new');
-  useEffect(() => setCreating(id === 'new'), [id]);
-  return (
-    <>
-      {id && id !== 'new' ? <LinkView id={id} /> : <LinkList onCreate={() => navigate('/app/links/new')} />}
-      <CreateLink open={creating} onClose={() => navigate('/app/links', { replace: true })} />
-    </>
-  );
-}
-
-function LinkList({ onCreate }: { onCreate: () => void }) {
-  const { t, lang, tx } = useI18n();
+  const { t } = useI18n();
   const demo = useDemo();
+  const wide = useMedia('(min-width: 1100px)');
+  const creating = id === 'new';
+  const selectedId = id && id !== 'new' ? id : wide ? demo.links[0]?.id : undefined;
+  const selected = demo.links.find((l) => l.id === selectedId);
+
+  const monthAgo = Date.now() - 30 * 86_400_000;
+  const linkPaid = demo.payments.filter((p) => p.source === 'link' && wasPaid(p) && (p.paidAt ?? 0) >= monthAgo);
+  const activeCount = demo.links.filter((l) => stateOf(l) === 'active').length;
+
   return (
     <div className="page">
       <PageHead
         title={t('nav_links')}
         sub={t('lnk_sub')}
         actions={
-          <Button variant="primary" icon="plus" onClick={onCreate}>
+          <Button variant="primary" icon="plus" onClick={() => navigate('/app/links/new')}>
             {t('create_link')}
           </Button>
         }
       />
+
+      <div className="summary-row">
+        <div className="summary is-mint">
+          <p>{t('lnk_sum_received')}</p>
+          <b>
+            <Money value={linkPaid.reduce((s, p) => s + p.amount, 0)} tween />
+          </b>
+          <span>{t('lnk_sum_30')}</span>
+        </div>
+        <div className="summary">
+          <p>{t('lnk_sum_payments')}</p>
+          <b>
+            <Money value={linkPaid.length} kind="count" />
+          </b>
+          <span>{t('lnk_sum_30')}</span>
+        </div>
+        <div className="summary">
+          <p>{t('lnk_sum_active')}</p>
+          <b>
+            <Money value={activeCount} kind="count" />
+          </b>
+          <span>{t('lnk_sum_total', { n: demo.links.length })}</span>
+        </div>
+      </div>
+
       {demo.links.length ? (
-        <div className="link-grid">
-          {demo.links.map((l) => {
-            const s = linkStats(demo, l.id);
-            const url = absolute(`/pay/${l.id}`);
-            return (
-              <article key={l.id} className={`link-card${l.active ? '' : ' is-off'}`}>
-                <a className="link-card-main" href={href(`/app/links/${l.id}`)}>
-                  <div className="link-card-top">
-                    <LinkStatus link={l} />
-                    <span className="link-card-type">{l.reusable ? t('lnk_reusable') : t('lnk_oneoff')}</span>
-                  </div>
-                  <h3>{tx(l.title)}</h3>
-                  <p className="link-card-amount num">{f.rub(l.amount, lang)}</p>
-                  <p className="link-card-stats">
-                    {s.count ? t('lnk_stats', { n: s.count, total: f.rub(s.total, lang) }) : t('lnk_no_payments')}
-                  </p>
-                </a>
-                <div className="link-card-foot">
-                  <span className="mono link-card-url">{url.replace(/^https?:\/\//, '').replace(/#\/pay\//, '…/pay/')}</span>
-                  {l.active ? <CopyButton text={url} /> : null}
-                </div>
-              </article>
-            );
-          })}
+        <div className="links-layout">
+          <div className="link-grid">
+            {demo.links.map((l) => (
+              <LinkCard key={l.id} link={l} selected={l.id === selectedId} />
+            ))}
+          </div>
+          {wide && selected && (
+            <aside className="link-panel">
+              <LinkPreview link={selected} />
+            </aside>
+          )}
         </div>
       ) : (
         <section className="card">
@@ -80,114 +106,187 @@ function LinkList({ onCreate }: { onCreate: () => void }) {
             title={t('lnk_empty')}
             text={t('lnk_empty_text')}
             action={
-              <Button size="sm" icon="plus" onClick={onCreate}>
+              <Button size="sm" icon="plus" onClick={() => navigate('/app/links/new')}>
                 {t('create_link')}
               </Button>
             }
           />
         </section>
       )}
+
+      {!wide && (
+        <Modal open={!!selected && !!id && !creating} onClose={() => navigate('/app/links')} title={t('lnk_details')}>
+          {selected && <LinkPreview link={selected} />}
+        </Modal>
+      )}
+      <CreateLink open={creating} onClose={() => navigate('/app/links', { replace: true })} />
     </div>
   );
 }
 
-function LinkView({ id }: { id: string }) {
+function LinkCard({ link, selected }: { link: PaymentLink; selected: boolean }) {
   const { t, lang, tx } = useI18n();
   const demo = useDemo();
-  const link = demo.links.find((l) => l.id === id);
-  if (!link) {
-    return (
-      <div className="page">
-        <PageHead title={t('nav_links')} back={{ label: t('nav_links'), to: '/app/links' }} />
-        <Empty icon="link" title={t('lnk_not_found')} />
-      </div>
-    );
-  }
-  const url = absolute(`/pay/${link.id}`);
   const s = linkStats(demo, link.id);
+  const state = stateOf(link);
+  const url = absolute(`/pay/${link.id}`);
+  const open = () => navigate(`/app/links/${link.id}`, { replace: true });
 
   return (
-    <div className="page">
-      <PageHead
-        title={tx(link.title)}
-        sub={`${f.rub(link.amount, lang)} · ${link.reusable ? t('lnk_reusable') : t('lnk_oneoff')}`}
-        back={{ label: t('nav_links'), to: '/app/links' }}
-        actions={<LinkStatus link={link} />}
-      />
-      <div className="inv-layout">
-        <div className="stack">
-          <section className="card share">
-            <div className="card-head">
-              <h2>{t('lnk_share')}</h2>
-              {!link.completedAt && (
-                <label className="inline-toggle">
-                  <span>{link.active ? t('lnk_accepting') : t('lnk_paused')}</span>
-                  <Toggle
-                    checked={link.active}
-                    label={t('lnk_accepting')}
-                    onChange={(v) => {
-                      setLinkActive(link.id, v);
-                      toast(v ? t('toast_link_on') : t('toast_link_off'), 'info');
-                    }}
-                  />
-                </label>
-              )}
-            </div>
-            <div className={`share-body${link.active ? '' : ' is-off'}`}>
-              <QR value={url} size={132} label={t('lnk_share')} />
-              <div>
-                <p className="share-text">{link.completedAt ? t('lnk_completed_text') : link.active ? t('lnk_share_text') : t('lnk_paused_text')}</p>
-                <p className="mono share-url">{url.replace(/^https?:\/\//, '')}</p>
-              </div>
-            </div>
-            <div className="share-actions">
-              <CopyButton text={url} label={t('copy_link')} />
-              <Button size="sm" icon="external" onClick={() => window.open(href(`/pay/${link.id}`), '_blank', 'noopener')}>
-                {t('open_pay_page')}
-              </Button>
-            </div>
-          </section>
+    <article className={`link-card is-${state}${selected ? ' is-selected' : ''}`}>
+      <button type="button" className="link-card-main" onClick={open} aria-pressed={selected}>
+        <span className="link-card-top">
+          <LinkStatus link={link} />
+          <span className="link-card-type">{link.reusable ? t('lnk_reusable') : t('lnk_oneoff')}</span>
+        </span>
+        <span className="link-card-title">{tx(link.title)}</span>
+        <span className="link-card-amount">
+          <Money value={link.amount} />
+        </span>
+        <span className="link-card-stats">
+          {s.count ? (
+            <>
+              <b>
+                {s.count} {f.plural(s.count, lang, t('pay_forms').split('|') as [string, string, string])}
+              </b>
+              <span>{t('lnk_received', { total: f.rub(s.total, lang) })}</span>
+            </>
+          ) : (
+            <span>{t('lnk_no_payments')}</span>
+          )}
+        </span>
+      </button>
+      <div className="link-card-actions">
+        {state === 'active' && <CopyButton text={url} variant="ghost" />}
+        {state === 'active' && (
+          <Button size="sm" variant="ghost" icon="share" onClick={() => shareLink(tx(link.title), url, t)}>
+            {t('lnk_share_btn')}
+          </Button>
+        )}
+        {state === 'paused' && (
+          <Button
+            size="sm"
+            variant="ghost"
+            icon="play"
+            onClick={() => {
+              setLinkActive(link.id, true);
+              toast(t('toast_link_on'), 'info');
+            }}
+          >
+            {t('lnk_resume')}
+          </Button>
+        )}
+        {state === 'completed' && link.completedAt && <span className="link-card-done">{t('lnk_paid_on', { date: f.date(link.completedAt, lang) })}</span>}
+        <button type="button" className="link-card-open" onClick={open} aria-label={t('lnk_open')} title={t('lnk_open')}>
+          <Icon name="arrow" size={17} />
+        </button>
+      </div>
+    </article>
+  );
+}
 
-          <section className="card card-flush">
-            <div className="card-head">
-              <h2>{t('lnk_payments')}</h2>
-              <span className="card-head-note num">{f.rub(s.total, lang)}</span>
-            </div>
-            {s.list.length ? (
-              <div className="plist">
-                {s.list.slice(0, 12).map((p) => (
-                  <PaymentRow key={p.id} p={p} showDate onOpen={() => navigate(`/app/transactions/${p.id}`)} />
-                ))}
-              </div>
-            ) : (
-              <Empty icon="link" title={t('lnk_no_payments')} text={t('lnk_no_payments_text')} />
-            )}
-          </section>
+function LinkPreview({ link }: { link: PaymentLink }) {
+  const { t, lang, tx } = useI18n();
+  const demo = useDemo();
+  const s = linkStats(demo, link.id);
+  const state = stateOf(link);
+  const url = absolute(`/pay/${link.id}`);
+  const [showQr, setShowQr] = useState(false);
+  useEffect(() => setShowQr(false), [link.id]);
+
+  return (
+    <div className="lp">
+      <p className="lp-label">{t('lnk_customer_sees')}</p>
+      <div className={`lp-checkout${state === 'active' ? '' : ' is-off'}`}>
+        <div className="lp-merchant">
+          <span className="co-avatar" aria-hidden="true">
+            KC
+          </span>
+          <span>{demo.merchant.name}</span>
         </div>
+        <p className="lp-title">{tx(link.title)}</p>
+        {link.description && <p className="lp-desc">{tx(link.description)}</p>}
+        <p className="lp-amount">
+          <Money value={link.amount} />
+        </p>
+        <span className="lp-pay" aria-hidden="true">
+          {state === 'active' ? t('lnk_preview_pay') : state === 'paused' ? t('lnk_paused') : t('lnk_completed')}
+        </span>
+        <p className="lp-assets">USDT · USDC · TON · BTC · ETH</p>
+      </div>
 
-        <aside className="stack">
-          <section className="card">
-            <div className="card-head">
-              <h2>{t('lnk_page')}</h2>
-            </div>
-            <div className="link-preview">
-              <p className="link-preview-merchant">{demo.merchant.name}</p>
-              <p className="link-preview-title">{tx(link.title)}</p>
-              {link.description && <p className="link-preview-desc">{tx(link.description)}</p>}
-              <p className="link-preview-amount num">{f.rub(link.amount, lang)}</p>
-            </div>
-          </section>
-          <section className="summary-col">
-            <div className="summary">
-              <p>{t('lnk_paid_count')}</p>
-              <b className="num">{s.count}</b>
-            </div>
-            <div className="summary">
-              <p>{t('lnk_last')}</p>
-              <b>{s.last ? f.dateTime(s.last, lang) : '—'}</b>
-            </div>
-          </section>
-        </aside>
+      <dl className="lp-stats">
+        <div>
+          <dt>{t('lnk_paid_count')}</dt>
+          <dd>
+            <Money value={s.count} kind="count" />
+          </dd>
+        </div>
+        <div>
+          <dt>{t('lnk_revenue')}</dt>
+          <dd>
+            <Money value={s.total} />
+          </dd>
+        </div>
+        <div>
+          <dt>{t('lnk_status')}</dt>
+          <dd>
+            <LinkStatus link={link} strong />
+          </dd>
+        </div>
+        <div>
+          <dt>{t('lnk_created')}</dt>
+          <dd className="lp-date">{f.date(link.createdAt, lang)}</dd>
+        </div>
+      </dl>
+
+      {state !== 'completed' && (
+        <div className="lp-url">
+          <span className="mono">{url.replace(/^https?:\/\//, '')}</span>
+        </div>
+      )}
+      <div className="lp-actions">
+        <CopyButton text={url} label={t('copy_link')} />
+        <Button size="sm" icon="external" onClick={() => window.open(href(`/pay/${link.id}`), '_blank', 'noopener')}>
+          {t('open_pay_page')}
+        </Button>
+        <Button size="sm" variant="ghost" icon="qr" onClick={() => setShowQr((v) => !v)} aria-expanded={showQr}>
+          QR
+        </Button>
+      </div>
+      {showQr && (
+        <div className="lp-qr">
+          <QRFrame value={url} size={150} label={t('lnk_share')} />
+        </div>
+      )}
+      {state !== 'completed' && (
+        <label className="lp-toggle">
+          <span>
+            <b>{t('lnk_accepting')}</b>
+            <span>{link.active ? t('lnk_share_text') : t('lnk_paused_text')}</span>
+          </span>
+          <Toggle
+            checked={link.active}
+            label={t('lnk_accepting')}
+            onChange={(v) => {
+              setLinkActive(link.id, v);
+              toast(v ? t('toast_link_on') : t('toast_link_off'), 'info');
+            }}
+          />
+        </label>
+      )}
+
+      <div className="lp-recent">
+        <p className="lp-label">{t('lnk_payments')}</p>
+        {s.list.length ? (
+          <div className="plist">
+            {s.list.slice(0, 4).map((p) => (
+              <PaymentRow key={p.id} p={p} showDate onOpen={() => navigate(`/app/transactions/${p.id}`)} />
+            ))}
+          </div>
+        ) : (
+          <p className="lp-empty">{t('lnk_no_payments_text')}</p>
+        )}
       </div>
     </div>
   );

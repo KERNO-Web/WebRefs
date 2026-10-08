@@ -6,7 +6,7 @@ import { assetById, refundable, refundedAmount, shortAddr } from '../lib/model';
 import { startOfDay } from '../lib/seed';
 import { href } from '../lib/router';
 import { Icon } from '../ui/icons';
-import { CopyInline, PaymentBadge, RefundBadge } from '../ui/ui';
+import { CopyInline, Money, PaymentBadge, RefundBadge } from '../ui/ui';
 import { CoinMark } from './Checkout';
 
 interface Props {
@@ -50,10 +50,12 @@ export function PaymentDetail({ p, invoice, link, feeRate, settleAsset, actions,
     <div className="pdetail">
       <div className="pdetail-top">
         <div className="pdetail-amount">
-          <p className="num">{f.rub(p.amount, lang)}</p>
+          <p>
+            <Money value={p.amount} />
+          </p>
           {refunded > 0 && <span className="pdetail-refunded num">{t('pd_refunded', { amount: f.rub(refunded, lang) })}</span>}
         </div>
-        <PaymentBadge status={p.status} />
+        <PaymentBadge status={p.status} strong />
       </div>
       {p.description && <p className="pdetail-desc">{tx(p.description)}</p>}
       <p className="pdetail-id">

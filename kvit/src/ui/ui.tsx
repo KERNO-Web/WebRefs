@@ -17,7 +17,7 @@ import { Icon, type IconName } from './icons';
 
 // ---------- buttons ----------
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'quiet';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'quiet' | 'bright';
 
 export function Button({
   variant = 'secondary',
@@ -115,29 +115,45 @@ const REFUND_TONE: Record<RefundStatus, [Tone, Key]> = {
   failed: ['danger', 'rf_failed'],
 };
 
-export function Badge({ tone, children, live }: { tone: Tone; children: ReactNode; live?: boolean }) {
+const BADGE_ICON: Record<Tone, ReactNode> = {
+  success: <path d="M3.2 6.3 5.2 8.3 8.9 4.2" />,
+  warning: <circle cx="6" cy="6" r="3" />,
+  info: <path d="M9 6a3 3 0 1 1-3-3" />,
+  danger: <path d="M4 4l4 4M8 4 4 8" />,
+  refund: <path d="M3.5 5.5h3.7a1.9 1.9 0 0 1 0 3.8H5.5M5 3.8 3.3 5.5 5 7.2" />,
+  neutral: <path d="M3.8 6h4.4" />,
+  draft: <path d="M3.8 6h4.4" />,
+};
+
+export function Badge({ tone, children, live, strong }: { tone: Tone; children: ReactNode; live?: boolean; strong?: boolean }) {
   return (
-    <span className={`badge tone-${tone}`}>
-      <span className={`badge-dot${live ? ' is-live' : ''}`} aria-hidden="true" />
+    <span className={`badge tone-${tone}${strong ? ' is-strong' : ''}${live ? ' is-live' : ''}`}>
+      <svg className="badge-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {BADGE_ICON[tone]}
+      </svg>
       {children}
     </span>
   );
 }
 
-export function PaymentBadge({ status }: { status: PaymentStatus }) {
+export function PaymentBadge({ status, strong }: { status: PaymentStatus; strong?: boolean }) {
   const { t } = useI18n();
   const [tone, key] = PAYMENT_TONE[status];
   return (
-    <Badge tone={tone} live={status === 'pending' || status === 'processing'}>
+    <Badge tone={tone} strong={strong} live={status === 'pending' || status === 'processing'}>
       {t(key)}
     </Badge>
   );
 }
 
-export function InvoiceBadge({ status }: { status: InvoiceStatus }) {
+export function InvoiceBadge({ status, strong }: { status: InvoiceStatus; strong?: boolean }) {
   const { t } = useI18n();
   const [tone, key] = INVOICE_TONE[status];
-  return <Badge tone={tone}>{t(key)}</Badge>;
+  return (
+    <Badge tone={tone} strong={strong}>
+      {t(key)}
+    </Badge>
+  );
 }
 
 export function RefundBadge({ status }: { status: RefundStatus }) {
@@ -154,14 +170,15 @@ export const paymentTone = (s: PaymentStatus) => PAYMENT_TONE[s][0];
 
 // ---------- brand ----------
 
-export function Logo({ compact }: { compact?: boolean }) {
+export function Logo({ compact, onDark }: { compact?: boolean; onDark?: boolean }) {
   return (
-    <span className="logo">
-      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden="true">
-        <rect width="26" height="26" rx="7.5" fill="var(--accent)" />
-        <path d="M8.5 7v12M8.5 13.4 15.6 7M11.4 11l5.6 8" fill="none" stroke="#fff" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" />
+    <span className={`logo${onDark ? ' on-dark' : ''}`}>
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true">
+        <rect width="28" height="28" rx="8" fill="var(--emerald)" />
+        <path d="M9 7.5v13M9 14.4 16.4 7.5M12.2 11.8l5.9 8.7" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="21" cy="20.5" r="2.4" fill="var(--bright)" />
       </svg>
-      {!compact && <span className="logo-word">Kvit</span>}
+      {!compact && <span className="logo-word">KVIT</span>}
     </span>
   );
 }
@@ -335,6 +352,22 @@ export function CopyInline({ text, display, mono = true }: { text: string; displ
 
 // ---------- QR ----------
 
+/** A QR inside KVIT's scan frame: corner marks sit outside the quiet zone. */
+export function QRFrame({ value, size = 200, label, caption }: { value: string; size?: number; label?: string; caption?: ReactNode }) {
+  return (
+    <div className="qr-frame">
+      <div className="qr-frame-box">
+        <QR value={value} size={size} label={label} />
+        <i className="qr-corner tl" />
+        <i className="qr-corner tr" />
+        <i className="qr-corner bl" />
+        <i className="qr-corner br" />
+      </div>
+      {caption && <div className="qr-frame-caption">{caption}</div>}
+    </div>
+  );
+}
+
 export function QR({ value, size = 200, label }: { value: string; size?: number; label?: string }) {
   const { path, count } = useMemo(() => {
     const qr = qrcode(0, 'Q');
@@ -372,7 +405,7 @@ export function QR({ value, size = 200, label }: { value: string; size?: number;
       {finder(0, 0)}
       {finder(count - 7, 0)}
       {finder(0, count - 7)}
-      <rect x={mid - 2.6} y={mid - 2.6} width={5.2} height={5.2} rx={1.5} fill="var(--accent)" />
+      <rect x={mid - 2.6} y={mid - 2.6} width={5.2} height={5.2} rx={1.5} fill="var(--emerald)" />
       <path
         d={`M${mid - 1} ${mid - 1.5}v3M${mid - 1} ${mid + 0.05}l1.65-1.55M${mid - 0.35} ${mid - 0.55}l1.5 2.05`}
         stroke="#fff"
@@ -381,6 +414,55 @@ export function QR({ value, size = 200, label }: { value: string; size?: number;
         fill="none"
       />
     </svg>
+  );
+}
+
+// ---------- money ----------
+
+/**
+ * KVIT's signature numerals: heavy whole part, lighter fraction and currency.
+ * kind 'rub' puts the sign before the number in English, after it in Russian.
+ */
+export function Money({
+  value,
+  kind = 'rub',
+  symbol = 'USDT',
+  digits,
+  tween,
+  sign,
+  className = '',
+}: {
+  value: number;
+  kind?: 'rub' | 'crypto' | 'count';
+  symbol?: string;
+  digits?: number;
+  tween?: boolean;
+  sign?: boolean;
+  className?: string;
+}) {
+  const { lang } = useI18n();
+  const animated = useTween(value);
+  const v = tween ? animated : value;
+  const d = digits ?? (kind === 'rub' ? (Math.abs(value) % 1 ? 2 : 0) : kind === 'count' ? 0 : 2);
+  const shown = d === 0 ? Math.round(Math.abs(v)) : Math.abs(v);
+  const body = new Intl.NumberFormat(lang === 'ru' ? 'ru-RU' : 'en-US', { minimumFractionDigits: d, maximumFractionDigits: d })
+    .format(shown)
+    .replace(/[\u202F\u2009]/g, '\u00A0');
+  const sep = lang === 'ru' ? ',' : '.';
+  const cut = d ? body.lastIndexOf(sep) : -1;
+  const int = cut >= 0 ? body.slice(0, cut) : body;
+  const frac = cut >= 0 ? body.slice(cut) : '';
+  const pre = kind === 'rub' && lang === 'en';
+  const cur = kind === 'rub' ? '₽' : kind === 'crypto' ? symbol : '';
+  const minus = value < 0 ? '−' : sign && value > 0 ? '+' : '';
+  return (
+    <span className={`money ${className}`}>
+      {minus}
+      {pre && <span className="money-cur is-pre">₽</span>}
+      <span className="money-int">{int}</span>
+      {frac && <span className="money-frac">{frac}</span>}
+      {cur && !pre && <span className="money-cur">{cur}</span>}
+    </span>
   );
 }
 

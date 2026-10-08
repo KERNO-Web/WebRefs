@@ -22,7 +22,7 @@ export function App() {
 
   // keep the scroll position when only a detail drawer opens or closes
   useEffect(() => {
-    const key = root === 'app' && (section === 'transactions' || (section === 'links' && id === 'new')) ? `${root}/${section}` : route.parts.join('/');
+    const key = root === 'app' && (section === 'transactions' || section === 'links') ? `${root}/${section}` : route.parts.join('/');
     if (key !== lastPath.current) window.scrollTo(0, 0);
     lastPath.current = key;
   }, [route, root, section, id]);
@@ -32,7 +32,7 @@ export function App() {
   }, [root, section]);
 
   useEffect(() => {
-    if (root === 'app') document.title = `${t('nav_' + (section === 'pos' ? 'pos' : section) as 'nav_pos')} · Kvit`;
+    if (root === 'app') document.title = `${t('nav_' + (section === 'pos' ? 'pos' : section) as 'nav_pos')} · KVIT`;
   }, [root, section, t]);
 
   let page: JSX.Element;

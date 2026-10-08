@@ -6,7 +6,7 @@ import { COIN_LABEL } from '../lib/derive';
 import type { Coin, Lang, Payment } from '../lib/model';
 import { assetById, refundedAmount, shortAddr } from '../lib/model';
 import { Icon, type IconName } from '../ui/icons';
-import { Badge, PaymentBadge, Tween } from '../ui/ui';
+import { Badge, Money, PaymentBadge } from '../ui/ui';
 import { CoinMark } from './Checkout';
 
 export function compactRub(n: number, lang: Lang) {
@@ -20,33 +20,35 @@ export function compactRub(n: number, lang: Lang) {
 export function Metric({
   label,
   value,
-  format,
+  kind,
+  symbol,
   delta,
   foot,
-  accent,
+  tone,
 }: {
   label: string;
   value: number;
-  format: (n: number) => string;
+  kind: 'rub' | 'crypto' | 'count';
+  symbol?: string;
   delta?: number | null;
   foot?: string;
-  accent?: boolean;
+  tone?: 'emerald' | 'mint' | 'dark';
 }) {
   const { t, lang } = useI18n();
+  const hasDelta = delta !== undefined && delta !== null && Number.isFinite(delta);
   return (
-    <div className={`metric${accent ? ' is-accent' : ''}`}>
+    <div className={`metric${tone ? ` is-${tone}` : ''}`}>
       <p className="metric-label">{label}</p>
-      <p className="metric-value num">
-        <Tween value={value} format={format} />
+      <p className="metric-value">
+        <Money value={value} kind={kind} symbol={symbol} tween />
       </p>
       <p className="metric-foot">
-        {delta !== undefined && delta !== null && Number.isFinite(delta) && (
-          <span className={`delta ${delta >= 0 ? 'is-up' : 'is-down'}`}>
-            {delta >= 0 ? '+' : '−'}
-            {f.num(Math.abs(delta * 100), lang, 0)}%
+        {hasDelta && (
+          <span className={`delta ${delta! >= 0 ? 'is-up' : 'is-down'}`}>
+            {delta! >= 0 ? '↑' : '↓'} {f.num(Math.abs(delta! * 100), lang, 0)}%
           </span>
         )}
-        {delta !== undefined && delta !== null && Number.isFinite(delta) ? ` ${t('vs_yesterday')}` : foot}
+        {hasDelta ? ` ${t('vs_yesterday')}` : foot}
       </p>
     </div>
   );
@@ -120,7 +122,7 @@ function niceStep(raw: number) {
 // ---------- asset mix ----------
 
 const MIX_COLORS: Record<Coin, string> = {
-  usdt: 'var(--accent)',
+  usdt: 'var(--emerald)',
   usdc: '#5C8BD6',
   ton: '#7FB8DE',
   btc: '#D89A4A',
@@ -179,7 +181,7 @@ export function SettlementBreakdown({
             {st.count} {f.plural(st.count, lang, t('payments_forms').split('|') as [string, string, string])} · {f.rub(st.grossRub, lang)}
           </p>
         </div>
-        <Badge tone={tone} live={st.status === 'open'}>
+        <Badge tone={tone} live={st.status === 'open'} strong={st.status === 'completed'}>
           {label}
         </Badge>
       </div>
@@ -201,8 +203,8 @@ export function SettlementBreakdown({
         </div>
         <div className="settle-total">
           <dt>{st.status === 'completed' ? t('stl_credited') : t('stl_to_credit')}</dt>
-          <dd className="num">
-            <Tween value={st.net} format={(n) => usd(n)} />
+          <dd>
+            <Money value={st.net} kind="crypto" symbol={asset} tween />
           </dd>
         </div>
       </dl>

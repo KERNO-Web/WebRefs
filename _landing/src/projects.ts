@@ -146,7 +146,7 @@ export const PROJECTS: Project[] = [
   {
     id: 12,
     slug: 'kvit',
-    title: 'Kvit',
+    title: 'KVIT',
     description:
       'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',
     thumbnail: 'kvit/og.jpg',

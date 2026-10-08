@@ -9,7 +9,7 @@ import type { AssetId, InvoiceItem, Text } from '../lib/model';
 import { ASSETS, assetById, fakeAddress, shortAddr } from '../lib/model';
 import { quote, useRates } from '../lib/rates';
 import { Icon } from '../ui/icons';
-import { Button, CopyInline, QR, Spinner, Toggle, useNow } from '../ui/ui';
+import { Button, CopyInline, Money, QR, Spinner, Toggle, useNow } from '../ui/ui';
 
 export type CheckoutPhase = 'open' | 'processing' | 'paid' | 'failed' | 'expired' | 'closed';
 
@@ -84,7 +84,9 @@ export function Checkout(p: CheckoutProps) {
 
       <section className="co-amount">
         {p.title && <p className="co-title">{tx(p.title)}</p>}
-        <p className="co-sum num">{f.rub(p.amount, lang)}</p>
+        <p className="co-sum">
+          <Money value={p.amount} />
+        </p>
         {p.description && <p className="co-desc">{tx(p.description)}</p>}
         {p.lines && p.lines.length > 0 && (
           <ul className="co-lines">
@@ -281,7 +283,7 @@ export function Checkout(p: CheckoutProps) {
 
       <footer className="co-foot">
         <span>{t('co_powered')}</span>
-        <span className="co-foot-brand">Kvit</span>
+        <span className="co-foot-brand">KVIT</span>
       </footer>
     </div>
   );
