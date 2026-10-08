@@ -37,7 +37,7 @@ export interface CheckoutProps {
 export function Checkout(p: CheckoutProps) {
   const { t, lang, tx } = useI18n();
   const rates = useRates();
-  const now = useNow(500);
+  const now = useNow(1000, (p.phase === 'open' && !!p.expiresAt) || p.phase === 'processing');
   const options = ASSETS.filter((a) => p.accepted.includes(a.id));
   const quotes = useMemo(() => Object.fromEntries(options.map((a) => [a.id, quote(p.amount, a.id, rates)])), [options, p.amount, rates]);
   const firstAffordable = options.find((a) => quotes[a.id].total <= a.demoBalance)?.id ?? options[0]?.id;

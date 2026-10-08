@@ -645,12 +645,17 @@ export function Empty({ icon, title, text, action }: { icon: IconName; title: st
   );
 }
 
-export function useNow(interval = 1000) {
+export function useNow(interval = 1000, enabled = true) {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), interval);
+    if (!enabled) return;
+    setNow(Date.now());
+    const id = setInterval(() => {
+      // nothing to update while the tab is in the background
+      if (document.visibilityState === 'visible') setNow(Date.now());
+    }, interval);
     return () => clearInterval(id);
-  }, [interval]);
+  }, [interval, enabled]);
   return now;
 }
 

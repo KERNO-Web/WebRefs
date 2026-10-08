@@ -1,4 +1,3 @@
-import Lenis from 'lenis';
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { overview } from '../lib/derive';
 import * as f from '../lib/format';
@@ -19,35 +18,13 @@ import { Badge, LangSwitch, LinkButton, Logo, Money, QRFrame, SandboxBadge, useM
 const DAY = 86_400_000;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// ---------- smooth scroll ----------
-
-let lenis: Lenis | null = null;
-
-function useSmoothScroll() {
-  useEffect(() => {
-    if (reducedMotion()) return;
-    const l = new Lenis({ lerp: 0.13, wheelMultiplier: 1, smoothWheel: true });
-    lenis = l;
-    let raf = 0;
-    const loop = (time: number) => {
-      l.raf(time);
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => {
-      cancelAnimationFrame(raf);
-      l.destroy();
-      lenis = null;
-    };
-  }, []);
-}
+// ---------- scrolling ----------
+// Native scrolling runs on the compositor thread and stays smooth even when
+// the page is busy; only anchor jumps are animated.
 
 const jump = (id: string) => (e: React.MouseEvent) => {
   e.preventDefault();
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (lenis) lenis.scrollTo(el, { offset: -64, duration: 1.1 });
-  else el.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  document.getElementById(id)?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
 };
 
 function useReveal() {
@@ -99,7 +76,6 @@ export function Landing() {
   const { t } = useI18n();
   const [scrolled, setScrolled] = useState(false);
   const active = useActiveSection();
-  useSmoothScroll();
   useReveal();
 
   useEffect(() => {
@@ -238,10 +214,22 @@ function HeroStage() {
   const [digits, setDigits] = useState('');
   const [paidAt, setPaidAt] = useState<number | null>(null);
   const [cycle, setCycle] = useState(0);
-  const now = useNow(1000);
+  const stage = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(true);
+  const now = useNow(1000, visible);
   const sessionStart = useRef(Date.now());
 
+  // the loop only runs while the hero is on screen
   useEffect(() => {
+    const el = stage.current;
+    if (!el || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
     if (reducedMotion()) {
       setDigits('2490');
       setPhase('pending');
@@ -262,7 +250,7 @@ function HeroStage() {
     });
     at(10400, () => setCycle((c) => c + 1));
     return () => timers.forEach(clearTimeout);
-  }, [cycle]);
+  }, [cycle, visible]);
 
   const q = quote(HERO_AMOUNT, 'usdt_ton', rates);
   const recent = demo.payments.filter((p) => p.status === 'paid').slice(0, 3);
@@ -273,7 +261,7 @@ function HeroStage() {
   const labels = [t('ph_amount'), 'QR', t('ph_pay'), t('ph_paid')];
 
   return (
-    <div className="hero-stage" aria-label={t('hero_stage_label')}>
+    <div className="hero-stage" ref={stage} aria-label={t('hero_stage_label')}>
       <ol className="hero-phases" aria-hidden="true">
         {PHASES.map((p, i) => (
           <li key={p} className={`${p === phase ? 'is-on' : ''}${PHASES.indexOf(phase) > i ? ' is-done' : ''}`}>
@@ -373,26 +361,43 @@ interface StoryStep {
 
 function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) => ReactNode; tone: 'dark' | 'light' }) {
   const [active, setActive] = useState(0);
-  const [progress, setProgress] = useState(0);
   const sticky = useMedia('(min-width: 1024px)');
   const ref = useRef<HTMLDivElement>(null);
+  const bars = useRef<(HTMLSpanElement | null)[]>([]);
   const n = steps.length;
 
+  // Scroll position drives the scene. Progress bars are written straight to
+  // the DOM once per frame; React only re-renders when the step changes.
   useEffect(() => {
     if (!sticky) return;
-    const on = () => {
+    let raf = 0;
+    let current = -1;
+    const update = () => {
+      raf = 0;
       const el = ref.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight) return;
       const run = r.height - window.innerHeight;
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, run)));
-      setProgress(p);
-      setActive(Math.min(n - 1, Math.floor(p * n * 0.999)));
+      const idx = Math.min(n - 1, Math.floor(p * n * 0.999));
+      const local = Math.min(1, Math.max(0, p * n - idx));
+      bars.current.forEach((b, i) => {
+        if (b) b.style.transform = `scaleX(${i < idx ? 1 : i === idx ? local : 0})`;
+      });
+      if (idx !== current) {
+        current = idx;
+        setActive(idx);
+      }
     };
-    on();
+    const on = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
     window.addEventListener('scroll', on, { passive: true });
     window.addEventListener('resize', on);
     return () => {
+      cancelAnimationFrame(raf);
       window.removeEventListener('scroll', on);
       window.removeEventListener('resize', on);
     };
@@ -404,8 +409,7 @@ function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) 
     const top = el.getBoundingClientRect().top + window.scrollY;
     const run = el.offsetHeight - window.innerHeight;
     const y = top + ((i + 0.5) / n) * run;
-    if (lenis) lenis.scrollTo(y, { duration: 0.9 });
-    else window.scrollTo({ top: y, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    window.scrollTo({ top: y, behavior: reducedMotion() ? 'auto' : 'smooth' });
   };
 
   if (!sticky) {
@@ -423,7 +427,6 @@ function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) 
     );
   }
 
-  const local = Math.min(1, Math.max(0, progress * n - active));
   return (
     <div ref={ref} className={`story is-${tone}`} style={{ height: `calc(${n * 48}vh + 100vh)` }}>
       <div className="story-pin">
@@ -434,7 +437,11 @@ function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) 
                 <span className="story-n">
                   {String(i + 1).padStart(2, '0')}
                   <span className="story-bar">
-                    <span style={{ transform: `scaleX(${i < active ? 1 : i === active ? local : 0})` }} />
+                    <span
+                      ref={(el) => {
+                        bars.current[i] = el;
+                      }}
+                    />
                   </span>
                 </span>
                 <h3>{s.title}</h3>
@@ -448,7 +455,7 @@ function Story({ steps, frame, tone }: { steps: StoryStep[]; frame: (i: number) 
         <div className="story-frame">
           {steps.map((_, i) => (
             <div key={i} className={`story-layer${i === active ? ' is-on' : ''}${i < active ? ' is-past' : ''}`} aria-hidden={i !== active}>
-              {frame(i)}
+              {Math.abs(i - active) <= 1 ? frame(i) : null}
             </div>
           ))}
         </div>
@@ -481,7 +488,7 @@ function PosStory() {
   const rates = useRates();
   const q = quote(HERO_AMOUNT, 'usdt_ton', rates);
   const [base] = useState(() => Date.now());
-  const now = useNow(1000);
+  const now = useNow(1000, false);
   const pos = (status: 'pending' | 'paid') => (
     <PosView
       id="pay_9H3XQ7LM2C"

@@ -67,9 +67,7 @@
 
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 76px; }
-html.lenis, html.lenis body { height: auto; }
-.lenis.lenis-smooth { scroll-behavior: auto !important; }
-.lenis.lenis-stopped { overflow: hidden; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
 body {
   margin: 0;
   background: var(--ivory);
@@ -205,8 +203,9 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
 .tone-draft { --b-bg: transparent; --b-fg: var(--mute-fg); }
 .badge.tone-draft { box-shadow: inset 0 0 0 1px var(--line-2); }
 
-.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--bright); display: inline-block; flex: none; animation: live 2s ease-out infinite; }
-@keyframes live { 0% { box-shadow: 0 0 0 0 rgba(0, 184, 148, 0.5); } 70%, 100% { box-shadow: 0 0 0 7px rgba(0, 184, 148, 0); } }
+.live-dot, .rates-dot.is-live { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--bright); display: inline-block; flex: none; }
+.live-dot::after, .rates-dot.is-live::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--bright); animation: live 2s ease-out infinite; will-change: transform, opacity; }
+@keyframes live { 0% { transform: scale(1); opacity: 0.55; } 70%, 100% { transform: scale(3); opacity: 0; } }
 
 /* =========================================================
    Brand bits
@@ -588,7 +587,7 @@ button.prow:focus-visible { border-radius: 0; box-shadow: inset var(--focus); }
 .rates { padding: 12px; border-radius: var(--r); background: var(--dark-2); border: 1px solid var(--dark-line); display: grid; gap: 8px; }
 .rates-head { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--on-dark-2); }
 .rates-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neutral); display: inline-block; flex: none; }
-.rates-dot.is-live { background: var(--bright); animation: live 2s ease-out infinite; }
+
 .rates ul { display: grid; gap: 4px; font-size: 13px; }
 .rates li { display: flex; justify-content: space-between; }
 .rates li span { color: var(--on-dark-2); }
@@ -875,7 +874,7 @@ button.prow:focus-visible { border-radius: 0; box-shadow: inset var(--focus); }
    ========================================================= */
 .site { font-size: 16px; }
 .wrap { width: 100%; max-width: 1320px; margin: 0 auto; padding: 0 32px; }
-.site-head { position: sticky; top: 0; z-index: 30; background: rgba(245, 242, 234, 0.84); backdrop-filter: saturate(1.5) blur(16px); -webkit-backdrop-filter: saturate(1.5) blur(16px); border-bottom: 1px solid transparent; transition: border-color 0.25s var(--ease); }
+.site-head { position: sticky; top: 0; z-index: 30; background: rgba(245, 242, 234, 0.97); border-bottom: 1px solid transparent; transition: border-color 0.25s var(--ease); }
 .site-head.is-scrolled { border-bottom-color: var(--line); }
 .site-head-row { display: flex; align-items: center; gap: 30px; height: 64px; }
 .site-logo { display: inline-flex; border-radius: 8px; }
@@ -949,11 +948,6 @@ html[lang='ru'] .hero-title { font-size: clamp(36px, 3.65vw, 54px); line-height:
 .panel-emerald .lead { color: rgba(255, 255, 255, 0.82); }
 .panel-emerald .story-head h2 .is-accent { color: var(--mint-2); }
 
-@supports (animation-timeline: view()) {
-  .panel { animation: panel-in linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
-  @keyframes panel-in { from { transform: scale(0.96); border-radius: 56px; } to { transform: none; } }
-}
-
 .story-head { max-width: 760px; margin-bottom: 36px; }
 .story-head h2 { font-size: clamp(36px, 4.6vw, 64px); line-height: 1; font-weight: 800; letter-spacing: -0.045em; margin-bottom: 18px; }
 html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height: 1.04; }
@@ -975,7 +969,7 @@ html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height:
 .story.is-dark .story-n { color: var(--bright); }
 .story-bar { flex: 1; max-width: 120px; height: 2px; border-radius: 2px; background: currentColor; opacity: 0.18; overflow: hidden; position: relative; }
 .story-step.is-active .story-bar, .story-step.is-done .story-bar { opacity: 1; background: rgba(127, 127, 127, 0.25); }
-.story-bar span { position: absolute; inset: 0; background: currentColor; transform-origin: left; transition: transform 0.15s linear; }
+.story-bar span { position: absolute; inset: 0; background: currentColor; transform-origin: left; transform: scaleX(0); will-change: transform; }
 .story-text { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s var(--ease), opacity 0.35s var(--ease); opacity: 0; }
 .story-text > p { overflow: hidden; }
 .story-step.is-active .story-text { grid-template-rows: 1fr; opacity: 1; }
@@ -984,7 +978,7 @@ html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height:
 .story-frame { position: relative; border-radius: var(--r-2xl); overflow: hidden; min-height: 0; }
 .story.is-dark .story-frame { background: radial-gradient(90% 70% at 50% 40%, #1f2a25 0%, var(--dark-2) 70%); box-shadow: inset 0 0 0 1px var(--dark-line); }
 .story.is-light .story-frame { background: var(--ivory-2); box-shadow: inset 0 0 0 1px var(--line); }
-.story-layer { position: absolute; inset: 0; display: grid; place-items: center; padding: 28px; opacity: 0; transform: translateY(26px) scale(0.97); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease); pointer-events: none; }
+.story-layer { position: absolute; inset: 0; display: grid; place-items: center; padding: 28px; will-change: opacity, transform; opacity: 0; transform: translateY(26px) scale(0.97); transition: opacity 0.5s var(--ease), transform 0.6s var(--ease); pointer-events: none; }
 .story-layer.is-past { transform: translateY(-26px) scale(0.97); }
 .story-layer.is-on { opacity: 1; transform: none; pointer-events: auto; }
 .story-flow { display: grid; grid-template-columns: minmax(0, 1fr); gap: 44px; }
@@ -1002,7 +996,9 @@ html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height:
 .story .device-screen { min-height: 0; }
 .phone-frame { display: grid; justify-items: center; gap: 10px; width: 100%; max-height: 100%; }
 .phone-frame .checkout { max-width: 400px; box-shadow: 0 30px 60px -28px rgba(0, 0, 0, 0.5); }
-.story-layer .phone-frame { overflow: hidden; -webkit-mask-image: linear-gradient(to bottom, #000 88%, transparent); mask-image: linear-gradient(to bottom, #000 88%, transparent); align-content: start; align-self: start; padding-top: 4px; }
+.story-layer .phone-frame { overflow: hidden; align-content: start; align-self: start; padding-top: 4px; position: relative; }
+.story-layer .phone-frame::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: linear-gradient(to bottom, transparent, var(--fade, var(--dark-2))); pointer-events: none; }
+.story.is-light .phone-frame { --fade: var(--ivory-2); }
 .frame-tag { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px; border-radius: 8px; font-size: 11.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; background: var(--bright); color: var(--ink); }
 .story.is-light .frame-tag { background: var(--ink); color: var(--on-dark); }
 .paid-frame { position: relative; padding-top: 30px; }
@@ -1119,7 +1115,7 @@ html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height:
 @media (max-width: 1023px) {
   .side { display: none; }
   .app-main { margin-left: 0; }
-  .topbar { position: sticky; top: 0; z-index: 25; display: flex; align-items: center; gap: 10px; height: 58px; padding: 0 12px 0 16px; background: rgba(245, 242, 234, 0.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar { position: sticky; top: 0; z-index: 25; display: flex; align-items: center; gap: 10px; height: 58px; padding: 0 12px 0 16px; background: rgba(245, 242, 234, 0.97); border-bottom: 1px solid var(--line); }
   .topbar-brand { display: inline-flex; }
   .topbar-spacer { flex: 1; }
   .sandbox-strip { display: none; }
@@ -1284,5 +1280,4 @@ html[lang='ru'] .story-head h2 { font-size: clamp(32px, 4vw, 56px); line-height:
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
   [data-reveal] { opacity: 1; transform: none; }
-  .panel { animation: none; }
 }
