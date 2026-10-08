@@ -143,6 +143,18 @@ export const PROJECTS: Project[] = [
     year: 2026,
     accent: '#ff4d2e',
   },
+  {
+    id: 12,
+    slug: 'kvit',
+    title: 'Kvit',
+    description:
+      'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',
+    thumbnail: 'kvit/og.jpg',
+    href: 'kvit/',
+    tags: ['Финтех', 'Продукт', 'Демо'],
+    year: 2026,
+    accent: '#0e7c6e',
+  },
 ];
 
 /** Pinned when Supabase is not configured or cannot be reached. */

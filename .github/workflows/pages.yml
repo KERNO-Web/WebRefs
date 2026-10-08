@@ -29,7 +29,7 @@ jobs:
           (cd _landing && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
           cp -R _landing/dist/. _site/
           echo "::endgroup::"
-          for p in afterimage key01 noctis null witcher ranked nexus route facemail brightline; do
+          for p in afterimage key01 noctis null witcher ranked nexus route facemail brightline kvit; do
             echo "::group::$p"
             (cd "$p" && npm ci --ignore-scripts --no-audit --no-fund && npx vite build)
             cp -R "$p/dist" "_site/$p"
