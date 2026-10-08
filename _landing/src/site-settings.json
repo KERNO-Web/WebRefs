@@ -1,4 +1,20 @@
 {
-  "featured": "brightline",
+  "featured": [
+    "brightline"
+  ],
+  "order": [
+    "roman",
+    "key01",
+    "afterimage",
+    "noctis",
+    "null",
+    "witcher",
+    "ranked",
+    "nexus",
+    "route",
+    "facemail",
+    "brightline",
+    "kvit"
+  ],
   "hidden": []
 }

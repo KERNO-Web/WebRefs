@@ -15,13 +15,34 @@ const accent = (p: Project) => (p.accent ? ` style="--a:${p.accent}"` : '');
 /* ---------- pinned project and the rest of the grid ---------- */
 
 function render() {
-  const { featured: p, rest } = visibleProjects();
+  const { featured, rest } = visibleProjects();
   const feat = document.getElementById('featured')!;
-  feat.setAttribute('style', p.accent ? `--a:${p.accent}` : '');
-  feat.innerHTML = `
+  const head = `
     <header class="feat-head">
       <span class="pin"><i aria-hidden="true"></i>Закреплено</span>
-    </header>
+    </header>`;
+  if (featured.length > 1) {
+    feat.removeAttribute('style');
+    feat.innerHTML = `${head}
+    <div class="feat-duo">
+      ${featured
+        .map(
+          (p, i) => `
+      <a class="feat-card card" ${linkAttrs(p)}${accent(p)}>
+        <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630"${i === 0 ? ' fetchpriority="high"' : ''} /></div>
+        <div class="feat-info">
+          <h2 class="card-title">${esc(p.title)}</h2>
+          <p class="desc">${esc(p.description)}</p>
+          <span class="go">Открыть проект ${ARROW}</span>
+        </div>
+      </a>`,
+        )
+        .join('')}
+    </div>`;
+  } else {
+    const p = featured[0];
+    feat.setAttribute('style', p.accent ? `--a:${p.accent}` : '');
+    feat.innerHTML = `${head}
     <a class="feat-card card" ${linkAttrs(p)}>
       <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" fetchpriority="high" /></div>
       <div class="feat-info">
@@ -30,6 +51,7 @@ function render() {
         <span class="go">Открыть проект ${ARROW}</span>
       </div>
     </a>`;
+  }
 
   document.getElementById('grid')!.innerHTML = rest
     .map(
