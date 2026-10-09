@@ -611,22 +611,27 @@ button {
   color: var(--ink-2);
 }
 .contact-actions {
-  grid-column: 9 / -1;
+  grid-column: 8 / -1;
   display: grid;
-  gap: 18px;
-  justify-items: end;
+  gap: 12px;
   align-self: end;
-  padding-bottom: 4px;
+}
+.contact-actions .btn {
+  width: 100%;
+  height: clamp(68px, 5.6vw, 88px);
+  padding: 0 32px;
+  border-radius: 14px;
+  font-size: clamp(18px, 1.45vw, 23px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .contact-gh {
-  font-size: 15px;
-  font-weight: 600;
-  border-bottom: 1px solid rgba(20, 20, 22, 0.25);
-  padding-bottom: 2px;
-  transition: border-color 0.3s;
+  border: 2px solid var(--ink);
+  color: var(--ink);
 }
 .contact-gh:hover {
-  border-color: var(--accent);
+  background: var(--ink);
+  color: var(--paper);
 }
 .foot {
   display: flex;
@@ -1096,7 +1101,7 @@ button {
   }
   .contact-actions {
     grid-column: 1 / -1;
-    justify-items: start;
+    max-width: 560px;
   }
 }
 
@@ -1354,6 +1359,8 @@ button {
   }
   .contact-actions .btn {
     width: 100%;
+    padding: 0 18px;
+    font-size: 17px;
   }
   .adm-user,
   .adm-tag {
