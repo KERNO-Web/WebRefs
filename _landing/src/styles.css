@@ -464,9 +464,6 @@ button {
   letter-spacing: -0.045em;
   line-height: 0.98;
 }
-.feat-card:hover .card-title {
-  color: var(--a);
-}
 /* two pinned projects side by side */
 .feat-duo {
   display: grid;

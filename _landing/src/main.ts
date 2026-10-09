@@ -10,7 +10,6 @@ const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const pad = (n: number) => String(n).padStart(2, '0');
 const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
-const accent = (p: Project) => (p.accent ? ` style="--a:${p.accent}"` : '');
 const kind = (p: Project) => `<p class="kind${p.real ? ' is-real' : ''}">${esc(p.kind)}</p>`;
 
 /* ---------- pinned project and the rest of the grid ---------- */
@@ -29,7 +28,7 @@ function render() {
       ${featured
         .map(
           (p, i) => `
-      <a class="feat-card card" ${linkAttrs(p)}${accent(p)}>
+      <a class="feat-card card" ${linkAttrs(p)}>
         <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630"${i === 0 ? ' fetchpriority="high"' : ''} /></div>
         <div class="feat-info">
           ${kind(p)}
@@ -43,7 +42,7 @@ function render() {
     </div>`;
   } else {
     const p = featured[0];
-    feat.setAttribute('style', p.accent ? `--a:${p.accent}` : '');
+    feat.removeAttribute('style');
     feat.innerHTML = `${head}
     <a class="feat-card card" ${linkAttrs(p)}>
       <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" fetchpriority="high" /></div>
@@ -59,7 +58,7 @@ function render() {
   document.getElementById('grid')!.innerHTML = rest
     .map(
       (r, i) => `
-      <a class="card rv" ${linkAttrs(r)}${accent(r)}>
+      <a class="card rv" ${linkAttrs(r)}>
         <div class="shot"><img src="${esc(r.thumbnail)}" alt="${esc(r.title)}" loading="lazy" width="1200" height="630" /></div>
         <div class="info">
           <span class="num">${pad(i + 1)}</span>
