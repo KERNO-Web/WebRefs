@@ -1,12 +1,12 @@
-# NEXUS Card
+# TapShift
 
-Frontend concept: a virtual crypto card. Hold USDT, USDC and ETH, pay by card, NEXUS converts at the moment of payment.
+Interactive crypto-card product demo (formerly NEXUS; still served from `/nexus/`).
 
-Everything is simulated and stored locally (localStorage): balances, rates, card issuing, payments, refunds. No backend, no real money, no blockchain.
+A short landing, then the product: choose a lived-in **demo account** or **start from zero** (finish, cardholder, currency, spending source, hold to activate). Inside: Home, Card, Wallets, Activity, Settings — funding, exchange, Smart Spend, card controls that decide simulated payments, refunds, analytics, balance privacy.
 
-- Site: issue, fund, spend, Smart Spend, card controls with a purchase simulator, activity with refunds
-- App: `#demo` (Home, Card, Activity, Settings)
-- RU / EN
+Everything is simulated and stored in localStorage. No backend, no real money, no blockchain.
+
+Routes: `#` landing · `#start` onboarding · `#app`, `#app/card`, `#app/wallets`, `#app/activity`, `#app/settings`.
 
 ```bash
 npm install

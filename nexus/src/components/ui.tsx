@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useI18n } from '../i18n';
-import { reducedMotion } from '../ctx';
+import { reducedMotion, useApp } from '../ctx';
 import { Icon } from './Icon';
 
 const FOCUSABLE = 'button:not(:disabled), input:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])';
@@ -106,9 +106,9 @@ export function Count({ value, format, ms }: { value: number; format: (n: number
   return <>{format(v)}</>;
 }
 
-export function StatusPill({ status }: { status: 'paid' | 'declined' | 'refunded' | 'received' | 'processing' }) {
+export function StatusPill({ status }: { status: 'paid' | 'declined' | 'refunded' | 'received' | 'processing' | 'done' }) {
   const { t } = useI18n();
-  const label = { paid: t('PAID'), declined: t('DECLINED'), refunded: t('REFUNDED'), received: t('RECEIVED'), processing: t('PROCESSING') }[status];
+  const label = { paid: t('PAID'), declined: t('DECLINED'), refunded: t('REFUNDED'), received: t('RECEIVED'), processing: t('PROCESSING'), done: t('DONE') }[status];
   return <span className={'pill st-' + status}><i />{label}</span>;
 }
 
@@ -122,4 +122,64 @@ export function useReveal() {
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
   }, []);
+}
+
+/** Balance privacy: the figure stays in layout, masked and blurred. */
+export function Private({ children, className = '' }: { children: ReactNode; className?: string }) {
+  const { state } = useApp();
+  const { t } = useI18n();
+  if (!state.settings.privacy) return <span className={className}>{children}</span>;
+  return <span className={'private ' + className} aria-label={t('Hidden')}><span aria-hidden="true">••••••</span></span>;
+}
+
+export function Toasts() {
+  const { toasts } = useApp();
+  return (
+    <div className="toasts" role="status" aria-live="polite">
+      {toasts.map((x) => <div key={x.id} className={'toast t-' + x.tone}><i />{x.text}</div>)}
+    </div>
+  );
+}
+
+/** Press and hold to confirm. Pointer, touch and keyboard (Space / Enter). */
+export function HoldButton({ label, doneLabel, ms = 1500, done, onProgress, onDone }: { label: string; doneLabel: string; ms?: number; done: boolean; onProgress: (p: number) => void; onDone: () => void }) {
+  const holding = useRef(false);
+  const p = useRef(0);
+  const raf = useRef(0);
+  const [, force] = useState(0);
+  const cb = useRef({ onProgress, onDone, done });
+  cb.current = { onProgress, onDone, done };
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+  const loop = (last: number) => (now: number) => {
+    const dt = now - last;
+    p.current = Math.max(0, Math.min(1, p.current + (holding.current ? dt / ms : -dt / 450)));
+    cb.current.onProgress(p.current);
+    force((n) => n + 1);
+    if (p.current >= 1) { holding.current = false; cb.current.onDone(); return; }
+    raf.current = p.current > 0 || holding.current ? requestAnimationFrame(loop(now)) : 0;
+  };
+  const start = () => {
+    if (cb.current.done || holding.current) return;
+    holding.current = true;
+    if (!raf.current) raf.current = requestAnimationFrame(loop(performance.now()));
+  };
+  const stop = () => { holding.current = false; };
+  const pct = Math.round(p.current * 100);
+  return (
+    <button
+      className={'hold' + (done ? ' done' : '') + (holding.current ? ' holding' : '')}
+      style={{ ['--p' as string]: done ? 1 : p.current }}
+      onPointerDown={(e) => { e.currentTarget.setPointerCapture?.(e.pointerId); start(); }}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); start(); } }}
+      onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') stop(); }}
+      onContextMenu={(e) => e.preventDefault()}
+      aria-disabled={done}
+      aria-valuenow={pct}
+    >
+      <span className="hold-fill" aria-hidden="true" />
+      <span className="hold-label">{done ? doneLabel : label}{!done && pct > 0 ? ` · ${pct}%` : ''}</span>
+    </button>
+  );
 }

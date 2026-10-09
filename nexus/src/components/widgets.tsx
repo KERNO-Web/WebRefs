@@ -2,106 +2,72 @@ import { useEffect, useRef, useState } from 'react';
 import { useI18n, type T } from '../i18n';
 import { useApp } from '../ctx';
 import {
-  ASSETS, MERCHANTS, NETWORKS, RATE, SIMULATOR, available, cvvOf, debitFor, expiryOf, networkFee, pickSource, priority, refundable, spentThisMonth, valueOf,
-  type Asset, type Auth, type Base, type CardKind, type Category, type Finish, type MerchantId, type Network, type Reason, type Rule, type Tx,
+  ASSETS, EXCHANGEABLE, MERCHANTS, NETWORKS, SIMULATOR, analytics, cardAvailable, cvvOf, debitFor, exchangeOut, exchangeRate, expiryOf, networkFee, pickSource, priority, rateOf,
+  refundable, spentThisMonth, totalBalance, valueOf,
+  type Asset, type Auth, type Category, type Finish, type MerchantId, type Network, type Reason, type Rule, type Stable, type Tx, type Wallet,
 } from '../store';
 import { AssetMark, CHANNEL_ICON, Icon, MerchantMark } from './Icon';
-import { Seg, Sheet, StatusPill, Switch, useCount } from './ui';
+import { Private, Seg, Sheet, StatusPill, Switch, useCount } from './ui';
 
 // ---------- labels ----------
 
 export const CATEGORY: Record<Category, string> = {
-  coffee: 'Coffee', subscription: 'Subscription', shopping: 'Shopping', cash: 'Cash', transport: 'Transport', travel: 'Travel', groceries: 'Groceries', deposit: 'Top up',
+  coffee: 'Coffee', subscription: 'Subscription', shopping: 'Shopping', cash: 'Cash', transport: 'Transport', travel: 'Travel', groceries: 'Groceries', deposit: 'Top up', exchange: 'Exchange',
 };
-export const CHANNEL: Record<Tx['channel'], string> = { contactless: 'Contactless', online: 'Online', atm: 'ATM withdrawal', deposit: 'Deposit' };
+export const CHANNEL: Record<Tx['channel'], string> = { contactless: 'Contactless', online: 'Online', atm: 'ATM withdrawal', deposit: 'Deposit', exchange: 'Exchange' };
 export const REASON: Record<Reason, string> = {
   frozen: 'Card is frozen',
   online: 'Online payments are off',
   contactless: 'Contactless is off',
   atm: 'ATM withdrawals are off',
   intl: 'International payments are off',
-  limit: 'Over the monthly limit',
+  limit: 'Monthly limit reached',
   funds: 'No balance covers this payment',
 };
 export const RULE: Record<Rule, { title: string; desc: string }> = {
   stable: { title: 'Stablecoins first', desc: 'Spends USDT or USDC before anything that moves in price.' },
   best: { title: 'Best available balance', desc: 'Picks the balance with the lowest conversion spread.' },
-  manual: { title: 'Manual priority', desc: 'Your order. NEXUS falls through it until a balance covers the payment.' },
+  manual: { title: 'Manual priority', desc: 'Your order. TapShift falls through it until a balance covers the payment.' },
 };
-export const FINISH: Record<Finish, string> = { graphite: 'Graphite', titanium: 'Titanium', ice: 'Ice' };
-export const KIND: Record<CardKind, string> = { multi: 'Multi-use', single: 'Single-use' };
+export const FINISH: Record<Finish, { name: string; desc: string }> = {
+  graphite: { name: 'Graphite', desc: 'Dark brushed steel' },
+  titanium: { name: 'Titanium', desc: 'Light bead-blasted metal' },
+  ice: { name: 'Ice', desc: 'Cold tinted alloy' },
+};
+export const WALLET_NAME: Record<Wallet, string> = { USDT: 'Tether', USDC: 'USD Coin', ETH: 'Ether', EUR: 'Euro pocket' };
+const STATUS_WORD: Record<Tx['status'], string> = { paid: 'Paid', declined: 'Declined', refunded: 'Refunded', received: 'Received', done: 'Completed' };
 
-export const merchantName = (t: T, tx: Pick<Tx, 'merchant' | 'asset'>) => (tx.merchant === 'deposit' ? t('Top up') : t(MERCHANTS[tx.merchant].name));
-const categoryOf = (tx: Tx): Category => (tx.merchant === 'deposit' ? 'deposit' : MERCHANTS[tx.merchant].category);
+const categoryOf = (tx: Tx): Category => (tx.merchant === 'deposit' ? 'deposit' : tx.merchant === 'exchange' ? 'exchange' : MERCHANTS[tx.merchant].category);
+export const txTitle = (t: T, tx: Tx) =>
+  tx.kind === 'deposit' ? `${t('Top up')} · ${tx.asset}` : tx.kind === 'exchange' ? `${tx.asset} → ${tx.toAsset}` : t(MERCHANTS[tx.merchant as MerchantId].name);
 
-// ---------- issue ----------
+// ---------- balances ----------
 
-export interface Draft { finish: Finish; name: string; kind: CardKind; base: Base }
-
-export function useDraft() {
+/** Big balance figure: fraction digits set smaller, rolls on change, respects privacy. */
+export function Balance({ value, className = '' }: { value?: number; className?: string }) {
+  const { locale } = useI18n();
   const { state } = useApp();
-  const fromState = (): Draft => ({ finish: state.card.finish, name: state.card.name, kind: state.card.kind, base: state.base });
-  const [draft, setDraft] = useState<Draft>(fromState);
-  const dirty = draft.finish !== state.card.finish || draft.kind !== state.card.kind || draft.base !== state.base || draft.name.trim().toUpperCase() !== state.card.name;
-  // follow the stored card when it changes elsewhere (demo app, reset)
-  const key = `${state.card.number}|${state.card.finish}|${state.card.kind}|${state.base}|${state.card.name}`;
-  const last = useRef(key);
-  useEffect(() => { if (last.current !== key) { last.current = key; setDraft(fromState()); } });
-  return { draft, setDraft, dirty };
-}
-
-export function IssueControls({ draft, setDraft, dirty, layout = 'bar' }: { draft: Draft; setDraft: (d: Draft) => void; dirty: boolean; layout?: 'bar' | 'stack' }) {
-  const { t } = useI18n();
-  const { state, issue } = useApp();
-  const [phase, setPhase] = useState<'idle' | 'busy' | 'done'>('idle');
-  const timers = useRef<number[]>([]);
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  const create = () => {
-    setPhase('busy');
-    timers.current.push(window.setTimeout(() => { issue(draft); setPhase('done'); }, 900));
-    timers.current.push(window.setTimeout(() => setPhase('idle'), 3600));
-  };
-  const set = <K extends keyof Draft>(k: K, v: Draft[K]) => { setDraft({ ...draft, [k]: v }); if (phase === 'done') setPhase('idle'); };
+  const v = useCount(value ?? totalBalance(state));
+  const parts = new Intl.NumberFormat(locale, { style: 'currency', currency: state.base }).formatToParts(v);
   return (
-    <div className={'issue-controls ' + layout}>
-      <div className="ic-field">
-        <span className="label">{t('Finish')}</span>
-        <Seg className="finishes" value={draft.finish} options={['graphite', 'titanium', 'ice'] as Finish[]} onChange={(v) => set('finish', v)} label={t('Finish')}
-          render={(f) => <><i className={'swatch f-' + f} />{t(FINISH[f])}</>} />
-      </div>
-      <label className="ic-field ic-name">
-        <span className="label">{t('Name on card')}</span>
-        <input value={draft.name} maxLength={22} onChange={(e) => set('name', e.target.value.replace(/[^\p{L} .'-]/gu, ''))} autoComplete="off" spellCheck={false} />
-      </label>
-      <div className="ic-field">
-        <span className="label">{t('Base currency')}</span>
-        <Seg value={draft.base} options={['EUR', 'USD'] as Base[]} onChange={(v) => set('base', v)} label={t('Base currency')} />
-      </div>
-      <div className="ic-field">
-        <span className="label">{t('Card type')}</span>
-        <Seg value={draft.kind} options={['multi', 'single'] as CardKind[]} onChange={(v) => set('kind', v)} label={t('Card type')} render={(k) => t(KIND[k])} />
-      </div>
-      <div className="ic-go">
-        <button className="btn primary" onClick={create} disabled={phase === 'busy'}>
-          {phase === 'busy' ? t('Issuing…') : phase === 'done' && !dirty ? <><Icon name="check" size={18} />{t('Active')} · {state.card.number.slice(-4)}</> : t('Create card')}
-        </button>
-        <span className="fine muted" aria-live="polite">
-          {phase === 'done' && !dirty ? t('New number issued. Old one is closed.') : draft.kind === 'single' ? t('Single-use: the number changes after every approved purchase.') : dirty ? t('Preview only until you create it.') : t('Creating again issues a fresh number.')}
-        </span>
-      </div>
-    </div>
+    <Private className={'balance num ' + className}>
+      {parts.map((p, i) => (p.type === 'fraction' || p.type === 'decimal' ? <small key={i}>{p.value}</small> : p.type === 'currency' ? <span key={i} className="cur">{p.value}</span> : <span key={i}>{p.value}</span>))}
+    </Private>
   );
 }
 
 // ---------- fund ----------
 
-export function useFund() {
-  const { state, fund } = useApp();
-  const [asset, setAssetRaw] = useState<Asset>('USDT');
-  const [network, setNetwork] = useState<Network>('TRON');
-  const [amount, setAmount] = useState('250');
+const trimFee = (s: string) => s.replace(/([.,]\d*?)0+(?= )/, '$1').replace(/[.,](?= )/, '');
+
+export function FundSheet({ onClose, asset: initial = 'USDT' }: { onClose: () => void; asset?: Asset }) {
+  const { t, crypto, fiat } = useI18n();
+  const { state, fund, toast } = useApp();
+  const [asset, setAssetRaw] = useState<Asset>(initial);
+  const [network, setNetwork] = useState<Network>(NETWORKS[initial][0]);
+  const [amount, setAmountRaw] = useState(initial === 'ETH' ? '0.05' : '250');
   const [phase, setPhase] = useState<'form' | 'busy' | 'done'>('form');
-  const [credited, setCredited] = useState(0);
+  const [result, setResult] = useState({ before: 0, credited: 0 });
   const timer = useRef(0);
   useEffect(() => () => clearTimeout(timer.current), []);
   const n = parseFloat(amount.replace(',', '.')) || 0;
@@ -110,86 +76,67 @@ export function useFund() {
   const have = state.wallet[asset];
   const over = n > have + 1e-9;
   const valid = n > 0 && credit > 0 && !over;
-  const before = available(state);
-  const after = available({ base: state.base, balances: { ...state.balances, [asset]: state.balances[asset] + credit } });
-  const setAsset = (a: Asset) => {
-    setAssetRaw(a);
-    if (!NETWORKS[a].includes(network)) setNetwork(NETWORKS[a][0]);
-    setAmount(a === 'ETH' ? '0.05' : '250');
-    setPhase('form');
-  };
+  const cur = state.balances[asset];
+  const rolled = useCount(cur, 900);
+  const setAsset = (a: Asset) => { setAssetRaw(a); if (!NETWORKS[a].includes(network)) setNetwork(NETWORKS[a][0]); setAmountRaw(a === 'ETH' ? '0.05' : '250'); setPhase('form'); };
+  const setAmount = (v: string) => { setAmountRaw(v.replace(/[^0-9.,]/g, '')); if (phase === 'done') setPhase('form'); };
   const submit = () => {
     if (!valid || phase === 'busy') return;
     setPhase('busy');
-    timer.current = window.setTimeout(() => { fund(asset, network, n); setCredited(credit); setPhase('done'); }, 1200);
+    timer.current = window.setTimeout(() => {
+      setResult({ before: cur, credited: credit });
+      fund(asset, network, n);
+      setPhase('done');
+      toast(`${t('Received')} ${crypto(credit, asset, { sign: true })}`, 'ok');
+    }, 1200);
   };
-  return { state, asset, setAsset, network, setNetwork, amount, setAmount: (v: string) => { setAmount(v.replace(/[^0-9.,]/g, '')); if (phase === 'done') setPhase('form'); }, n, fee, credit, have, over, valid, before, after, phase, setPhase, credited, submit };
-}
-export type FundApi = ReturnType<typeof useFund>;
-
-export function FundFields({ f }: { f: FundApi }) {
-  const { t, crypto } = useI18n();
+  const done = phase === 'done';
   return (
-    <>
-      <div className="field">
-        <span className="label">{t('Asset')}</span>
-        <Seg value={f.asset} options={ASSETS} onChange={f.setAsset} label={t('Asset')} render={(a) => <><AssetMark asset={a} size={20} />{a}</>} />
-      </div>
-      <div className="field">
-        <span className="label">{t('Network')}</span>
-        <Seg value={f.network} options={NETWORKS[f.asset]} onChange={(v) => { f.setNetwork(v); f.setPhase('form'); }} label={t('Network')}
-          render={(nw) => <>{nw}<small>{crypto(networkFee(f.asset, nw), f.asset).replace(/([.,]\d*?)0+(?= )/, '$1').replace(/[.,](?= )/, '')}</small></>} />
-      </div>
-      <label className="field">
-        <span className="label">{t('Amount')}</span>
-        <span className={'amount-input' + (f.over ? ' bad' : '')}>
-          <input className="num" inputMode="decimal" value={f.amount} onChange={(e) => f.setAmount(e.target.value)} aria-describedby="fund-have" />
-          <span>{f.asset}</span>
-        </span>
-        <span id="fund-have" className={'small ' + (f.over ? 'neg' : 'muted')}>
-          {f.over ? t('More than your wallet holds') : `${t('In wallet')}: ${crypto(f.have, f.asset)}`}
-        </span>
-      </label>
-      <div className="quick">
-        {(f.asset === 'ETH' ? [0.02, 0.05, 0.1] : [100, 250, 500]).map((v) => (
-          <button key={v} className={String(v) === f.amount ? 'on' : ''} onClick={() => f.setAmount(String(v))}>{v}</button>
-        ))}
-        <button onClick={() => f.setAmount(String(f.have))}>{t('Max')}</button>
-      </div>
-    </>
-  );
-}
-
-export function FundSummary({ f }: { f: FundApi }) {
-  const { t, fiat, crypto, rate } = useI18n();
-  const base = f.state.base;
-  return (
-    <dl className="summary">
-      <div><dt>{t('Rate')}</dt><dd className="num mono">{rate(f.asset, RATE[base][f.asset], base)}</dd></div>
-      <div><dt>{t('Network fee')}</dt><dd className="num">{crypto(f.fee, f.asset)}</dd></div>
-      <div><dt>{t('Lands on card')}</dt><dd className="num">{crypto(f.credit, f.asset)}</dd></div>
-      <div className="strong"><dt>{t('Card balance after')}</dt><dd className="num">{fiat(f.after, base)}</dd></div>
-    </dl>
-  );
-}
-
-export function FundSheet({ onClose }: { onClose: () => void }) {
-  const { t, crypto, fiat } = useI18n();
-  const f = useFund();
-  return (
-    <Sheet title={t('Fund card')} onClose={onClose}>
-      {f.phase === 'done' ? (
-        <div className="done">
-          <span className="done-mark"><Icon name="check" size={28} /></span>
-          <p className="done-amt num">+{crypto(f.credited, f.asset)}</p>
-          <p className="muted">{t('Card balance')} · {fiat(available(f.state), f.state.base)}</p>
-          <button className="btn primary wide" onClick={onClose}>{t('Done')}</button>
+    <Sheet title={t('Fund')} onClose={onClose}>
+      <div className={'fund-flow ph-' + phase}>
+        <div className="ff-row"><span className="label">{t('Current balance')}</span><b className="num">{crypto(done ? result.before : cur, asset)}</b></div>
+        <div className="ff-rail" aria-hidden="true"><i /></div>
+        <div className="ff-row"><span className="label">{t('Added')}</span><b className="num ff-add">{crypto(done ? result.credited : credit, asset, { sign: true })}</b></div>
+        <div className="ff-row big">
+          <span className="label">{t('Updated balance')}</span>
+          <b className="num">{crypto(done ? rolled : cur + credit, asset)}</b>
+          <span className="muted small num">≈ {fiat(valueOf(done ? cur : cur + credit, asset, state.base), state.base)}</span>
         </div>
+      </div>
+      {done ? (
+        <>
+          <button className="btn primary wide" onClick={onClose}>{t('Done')}</button>
+          <button className="btn ghost wide" onClick={() => setPhase('form')}>{t('Fund again')}</button>
+        </>
       ) : (
         <>
-          <FundFields f={f} />
-          <FundSummary f={f} />
-          <button className="btn primary wide" disabled={!f.valid || f.phase === 'busy'} onClick={f.submit}>{f.phase === 'busy' ? t('Confirming on network…') : t('Fund card')}</button>
+          <div className="field">
+            <span className="label">{t('Asset')}</span>
+            <Seg value={asset} options={ASSETS} onChange={setAsset} label={t('Asset')} render={(a) => <><AssetMark asset={a} size={20} />{a}</>} />
+          </div>
+          <div className="field">
+            <span className="label">{t('Network')}</span>
+            <Seg value={network} options={NETWORKS[asset]} onChange={setNetwork} label={t('Network')} render={(nw) => <>{nw}<small>{trimFee(crypto(networkFee(asset, nw), asset))}</small></>} />
+          </div>
+          <label className="field">
+            <span className="label">{t('Amount')}</span>
+            <span className={'amount-input' + (over ? ' bad' : '')}>
+              <input className="num" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} aria-describedby="fund-have" />
+              <span>{asset}</span>
+            </span>
+            <span id="fund-have" className={'small ' + (over ? 'neg' : 'muted')}>
+              {over ? t('More than your wallet holds') : `${t('External wallet')}: ${crypto(have, asset)}`}
+            </span>
+          </label>
+          <div className="quick">
+            {(asset === 'ETH' ? [0.02, 0.05, 0.1] : [100, 250, 500]).map((v) => (
+              <button key={v} className={String(v) === amount ? 'on' : ''} onClick={() => setAmount(String(v))}>{v}</button>
+            ))}
+            <button onClick={() => setAmount(String(have))}>{t('Max')}</button>
+          </div>
+          <button className="btn primary wide" disabled={!valid || phase === 'busy'} onClick={submit}>
+            {phase === 'busy' ? t('Confirming on network…') : t('Fund {amount}', { amount: crypto(n, asset) })}
+          </button>
           <p className="fine muted">{t('Simulated. No real crypto moves.')}</p>
         </>
       )}
@@ -197,15 +144,74 @@ export function FundSheet({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ---------- exchange ----------
+
+export function Exchange({ onDone, initialFrom = 'USDT' }: { onDone?: () => void; initialFrom?: Wallet }) {
+  const { t, crypto, pair, fiat } = useI18n();
+  const { state, exchange, toast } = useApp();
+  const [from, setFrom] = useState<Wallet>(initialFrom);
+  const [to, setTo] = useState<Wallet>(initialFrom === 'EUR' ? 'USDT' : 'EUR');
+  const [amount, setAmount] = useState('100');
+  const [busy, setBusy] = useState(false);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const n = parseFloat(amount.replace(',', '.')) || 0;
+  const out = exchangeOut(from, to, n);
+  const have = state.balances[from];
+  const short = n > have + 1e-9;
+  const ok = n > 0 && !short && out > 0;
+  const pickFrom = (w: Wallet) => { setFrom(w); if (w === to) setTo(EXCHANGEABLE.find((x) => x !== w)!); };
+  const pickTo = (w: Wallet) => { setTo(w); if (w === from) setFrom(EXCHANGEABLE.find((x) => x !== w)!); };
+  const flip = () => { setFrom(to); setTo(from); if (out) setAmount(String(out)); };
+  const go = () => {
+    if (!ok) return;
+    setBusy(true);
+    timer.current = window.setTimeout(() => {
+      exchange(from, to, n);
+      setBusy(false);
+      toast(`${t('Exchanged')} ${crypto(n, from)} → ${crypto(out, to)}`, 'ok');
+      onDone?.();
+    }, 700);
+  };
+  return (
+    <div className="xch">
+      <div className="xch-side">
+        <div className="xch-top"><span className="label">{t('You send')}</span>
+          <Seg className="mini" value={from} options={EXCHANGEABLE} onChange={pickFrom} label={t('You send')} /></div>
+        <span className={'amount-input' + (short ? ' bad' : '')}>
+          <input className="num" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^0-9.,]/g, ''))} aria-label={t('You send')} />
+          <span>{from}</span>
+        </span>
+        <span className="small muted num xch-have">{t('Available')}: <Private>{crypto(have, from)}</Private>
+          <button className="text-btn sm" onClick={() => setAmount(String(have))}>{t('Max')}</button></span>
+      </div>
+      <button className="xch-flip" onClick={flip} aria-label={t('Swap direction')}><Icon name="exchange" size={18} /></button>
+      <div className="xch-side">
+        <div className="xch-top"><span className="label">{t('You receive')}</span>
+          <Seg className="mini" value={to} options={EXCHANGEABLE} onChange={pickTo} label={t('You receive')} /></div>
+        <p className="xch-out num">{crypto(out, to)}</p>
+        <span className="small muted num">≈ {fiat(valueOf(out, to, state.base), state.base)}</span>
+      </div>
+      <dl className="summary xch-sum">
+        <div><dt>{t('Rate')}</dt><dd className="num mono">{pair(from, to, exchangeRate(from, to))}</dd></div>
+        <div><dt>{t('Fee')}</dt><dd className="num">{fiat(0, state.base)}</dd></div>
+      </dl>
+      <button className="btn primary wide" disabled={!ok || busy} onClick={go}>
+        {busy ? t('Exchanging…') : short ? t('Not enough {asset}', { asset: from }) : t('Exchange')}
+      </button>
+    </div>
+  );
+}
+
 // ---------- smart spend ----------
 
-export function SmartSpend({ amounts }: { amounts?: number[] }) {
+export function SmartSpend({ compact }: { compact?: boolean }) {
   const { t, fiat, crypto, rate } = useI18n();
   const { state, dispatch } = useApp();
   const base = state.base;
-  const presets = amounts ?? (base === 'EUR' ? [8.4, 89, 250] : [8.9, 95, 270]);
-  const [amt, setAmt] = useState(presets[1]);
-  useEffect(() => { if (!presets.includes(amt)) setAmt(presets[1]); }, [base]); // eslint-disable-line react-hooks/exhaustive-deps
+  const presets = [MERCHANTS.coffee.price[base], MERCHANTS.nike.price[base], { EUR: 250, USD: 270, GBP: 215 }[base]];
+  const [amt, setAmt] = useState(presets[0]);
+  useEffect(() => { setAmt(presets[0]); }, [base]); // eslint-disable-line react-hooks/exhaustive-deps
   const order = priority(state);
   const pick = pickSource(state, amt);
   const move = (a: Asset, d: -1 | 1) => {
@@ -216,7 +222,7 @@ export function SmartSpend({ amounts }: { amounts?: number[] }) {
     dispatch({ type: 'order', order: o });
   };
   return (
-    <div className="smart">
+    <div className={'smart' + (compact ? ' compact' : '')}>
       <div className="smart-rules" role="radiogroup" aria-label={t('Smart Spend rule')}>
         {(['stable', 'best', 'manual'] as Rule[]).map((r, i) => (
           <button key={r} role="radio" aria-checked={state.rule === r} className={'rule' + (state.rule === r ? ' on' : '')} onClick={() => dispatch({ type: 'rule', rule: r })}>
@@ -226,46 +232,49 @@ export function SmartSpend({ amounts }: { amounts?: number[] }) {
           </button>
         ))}
       </div>
-
-      <div className="smart-stack">
-        <div className="smart-head">
-          <span className="label">{t('Balances, in the order NEXUS tries them')}</span>
-        </div>
-        <ol className="balances">
-          {order.map((a, i) => {
-            const v = valueOf(state.balances[a], a, base);
-            const used = pick?.asset === a;
-            const covers = state.balances[a] + 1e-9 >= debitFor(amt, a, base);
-            return (
-              <li key={a} className={(used ? 'used' : '') + (covers ? '' : ' short')}>
-                <span className="b-pos mono">{i + 1}</span>
-                <AssetMark asset={a} size={34} />
-                <span className="b-main">
-                  <b className="num">{crypto(state.balances[a], a)}</b>
-                  <span className="muted small num">{fiat(v, base)} · {rate(a, RATE[base][a], base)}</span>
-                </span>
-                {state.rule === 'manual' ? (
-                  <span className="b-move">
-                    <button className="icon-btn sm" onClick={() => move(a, -1)} disabled={i === 0} aria-label={t('Move {asset} up', { asset: a })}><Icon name="up" size={16} /></button>
-                    <button className="icon-btn sm" onClick={() => move(a, 1)} disabled={i === order.length - 1} aria-label={t('Move {asset} down', { asset: a })}><Icon name="down" size={16} /></button>
-                  </span>
-                ) : <span className="b-tag small">{used ? t('Used') : covers ? '' : t('Too low')}</span>}
-              </li>
-            );
-          })}
-        </ol>
-        <div className="smart-preview">
-          <span className="label">{t('Next payment')}</span>
-          <div className="seg mini" role="radiogroup" aria-label={t('Next payment')}>
-            {presets.map((p) => <button key={p} role="radio" aria-checked={amt === p} className={amt === p ? 'on' : ''} onClick={() => setAmt(p)}>{fiat(p, base)}</button>)}
+      {!compact && (
+        <div className="smart-stack">
+          <div className="smart-head">
+            <span className="label">{t('Order TapShift tries')}</span>
+            {state.rule === 'stable' && (
+              <Seg className="mini" value={state.primary} options={['USDT', 'USDC'] as Stable[]} onChange={(p) => dispatch({ type: 'primary', primary: p })} label={t('First stablecoin')} />
+            )}
           </div>
-          <p className="smart-result" aria-live="polite">
-            {pick
-              ? <><span className="num">{t('Uses')} <b>{crypto(pick.crypto, pick.asset)}</b></span><span className="muted"> · {t(RULE[state.rule].title)}</span></>
-              : <span className="neg">{t('No single balance covers {amount}', { amount: fiat(amt, base) })}</span>}
-          </p>
+          <ol className="balances">
+            {order.map((a, i) => {
+              const used = pick?.asset === a;
+              const covers = state.balances[a] + 1e-9 >= debitFor(amt, a, base);
+              return (
+                <li key={a} className={(used ? 'used' : '') + (covers ? '' : ' short')}>
+                  <span className="b-pos mono">{i + 1}</span>
+                  <AssetMark asset={a} size={32} />
+                  <span className="b-main">
+                    <b className="num"><Private>{crypto(state.balances[a], a)}</Private></b>
+                    <span className="muted small num mono">{rate(a, rateOf(a, base), base)}</span>
+                  </span>
+                  {state.rule === 'manual' ? (
+                    <span className="b-move">
+                      <button className="icon-btn sm" onClick={() => move(a, -1)} disabled={i === 0} aria-label={t('Move {asset} up', { asset: a })}><Icon name="up" size={16} /></button>
+                      <button className="icon-btn sm" onClick={() => move(a, 1)} disabled={i === order.length - 1} aria-label={t('Move {asset} down', { asset: a })}><Icon name="down" size={16} /></button>
+                    </span>
+                  ) : <span className="b-tag small">{used ? t('Used') : covers ? '' : t('Too low')}</span>}
+                </li>
+              );
+            })}
+          </ol>
+          <div className="smart-preview">
+            <span className="label">{t('Next payment')}</span>
+            <div className="seg mini" role="radiogroup" aria-label={t('Next payment')}>
+              {presets.map((p) => <button key={p} role="radio" aria-checked={amt === p} className={amt === p ? 'on' : ''} onClick={() => setAmt(p)}>{fiat(p, base)}</button>)}
+            </div>
+            <p className="smart-result" aria-live="polite">
+              {pick
+                ? <><span className="num">{t('Uses')} <b>{crypto(pick.crypto, pick.asset)}</b></span><span className="muted"> · {t(RULE[state.rule].title)}</span></>
+                : <span className="neg">{t('No single balance covers {amount}', { amount: fiat(amt, base) })}</span>}
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -277,19 +286,19 @@ export const CONTROL: Record<ControlKey, { title: string; desc: string; icon: st
   frozen: { title: 'Freeze card', desc: 'Every payment declines until you unfreeze.', icon: 'snow' },
   online: { title: 'Online payments', desc: 'Shops, apps and subscriptions.', icon: 'online' },
   contactless: { title: 'Contactless', desc: 'Tap to pay with your phone.', icon: 'contactless' },
-  atm: { title: 'ATM withdrawals', desc: 'Cash, with a flat €1.50 fee.', icon: 'atm' },
+  atm: { title: 'ATM withdrawals', desc: 'Cash, with a flat {fee} fee.', icon: 'atm' },
   intl: { title: 'International payments', desc: 'Merchants outside your home region.', icon: 'globe' },
 };
 
 export function ControlRow({ k }: { k: ControlKey }) {
-  const { t, symbol } = useI18n();
+  const { t, fiat } = useI18n();
   const { state, dispatch } = useApp();
   const on = state.controls[k];
   const c = CONTROL[k];
   return (
     <div className={'ctl k-' + k + (on ? ' is-on' : '')}>
       <span className="ctl-ico"><Icon name={c.icon} size={18} /></span>
-      <span className="ctl-txt"><b>{t(c.title)}</b><span>{t(c.desc).replace('€', symbol(state.base))}</span></span>
+      <span className="ctl-txt"><b>{t(c.title)}</b><span>{t(c.desc, { fee: fiat({ EUR: 1.5, USD: 1.5, GBP: 1.25 }[state.base], state.base) })}</span></span>
       <Switch on={on} onChange={(v) => dispatch({ type: 'control', key: k, on: v })} label={t(c.title)} tone={k === 'frozen' ? 'ice' : undefined} />
     </div>
   );
@@ -318,13 +327,13 @@ export function LimitControl() {
 
 // ---------- purchase simulator ----------
 
-export function Receipt({ auth, compact }: { auth: Auth; compact?: boolean }) {
+export function Receipt({ auth }: { auth: Auth }) {
   const { t, fiat, crypto, rate } = useI18n();
   const { state } = useApp();
   const base = state.base;
   const m = auth.merchant;
   return (
-    <div className={'receipt ' + (auth.ok ? 'ok' : 'no') + (compact ? ' compact' : '')} role="status">
+    <div className={'receipt ' + (auth.ok ? 'ok' : 'no')}>
       <div className="r-head">
         <MerchantMark id={m.id} size={34} />
         <span className="r-m"><b>{t(m.name)}</b><span className="muted small">{t(CHANNEL[m.channel])} · {t(m.city)}</span></span>
@@ -335,8 +344,9 @@ export function Receipt({ auth, compact }: { auth: Auth; compact?: boolean }) {
         <dl className="r-lines">
           <div><dt>{t('Paid from')}</dt><dd className="num">{crypto(-auth.crypto, auth.asset)}</dd></div>
           <div><dt>{t('Rate')}</dt><dd className="num mono">{rate(auth.asset, auth.rate!, base)}</dd></div>
-          <div><dt>{t('NEXUS fee')}</dt><dd className="num">{fiat(auth.fee, base)}</dd></div>
-          <div><dt>{t('Available now')}</dt><dd className="num">{fiat(available(state), base)}</dd></div>
+          <div><dt>{t('Fee')}</dt><dd className="num">{fiat(auth.fee, base)}</dd></div>
+          <div><dt>{t('Smart Spend')}</dt><dd>{t(RULE[state.rule].title)}</dd></div>
+          <div><dt>{t('Card balance after')}</dt><dd className="num"><Private>{fiat(cardAvailable(state), base)}</Private></dd></div>
         </dl>
       ) : (
         <p className="r-reason">{t(REASON[auth.reason!])}</p>
@@ -345,14 +355,19 @@ export function Receipt({ auth, compact }: { auth: Auth; compact?: boolean }) {
   );
 }
 
-export function Simulator({ onResult, grid = 'wide' }: { onResult?: (a: Auth) => void; grid?: 'wide' | 'list' }) {
+export function Simulator() {
   const { t, fiat } = useI18n();
-  const { state, pay } = useApp();
+  const { state, pay, toast } = useApp();
   const [last, setLast] = useState<{ auth: Auth; n: number } | null>(null);
   const n = useRef(0);
-  const run = (id: MerchantId) => { const auth = pay(id); n.current++; setLast({ auth, n: n.current }); onResult?.(auth); };
+  const run = (id: MerchantId) => {
+    const auth = pay(id);
+    n.current++;
+    setLast({ auth, n: n.current });
+    toast(auth.ok ? `${t(auth.merchant.name)} · ${fiat(auth.fiat, state.base)} · ${t('Paid')}` : `${t(auth.merchant.name)} · ${t(REASON[auth.reason!])}`, auth.ok ? 'ok' : 'no', false);
+  };
   return (
-    <div className={'sim ' + grid}>
+    <div className="sim">
       <ul className="sim-list">
         {SIMULATOR.map((id) => {
           const m = MERCHANTS[id];
@@ -376,62 +391,94 @@ export function Simulator({ onResult, grid = 'wide' }: { onResult?: (a: Auth) =>
 
 // ---------- transactions ----------
 
+type Fmt = ReturnType<typeof useI18n>;
+function txAmount(tx: Tx, f: Pick<Fmt, 'fiat' | 'crypto'>) {
+  if (tx.kind === 'deposit') return f.fiat(tx.fiat, tx.base, { sign: true });
+  if (tx.kind === 'exchange') return f.crypto(tx.toAmount ?? 0, tx.toAsset!, { sign: true });
+  if (tx.status === 'refunded') return f.fiat(tx.fiat, tx.base, { sign: true });
+  return f.fiat(-tx.fiat - tx.fee, tx.base);
+}
+
 export function TxRow({ tx, onOpen }: { tx: Tx; onOpen: (id: string) => void }) {
-  const { t, fiat, crypto, time, day } = useI18n();
-  const dep = tx.kind === 'deposit';
+  const f = useI18n();
+  const { t, crypto, time, day } = f;
+  const src = tx.kind === 'deposit' && tx.asset && tx.crypto ? `${tx.network ?? t('Demo funds')} · ${crypto(tx.crypto, tx.asset)}`
+    : tx.kind === 'exchange' && tx.asset ? crypto(-(tx.crypto ?? 0), tx.asset)
+    : tx.asset && tx.crypto ? crypto(tx.status === 'refunded' ? tx.crypto : -tx.crypto, tx.asset, { sign: tx.status === 'refunded' })
+    : tx.reason ? t(REASON[tx.reason]) : '—';
   return (
-    <li className={'tx st-' + tx.status}>
-      <button onClick={() => onOpen(tx.id)} aria-label={`${merchantName(t, tx)}, ${fiat(tx.fiat, tx.base)}, ${t(tx.status.toUpperCase())}`}>
+    <li className={'tx st-' + tx.status + ' k-' + tx.kind}>
+      <button onClick={() => onOpen(tx.id)}>
         <MerchantMark id={tx.merchant} size={40} />
         <span className="tx-m">
-          <b>{merchantName(t, tx)}{dep && tx.asset ? ` · ${tx.asset}` : ''}</b>
-          <span className="muted small">{t(CATEGORY[categoryOf(tx)])}<span className="tx-ch"> · {dep ? tx.network : t(CHANNEL[tx.channel])}</span></span>
+          <b>{txTitle(t, tx)}</b>
+          <span className="muted small">{t(CATEGORY[categoryOf(tx)])} · {day(tx.at)}, {time(tx.at)}</span>
         </span>
-        <span className="tx-src num small">
-          {tx.asset && tx.crypto ? crypto(dep || tx.status === 'refunded' ? tx.crypto : -tx.crypto, tx.asset, { sign: dep }) : tx.reason ? t(REASON[tx.reason]) : '—'}
-        </span>
-        <span className="tx-amt num">{dep ? fiat(tx.fiat, tx.base, { sign: true }) : fiat(-tx.fiat, tx.base)}</span>
+        <span className="tx-src num small">{src}</span>
+        <span className="tx-amt num">{txAmount(tx, f)}</span>
         <span className="tx-st"><StatusPill status={tx.status} /></span>
-        <span className="tx-time num small muted"><span className="tx-day">{day(tx.at)}, </span>{time(tx.at)}</span>
       </button>
     </li>
   );
 }
 
-export type TxFilter = 'all' | 'paid' | 'declined' | 'refunded' | 'deposits';
+export type TxFilter = 'all' | 'paid' | 'declined' | 'refunded' | 'moves';
 export function filterTx(tx: Tx[], f: TxFilter) {
   if (f === 'all') return tx;
-  if (f === 'deposits') return tx.filter((x) => x.kind === 'deposit');
+  if (f === 'moves') return tx.filter((x) => x.kind !== 'purchase');
   return tx.filter((x) => x.status === f);
 }
 
 export function TxFilters({ value, onChange }: { value: TxFilter; onChange: (f: TxFilter) => void }) {
   const { t } = useI18n();
-  const L: Record<TxFilter, string> = { all: 'All', paid: 'Paid', declined: 'Declined', refunded: 'Refunded', deposits: 'Top ups' };
-  return <Seg className="filters" value={value} options={['all', 'paid', 'declined', 'refunded', 'deposits'] as TxFilter[]} onChange={onChange} label={t('Filter')} render={(f) => t(L[f])} />;
+  const L: Record<TxFilter, string> = { all: 'All', paid: 'Paid', declined: 'Declined', refunded: 'Refunded', moves: 'Top ups & exchanges' };
+  return <Seg className="filters" value={value} options={['all', 'paid', 'declined', 'refunded', 'moves'] as TxFilter[]} onChange={onChange} label={t('Filter')} render={(x) => t(L[x])} />;
 }
 
+const REFUND_STEPS = ['Refund requested', 'Processing', 'Refunded'];
+
 export function TxDetailSheet({ id, onClose }: { id: string; onClose: () => void }) {
-  const { t, fiat, crypto, rate, dateTime } = useI18n();
-  const { state, refund } = useApp();
+  const f = useI18n();
+  const { t, fiat, crypto, rate, pair, dateTime } = f;
+  const { state, refund, toast } = useApp();
   const tx = state.tx.find((x) => x.id === id);
-  const [phase, setPhase] = useState<'idle' | 'busy'>('idle');
-  const timer = useRef(0);
-  useEffect(() => () => clearTimeout(timer.current), []);
+  const [step, setStep] = useState(-1);
+  const timers = useRef<number[]>([]);
+  useEffect(() => () => timers.current.forEach(clearTimeout), []);
   if (!tx) return null;
-  const dep = tx.kind === 'deposit';
-  const status = phase === 'busy' ? 'processing' : tx.status;
-  const doRefund = () => { setPhase('busy'); timer.current = window.setTimeout(() => { refund(tx.id); setPhase('idle'); }, 1500); };
-  const rows: [string, string, string?][] = [
-    [t('Date'), dateTime(tx.at)],
-    [t('Payment type'), dep ? `${t('Deposit')} · ${tx.network}` : t(CHANNEL[tx.channel])],
-  ];
-  if (tx.asset && tx.crypto) rows.push([dep ? t('Credited') : t('Crypto debit'), crypto(dep ? tx.crypto : -tx.crypto, tx.asset, { sign: dep }), 'num']);
-  if (tx.asset && tx.rate) rows.push([t('Rate'), rate(tx.asset, tx.rate, tx.base), 'num mono']);
-  if (!dep) rows.push([t('NEXUS fee'), fiat(tx.fee, tx.base), 'num']);
-  if (tx.rule) rows.push([t('Smart Spend'), t(RULE[tx.rule].title)]);
-  if (tx.reason) rows.push([t('Reason'), t(REASON[tx.reason])]);
-  if (tx.refundedAt) rows.push([t('Refunded'), dateTime(tx.refundedAt)]);
+  const busy = step >= 0 && step < 2;
+  const status = busy ? 'processing' : tx.status;
+  const doRefund = () => {
+    setStep(0);
+    timers.current.push(window.setTimeout(() => setStep(1), 750));
+    timers.current.push(window.setTimeout(() => {
+      refund(tx.id);
+      setStep(2);
+      if (tx.asset && tx.crypto) toast(t('{amount} returned to your {asset} balance.', { amount: crypto(tx.crypto, tx.asset), asset: tx.asset }), 'ok');
+    }, 1950));
+  };
+  const rows: [string, string, string?][] = [[t('Date'), dateTime(tx.at)], [t('Status'), t(busy ? 'Processing' : STATUS_WORD[tx.status])]];
+  if (tx.kind === 'purchase') {
+    rows.push([t('Payment type'), t(CHANNEL[tx.channel])]);
+    if (tx.asset && tx.crypto) {
+      rows.push([t('Source asset'), tx.asset]);
+      rows.push([t('Crypto debit'), crypto(-tx.crypto, tx.asset), 'num']);
+      rows.push([t('Rate'), rate(tx.asset, tx.rate!, tx.base), 'num mono']);
+    }
+    rows.push([t('Fee'), fiat(tx.fee, tx.base), 'num']);
+    if (tx.rule) rows.push([t('Smart Spend'), t(RULE[tx.rule].title)]);
+    if (tx.reason) rows.push([t('Reason'), t(REASON[tx.reason])]);
+    if (tx.refundedAt) rows.push([t('Refunded'), dateTime(tx.refundedAt)]);
+  } else if (tx.kind === 'deposit' && tx.asset && tx.crypto) {
+    rows.push([t('Payment type'), `${t('Deposit')} · ${tx.network ?? t('Demo funds')}`]);
+    rows.push([t('Credited'), crypto(tx.crypto, tx.asset, { sign: true }), 'num']);
+    rows.push([t('Rate'), rate(tx.asset, tx.rate!, tx.base), 'num mono']);
+  } else if (tx.kind === 'exchange' && tx.asset && tx.toAsset) {
+    rows.push([t('You send'), crypto(-(tx.crypto ?? 0), tx.asset), 'num']);
+    rows.push([t('You receive'), crypto(tx.toAmount ?? 0, tx.toAsset, { sign: true }), 'num']);
+    rows.push([t('Rate'), pair(tx.asset, tx.toAsset, tx.rate!), 'num mono']);
+    rows.push([t('Fee'), fiat(0, tx.base), 'num']);
+  }
   rows.push([t('Card'), `•••• ${tx.last4}`, 'num mono']);
   rows.push([t('Transaction ID'), tx.id, 'mono']);
   return (
@@ -440,21 +487,25 @@ export function TxDetailSheet({ id, onClose }: { id: string; onClose: () => void
         <div className="txd-head">
           <MerchantMark id={tx.merchant} size={52} />
           <div>
-            <b>{merchantName(t, tx)}</b>
-            <span className="muted small">{t(CATEGORY[categoryOf(tx)])}{tx.merchant !== 'deposit' ? ' · ' + t(MERCHANTS[tx.merchant].city) : ''}</span>
+            <b>{txTitle(t, tx)}</b>
+            <span className="muted small">{t(CATEGORY[categoryOf(tx)])}{tx.kind === 'purchase' ? ' · ' + t(MERCHANTS[tx.merchant as MerchantId].city) : ''}</span>
           </div>
         </div>
-        <p className="txd-amt num">{dep ? fiat(tx.fiat, tx.base, { sign: true }) : fiat(-tx.fiat, tx.base)}</p>
+        <p className="txd-amt num">{txAmount(tx, f)}</p>
         <StatusPill status={status} />
+        {step >= 0 && (
+          <ol className="refund-steps" aria-label={t('Refund')}>
+            {REFUND_STEPS.map((s, i) => <li key={s} className={i < step || step === 2 ? 'done' : i === step ? 'now' : ''}><i />{t(s)}</li>)}
+          </ol>
+        )}
         <dl className="txd-rows">
           {rows.map(([k, v, cls]) => <div key={k}><dt>{k}</dt><dd className={cls}>{v}</dd></div>)}
         </dl>
-        {(refundable(tx) || phase === 'busy') && (
-          <button className="btn ghost wide" onClick={doRefund} disabled={phase === 'busy'}>
-            <Icon name="refund" size={18} />{phase === 'busy' ? t('Processing refund…') : t('Simulate refund')}
+        {(refundable(tx) || busy) && (
+          <button className="btn ghost wide" onClick={doRefund} disabled={busy}>
+            <Icon name="refund" size={18} />{busy ? t('Processing refund…') : t('Simulate refund')}
           </button>
         )}
-        {tx.status === 'refunded' && tx.asset && tx.crypto && <p className="fine ok-text">{t('{amount} returned to your {asset} balance.', { amount: crypto(tx.crypto, tx.asset), asset: tx.asset })}</p>}
       </div>
     </Sheet>
   );
@@ -464,41 +515,89 @@ export function TxDetailSheet({ id, onClose }: { id: string; onClose: () => void
 
 export function CardDetails() {
   const { t } = useI18n();
-  const { state } = useApp();
-  const [reveal, setReveal] = useState(false);
-  const [cvv, setCvv] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const num = state.card.number;
-  const shown = reveal ? num.replace(/(\d{4})(?=\d)/g, '$1 ') : `•••• •••• •••• ${num.slice(-4)}`;
-  const copy = () => { navigator.clipboard?.writeText(num).catch(() => {}); setCopied(true); setTimeout(() => setCopied(false), 1400); };
+  const { state, toast } = useApp();
+  const card = state.card!;
+  const [reveal, setReveal] = useState({ num: false, cvv: false });
+  const [scan, setScan] = useState<'num' | 'cvv' | null>(null);
+  const timer = useRef(0);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const num = card.number;
+  const exp = expiryOf(card.issuedAt);
+  // with biometric lock on, revealing asks for a (simulated) scan first
+  const toggle = (k: 'num' | 'cvv') => {
+    if (reveal[k] || !state.settings.biometric) { setReveal((r) => ({ ...r, [k]: !r[k] })); return; }
+    setScan(k);
+    timer.current = window.setTimeout(() => { setScan(null); setReveal((r) => ({ ...r, [k]: true })); }, 1100);
+  };
+  const copy = (text: string, what: string) => { navigator.clipboard?.writeText(text).catch(() => {}); toast(t('{what} copied', { what }), 'info'); };
+  const revealBtn = (k: 'num' | 'cvv') => (
+    <button className="text-btn" onClick={() => toggle(k)} aria-pressed={reveal[k]} disabled={scan !== null}>
+      {scan === k ? <><Icon name="finger" size={16} />{t('Confirming…')}</> : <><Icon name={reveal[k] ? 'eyeoff' : 'eye'} size={15} />{reveal[k] ? t('Hide') : t('Reveal')}</>}
+    </button>
+  );
   return (
     <div className="det">
       <div className="det-row wide">
         <span className="label">{t('Card number')}</span>
-        <span className="det-val num mono">{shown}</span>
-        <span className="det-actions">
-          <button className="text-btn" onClick={() => setReveal(!reveal)} aria-pressed={reveal}>{reveal ? t('Hide') : t('Show')}</button>
-          <button className="text-btn" onClick={copy}>{copied ? t('Copied') : t('Copy')}</button>
-        </span>
+        <span className={'det-val num mono' + (reveal.num ? ' shown' : '')}>{reveal.num ? num.replace(/(\d{4})(?=\d)/g, '$1 ') : `•••• •••• •••• ${num.slice(-4)}`}</span>
+        <span className="det-actions">{revealBtn('num')}<button className="text-btn" onClick={() => copy(num, t('Card number'))}><Icon name="copy" size={15} />{t('Copy')}</button></span>
       </div>
-      <div className="det-row"><span className="label">{t('Expiry')}</span><span className="det-val num mono">{expiryOf(state.card.issuedAt)}</span></div>
-      <div className="det-row"><span className="label">CVV</span><span className="det-val num mono">{cvv ? cvvOf(num) : '•••'}</span>
-        <span className="det-actions"><button className="text-btn" onClick={() => setCvv(!cvv)} aria-pressed={cvv}>{cvv ? t('Hide') : t('Show')}</button></span></div>
-      <div className="det-row"><span className="label">{t('Name on card')}</span><span className="det-val">{state.card.name}</span></div>
-      <div className="det-row"><span className="label">{t('Card type')}</span><span className="det-val">{t(KIND[state.card.kind])} · {t(FINISH[state.card.finish])}</span></div>
+      <div className="det-row">
+        <span className="label">{t('Expiry')}</span>
+        <span className="det-val num mono">{exp}</span>
+        <span className="det-actions"><button className="text-btn" onClick={() => copy(exp, t('Expiry'))}><Icon name="copy" size={15} />{t('Copy')}</button></span>
+      </div>
+      <div className="det-row">
+        <span className="label">CVV</span>
+        <span className={'det-val num mono' + (reveal.cvv ? ' shown' : '')}>{reveal.cvv ? cvvOf(num) : '•••'}</span>
+        <span className="det-actions">{revealBtn('cvv')}</span>
+      </div>
+      <div className="det-row wide"><span className="label">{t('Cardholder')}</span><span className="det-val">{card.name}</span></div>
     </div>
   );
 }
 
-/** Big balance figure: fraction digits set smaller, rolls on change. */
-export function Balance({ className = '' }: { className?: string }) {
-  const { locale } = useI18n();
+// ---------- analytics ----------
+
+export function Analytics() {
+  const { t, fiat, day } = useI18n();
   const { state } = useApp();
-  const v = useCount(available(state));
-  const parts = new Intl.NumberFormat(locale, { style: 'currency', currency: state.base }).formatToParts(v);
+  const a = analytics(state);
+  const max = Math.max(1, ...a.days.map((d) => d.value));
+  const [hover, setHover] = useState<number | null>(null);
+  const shown = hover ?? a.days.length - 1;
+  const tick = Math.max(50, Math.ceil(max / 50) * 50);
   return (
-    <span className={'balance num ' + className}>
-      {parts.map((p, i) => (p.type === 'fraction' || p.type === 'decimal' ? <small key={i}>{p.value}</small> : p.type === 'currency' ? <span key={i} className="cur">{p.value}</span> : <span key={i}>{p.value}</span>))}
-    </span>
+    <section className="analytics" aria-label={t('Spending')}>
+      <dl className="kpis">
+        <div><dt>{t('Spent · 30 days')}</dt><dd className="num">{fiat(a.spent, state.base)}</dd></div>
+        <div><dt>{t('Top category')}</dt><dd>{a.top ? t(CATEGORY[a.top.category]) : '—'}{a.top && <small className="num">{fiat(a.top.value, state.base)}</small>}</dd></div>
+        <div><dt>{t('Converted from crypto')}</dt><dd className="num">{fiat(a.converted, state.base)}</dd></div>
+        <div><dt>{t('Payments')}</dt><dd className="num">{a.count}</dd></div>
+      </dl>
+      <div className="chart">
+        <div className="chart-head">
+          <span className="label">{t('Daily spend · 30 days')}</span>
+          <span className="chart-read num" aria-live="polite">{day(a.days[shown].start)} · <b>{fiat(a.days[shown].value, state.base)}</b></span>
+        </div>
+        {a.count === 0 ? <p className="chart-empty muted">{t('No spending yet. Try a test payment.')}</p> : (
+          <div className="bars" onPointerLeave={() => setHover(null)}>
+            <span className="bars-tick num" aria-hidden="true">{fiat(tick, state.base, { whole: true })}</span>
+            {a.days.map((d, i) => (
+              <button
+                key={d.start}
+                className={'bar' + (i === shown ? ' on' : '')}
+                onPointerEnter={() => setHover(i)}
+                onFocus={() => setHover(i)}
+                onBlur={() => setHover(null)}
+                aria-label={`${day(d.start)}: ${fiat(d.value, state.base)}`}
+              >
+                <i style={{ height: `${(d.value / tick) * 100}%` }} />
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

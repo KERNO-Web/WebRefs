@@ -1,18 +1,20 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { forwardRef, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
 import { useI18n } from '../i18n';
 import { usePulse, reducedMotion, type PulseKind } from '../ctx';
-import { expiryOf, type CardKind, type Finish } from '../store';
+import { expiryOf, type CardState, type Finish } from '../store';
 import { Icon, Mark } from './Icon';
 
 export interface CardProps {
   finish: Finish;
   number: string;
   name: string;
-  kind: CardKind;
   issuedAt: number;
   frozen?: boolean;
+  /** not issued yet: number and expiry masked, edge light low */
   draft?: boolean;
   reveal?: boolean;
+  /** 0..1 while the visitor holds to activate: light travels the edge, the chip wakes */
+  charge?: number;
   /** resting pose, degrees: the card is photographed slightly turned */
   pose?: [number, number];
   /** stage decoration: halo + floor light */
@@ -24,15 +26,24 @@ export interface CardProps {
   className?: string;
 }
 
+export const cardProps = (c: CardState) => ({ finish: c.finish, number: c.number, name: c.name, issuedAt: c.issuedAt });
+
 const fine = () => window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
+// Hairline scratches: fixed, so every render of the card is the same object.
+const SCRATCHES = 'M38 52l61-6M210 31l44 9M300 140l-55 21M120 190l87-4M352 64l21 30M70 120l9-37M260 88l63-2M150 92l31 18M330 196l-52-8M20 168l46-11';
+
 /**
- * The NEXUS card. Pointer drives tilt, sheen and edge light through CSS vars.
+ * The TapShift card. Pointer drives tilt, sheen and edge light through CSS vars.
  * The loop only runs while the pointer moves and the card is on screen.
  */
-export function NexusCard({ finish, number, name, kind, issuedAt, frozen, draft, reveal, pose = [0, 0], stage = true, live = true, ping, className = '' }: CardProps) {
+export const TapCard = forwardRef<HTMLDivElement, CardProps>(function TapCard(
+  { finish, number, name, issuedAt, frozen, draft, reveal, charge = 0, pose = [0, 0], stage = true, live = true, ping, className = '' },
+  ref,
+) {
   const { t } = useI18n();
   const wrap = useRef<HTMLDivElement>(null);
+  useImperativeHandle(ref, () => wrap.current!);
   const chipId = useId().replace(/:/g, '');
   const p = usePulse();
   const [flash, setFlash] = useState<{ kind: PulseKind; n: number } | null>(null);
@@ -92,27 +103,28 @@ export function NexusCard({ finish, number, name, kind, issuedAt, frozen, draft,
 
   const groups = draft ? ['••••', '••••', '••••', '••••'] : reveal ? number.match(/.{4}/g)! : ['••••', '••••', '••••', number.slice(-4)];
   const state = draft ? 'draft' : frozen ? 'frozen' : 'active';
-  const label = `NEXUS ${t('virtual card')}${draft ? '' : ` ${t('ending')} ${number.slice(-4)}`}, ${draft ? t('Draft') : frozen ? t('Frozen') : t('Active')}`;
+  const label = `TapShift ${t('virtual card')}${draft ? '' : ` ${t('ending')} ${number.slice(-4)}`}, ${draft ? t('Not issued') : frozen ? t('Frozen') : t('Active')}`;
 
   return (
     <div
       ref={wrap}
-      className={`card-stage f-${finish} s-${state}${flash ? ' pulse-' + flash.kind : ''}${stage ? ' staged' : ''} ${className}`}
-      style={{ ['--prx' as string]: pose[0] + 'deg', ['--pry' as string]: pose[1] + 'deg' }}
+      className={`card-stage f-${finish} s-${state}${flash ? ' pulse-' + flash.kind : ''}${stage ? ' staged' : ''}${charge > 0 ? ' charging' : ''} ${className}`}
+      style={{ ['--prx' as string]: pose[0] + 'deg', ['--pry' as string]: pose[1] + 'deg', ['--charge' as string]: charge.toFixed(3) }}
     >
       {stage && <div className="card-halo" aria-hidden="true" />}
       <div className="card-tilt">
         <div className="vcard" role="img" aria-label={label}>
           <div className="vcard-metal" />
+          <svg className="vcard-scratch" viewBox="0 0 400 252" preserveAspectRatio="none" aria-hidden="true"><path d={SCRATCHES} /></svg>
           <div className="vcard-aniso" />
           <div className="vcard-sheen" />
           <div className="vcard-frost" />
           <div className="vcard-face">
             <div className="vcard-top">
-              <span className="vcard-brand"><Mark size={18} /><span>NEXUS</span></span>
+              <span className="vcard-brand"><Mark size={18} /><span>TAPSHIFT</span></span>
               <span className="vcard-state">
                 {frozen && !draft && <Icon name="snow" size={13} stroke={2} />}
-                {draft ? t('DRAFT') : frozen ? t('FROZEN') : t('VIRTUAL')}
+                {draft ? t('NOT ISSUED') : frozen ? t('FROZEN') : 'VIRTUAL'}
               </span>
             </div>
             <div className="vcard-mid">
@@ -135,16 +147,17 @@ export function NexusCard({ finish, number, name, kind, issuedAt, frozen, draft,
               {groups.map((g, i) => <span key={i} style={{ ['--i' as string]: i }}>{g}</span>)}
             </div>
             <div className="vcard-bottom">
-              <span className="vcard-name">{name || 'NEXUS MEMBER'}</span>
-              <span className="vcard-exp"><small>{t('VALID')}</small>{draft ? '••/••' : expiryOf(issuedAt)}</span>
-              <span className="vcard-kind">{kind === 'single' ? t('SINGLE-USE') : t('DEBIT')}</span>
+              <span className={'vcard-name' + (name ? '' : ' empty')}>{name || t('YOUR NAME')}</span>
+              <span className="vcard-exp"><small>VALID</small>{draft ? '••/••' : expiryOf(issuedAt)}</span>
+              <span className="vcard-kind">DEBIT</span>
             </div>
           </div>
           <div className="vcard-edge" />
           <div className="vcard-sweep" />
+          <div className="vcard-charge" />
         </div>
       </div>
       {stage && <div className="card-floor" aria-hidden="true" />}
     </div>
   );
-}
+});

@@ -3,21 +3,23 @@ import { useEffect, useReducer } from 'react';
 // ---------- model ----------
 
 export type Asset = 'USDT' | 'USDC' | 'ETH';
-export type Base = 'EUR' | 'USD';
+/** Everything the account holds: three crypto assets the card spends from, plus a EUR pocket. */
+export type Wallet = Asset | 'EUR';
+export type Stable = 'USDT' | 'USDC';
+export type Base = 'EUR' | 'USD' | 'GBP';
 export type Finish = 'graphite' | 'titanium' | 'ice';
-export type CardKind = 'multi' | 'single';
 export type Rule = 'stable' | 'best' | 'manual';
 export type Channel = 'contactless' | 'online' | 'atm';
 export type Network = 'TRON' | 'Ethereum' | 'Solana';
-export type Category = 'coffee' | 'subscription' | 'shopping' | 'cash' | 'transport' | 'travel' | 'groceries' | 'deposit';
+export type Category = 'coffee' | 'subscription' | 'shopping' | 'cash' | 'transport' | 'travel' | 'groceries' | 'deposit' | 'exchange';
 export type Reason = 'frozen' | 'online' | 'contactless' | 'atm' | 'intl' | 'limit' | 'funds';
-export type MerchantId = 'coffee' | 'spotify' | 'nike' | 'atm' | 'taxi' | 'tokyo' | 'halle' | 'market';
+export type MerchantId = 'coffee' | 'spotify' | 'nike' | 'atm' | 'taxi' | 'tokyo' | 'books' | 'market';
+export type Path = 'demo' | 'fresh';
 
 export interface CardState {
   number: string;
   finish: Finish;
   name: string;
-  kind: CardKind;
   issuedAt: number;
 }
 
@@ -27,21 +29,29 @@ export interface Controls {
   contactless: boolean;
   atm: boolean;
   intl: boolean;
-  limit: number; // in base currency
+  limit: number; // monthly, in base currency
+}
+
+export interface Settings {
+  privacy: boolean;
+  notifications: boolean;
+  biometric: boolean;
 }
 
 export interface Tx {
   id: string;
-  kind: 'purchase' | 'deposit';
-  merchant: MerchantId | 'deposit';
-  channel: Channel | 'deposit';
-  status: 'paid' | 'declined' | 'refunded' | 'received';
-  fiat: number; // purchase amount in `base`
+  kind: 'purchase' | 'deposit' | 'exchange';
+  merchant: MerchantId | 'deposit' | 'exchange';
+  channel: Channel | 'deposit' | 'exchange';
+  status: 'paid' | 'declined' | 'refunded' | 'received' | 'done';
+  fiat: number; // amount in `base`
   base: Base;
   fee: number;
-  asset?: Asset;
-  crypto?: number; // debit (purchase) or credit (deposit), in asset units
-  rate?: number; // 1 asset = rate base
+  asset?: Wallet; // source: debited asset, deposited asset, or exchanged-from asset
+  crypto?: number; // amount of `asset`
+  rate?: number; // 1 asset = rate base (purchases, deposits) or 1 asset = rate toAsset (exchange)
+  toAsset?: Wallet;
+  toAmount?: number;
   rule?: Rule;
   reason?: Reason;
   network?: Network;
@@ -51,14 +61,17 @@ export interface Tx {
 }
 
 export interface State {
-  v: 2;
+  v: 3;
+  path: Path | null;
   base: Base;
-  card: CardState;
-  balances: Record<Asset, number>;
+  card: CardState | null;
+  balances: Record<Wallet, number>;
   wallet: Record<Asset, number>; // the simulated outside wallet funding comes from
   controls: Controls;
   rule: Rule;
+  primary: Stable;
   order: Asset[];
+  settings: Settings;
   tx: Tx[];
   seq: number;
 }
@@ -66,17 +79,18 @@ export interface State {
 // ---------- reference data (simulated, fixed) ----------
 
 export const ASSETS: Asset[] = ['USDT', 'USDC', 'ETH'];
-export const STABLE: Asset[] = ['USDT', 'USDC'];
-export const DECIMALS: Record<Asset, number> = { USDT: 2, USDC: 2, ETH: 6 };
+export const WALLETS: Wallet[] = ['USDT', 'USDC', 'ETH', 'EUR'];
+export const EXCHANGEABLE: Wallet[] = ['USDT', 'USDC', 'EUR'];
+export const BASES: Base[] = ['EUR', 'USD', 'GBP'];
+export const DECIMALS: Record<Wallet, number> = { USDT: 2, USDC: 2, ETH: 6, EUR: 2 };
 
-/** 1 asset = RATE[base][asset] units of base. The spread is already inside the rate. */
-export const RATE: Record<Base, Record<Asset, number>> = {
-  EUR: { USDT: 0.921, USDC: 0.922, ETH: 2236.4 },
-  USD: { USDT: 0.9993, USDC: 1.0004, ETH: 2426.5 },
-};
+/** 1 EUR in each base currency. */
+export const FX: Record<Base, number> = { EUR: 1, USD: 1.0851, GBP: 0.8566 };
+/** 1 unit in EUR, spread already inside. */
+const EUR_RATE: Record<Wallet, number> = { USDT: 0.921, USDC: 0.922, ETH: 2236.4, EUR: 1 };
+export const rateOf = (w: Wallet, base: Base) => Math.round(EUR_RATE[w] * FX[base] * 1e6) / 1e6;
 /** Conversion spread vs mid-market. Best available picks the lowest one that covers the payment. */
 export const SPREAD: Record<Asset, number> = { USDT: 0.0012, USDC: 0.0008, ETH: 0.0045 };
-export const EUR_USD = 1.0851;
 
 export const NETWORKS: Record<Asset, Network[]> = { USDT: ['TRON', 'Ethereum', 'Solana'], USDC: ['Solana', 'Ethereum'], ETH: ['Ethereum'] };
 /** Network fee, in units of the asset sent. */
@@ -85,8 +99,7 @@ export const NETWORK_FEE: Record<Asset, Partial<Record<Network, number>>> = {
   USDC: { Solana: 0.05, Ethereum: 2.4 },
   ETH: { Ethereum: 0.0008 },
 };
-
-export const ATM_FEE = 1.5;
+export const ATM_FEE: Record<Base, number> = { EUR: 1.5, USD: 1.5, GBP: 1.25 };
 
 export interface Merchant {
   id: MerchantId;
@@ -100,45 +113,53 @@ export interface Merchant {
 }
 
 export const MERCHANTS: Record<MerchantId, Merchant> = {
-  coffee: { id: 'coffee', name: 'Coffee Corner', category: 'coffee', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 8.4, USD: 8.9 }, mark: 'Cc' },
-  spotify: { id: 'spotify', name: 'Spotify', category: 'subscription', channel: 'online', city: 'Stockholm', intl: false, price: { EUR: 14.99, USD: 15.99 }, mark: 'Sp' },
-  nike: { id: 'nike', name: 'Nike', category: 'shopping', channel: 'online', city: 'Amsterdam', intl: false, price: { EUR: 89, USD: 95 }, mark: 'Nk' },
-  atm: { id: 'atm', name: 'ATM', category: 'cash', channel: 'atm', city: 'Berlin', intl: false, price: { EUR: 100, USD: 100 }, mark: 'At' },
-  taxi: { id: 'taxi', name: 'Taxi', category: 'transport', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 21.5, USD: 23 }, mark: 'Tx' },
-  tokyo: { id: 'tokyo', name: 'Tokyo Metro', category: 'travel', channel: 'contactless', city: 'Tokyo', intl: true, price: { EUR: 12.6, USD: 13.4 }, mark: 'Tm' },
-  halle: { id: 'halle', name: 'Halle Store', category: 'shopping', channel: 'online', city: 'Berlin', intl: false, price: { EUR: 54.9, USD: 59 }, mark: 'Hs' },
-  market: { id: 'market', name: 'Corner Market', category: 'groceries', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 36.2, USD: 39 }, mark: 'Cm' },
+  coffee: { id: 'coffee', name: 'Coffee Corner', category: 'coffee', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 8.4, USD: 8.9, GBP: 7.2 }, mark: 'Cc' },
+  spotify: { id: 'spotify', name: 'Spotify', category: 'subscription', channel: 'online', city: 'Stockholm', intl: false, price: { EUR: 14.99, USD: 15.99, GBP: 11.99 }, mark: 'Sp' },
+  nike: { id: 'nike', name: 'Nike', category: 'shopping', channel: 'online', city: 'Amsterdam', intl: false, price: { EUR: 89, USD: 95, GBP: 76 }, mark: 'Nk' },
+  taxi: { id: 'taxi', name: 'Taxi', category: 'transport', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 21.5, USD: 23, GBP: 18.5 }, mark: 'Tx' },
+  atm: { id: 'atm', name: 'ATM', category: 'cash', channel: 'atm', city: 'Berlin', intl: false, price: { EUR: 100, USD: 100, GBP: 100 }, mark: 'At' },
+  tokyo: { id: 'tokyo', name: 'Tokyo Metro', category: 'travel', channel: 'contactless', city: 'Tokyo', intl: true, price: { EUR: 12.6, USD: 13.4, GBP: 10.8 }, mark: 'Tm' },
+  books: { id: 'books', name: 'Paper & Co', category: 'shopping', channel: 'online', city: 'Berlin', intl: false, price: { EUR: 32, USD: 35, GBP: 27.5 }, mark: 'Pc' },
+  market: { id: 'market', name: 'Corner Market', category: 'groceries', channel: 'contactless', city: 'Berlin', intl: false, price: { EUR: 36.2, USD: 39, GBP: 31 }, mark: 'Cm' },
 };
-export const SIMULATOR: MerchantId[] = ['coffee', 'spotify', 'nike', 'atm', 'taxi', 'tokyo'];
+export const SIMULATOR: MerchantId[] = ['coffee', 'spotify', 'nike', 'taxi', 'atm', 'tokyo'];
 
 // ---------- math ----------
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
-const roundTo = (n: number, d: number) => Math.round(n * 10 ** d) / 10 ** d;
-/** Card issuers round the debit up to the smallest unit. */
+export const roundTo = (n: number, d: number) => Math.round(n * 10 ** d) / 10 ** d;
 const ceilTo = (n: number, d: number) => Math.ceil(n * 10 ** d - 1e-7) / 10 ** d;
+const floorTo = (n: number, d: number) => Math.floor(n * 10 ** d + 1e-7) / 10 ** d;
 
-export const debitFor = (fiat: number, asset: Asset, base: Base) => ceilTo(fiat / RATE[base][asset], DECIMALS[asset]);
-export const valueOf = (amount: number, asset: Asset, base: Base) => amount * RATE[base][asset];
-export const available = (s: Pick<State, 'balances' | 'base'>) => Math.floor(ASSETS.reduce((a, k) => a + valueOf(s.balances[k], k, s.base), 0) * 100) / 100;
-export const toBase = (n: number, from: Base, to: Base) => (from === to ? n : from === 'EUR' ? n * EUR_USD : n / EUR_USD);
+/** Card issuers round the debit up to the smallest unit. */
+export const debitFor = (fiat: number, asset: Asset, base: Base) => ceilTo(fiat / rateOf(asset, base), DECIMALS[asset]);
+export const valueOf = (amount: number, w: Wallet, base: Base) => amount * rateOf(w, base);
+export const toBase = (n: number, from: Base, to: Base) => (from === to ? n : (n / FX[from]) * FX[to]);
 export const networkFee = (asset: Asset, network: Network) => NETWORK_FEE[asset][network] ?? 0;
 
+const sumValue = (s: Pick<State, 'balances' | 'base'>, ws: Wallet[]) => Math.floor(ws.reduce((a, k) => a + valueOf(s.balances[k], k, s.base), 0) * 100 + 1e-6) / 100;
+/** What the card can spend: the crypto balances. */
+export const cardAvailable = (s: Pick<State, 'balances' | 'base'>) => sumValue(s, ASSETS);
+/** Everything held, EUR pocket included. */
+export const totalBalance = (s: Pick<State, 'balances' | 'base'>) => sumValue(s, WALLETS);
+
+export const exchangeRate = (from: Wallet, to: Wallet) => EUR_RATE[from] / EUR_RATE[to];
+export const exchangeOut = (from: Wallet, to: Wallet, amount: number) => floorTo(amount * exchangeRate(from, to), DECIMALS[to]);
+
+const monthStart = (now: number) => { const d = new Date(now); return new Date(d.getFullYear(), d.getMonth(), 1).getTime(); };
 export function spentThisMonth(s: State, now = Date.now()) {
-  const d = new Date(now);
-  const start = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+  const start = monthStart(now);
   return r2(s.tx.filter((t) => t.kind === 'purchase' && t.status === 'paid' && t.at >= start).reduce((a, t) => a + toBase(t.fiat, t.base, s.base), 0));
 }
 
-/** The order NEXUS tries balances in for the active Smart Spend rule. */
-export function priority(s: Pick<State, 'rule' | 'order' | 'balances' | 'base'>): Asset[] {
+/** The order TapShift tries balances in for the active Smart Spend rule. */
+export function priority(s: Pick<State, 'rule' | 'order' | 'primary'>): Asset[] {
   if (s.rule === 'manual') return s.order;
   if (s.rule === 'best') return [...ASSETS].sort((a, b) => SPREAD[a] - SPREAD[b]);
-  const stables = [...STABLE].sort((a, b) => valueOf(s.balances[b], b, s.base) - valueOf(s.balances[a], a, s.base));
-  return [...stables, 'ETH'];
+  return [s.primary, s.primary === 'USDT' ? 'USDC' : 'USDT', 'ETH'];
 }
 
-export function pickSource(s: Pick<State, 'rule' | 'order' | 'balances' | 'base'>, total: number): { asset: Asset; crypto: number } | null {
+export function pickSource(s: Pick<State, 'rule' | 'order' | 'primary' | 'balances' | 'base'>, total: number): { asset: Asset; crypto: number } | null {
   for (const asset of priority(s)) {
     const crypto = debitFor(total, asset, s.base);
     if (s.balances[asset] + 1e-9 >= crypto) return { asset, crypto };
@@ -161,7 +182,7 @@ export interface Auth {
 export function authorize(s: State, id: MerchantId): Auth {
   const m = MERCHANTS[id];
   const fiat = m.price[s.base];
-  const fee = m.channel === 'atm' ? ATM_FEE : 0;
+  const fee = m.channel === 'atm' ? ATM_FEE[s.base] : 0;
   const c = s.controls;
   const base = { merchant: m, fiat, fee };
   if (c.frozen) return { ...base, ok: false, reason: 'frozen' };
@@ -172,7 +193,30 @@ export function authorize(s: State, id: MerchantId): Auth {
   if (spentThisMonth(s) + fiat > c.limit + 1e-9) return { ...base, ok: false, reason: 'limit' };
   const src = pickSource(s, fiat + fee);
   if (!src) return { ...base, ok: false, reason: 'funds' };
-  return { ...base, ok: true, asset: src.asset, crypto: src.crypto, rate: RATE[s.base][src.asset] };
+  return { ...base, ok: true, asset: src.asset, crypto: src.crypto, rate: rateOf(src.asset, s.base) };
+}
+
+// ---------- analytics ----------
+
+const D = 86400000;
+export function analytics(s: State, now = Date.now()) {
+  const from = now - 30 * D;
+  const paid = s.tx.filter((t) => t.kind === 'purchase' && t.status === 'paid' && t.at >= from);
+  const spent = r2(paid.reduce((a, t) => a + toBase(t.fiat, t.base, s.base), 0));
+  const byCat = new Map<Category, number>();
+  paid.forEach((t) => { const c = MERCHANTS[t.merchant as MerchantId].category; byCat.set(c, (byCat.get(c) ?? 0) + toBase(t.fiat, t.base, s.base)); });
+  const top = [...byCat.entries()].sort((a, b) => b[1] - a[1])[0];
+  const converted = r2(
+    paid.reduce((a, t) => a + toBase(t.fiat + t.fee, t.base, s.base), 0) +
+    s.tx.filter((t) => t.kind === 'exchange' && t.at >= from && t.asset !== 'EUR').reduce((a, t) => a + toBase(t.fiat, t.base, s.base), 0),
+  );
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const days = Array.from({ length: 30 }, (_, i) => {
+    const start = today.getTime() - (29 - i) * D;
+    const v = paid.filter((t) => t.at >= start && t.at < start + D).reduce((a, t) => a + toBase(t.fiat, t.base, s.base), 0);
+    return { start, value: r2(v) };
+  });
+  return { spent, top: top ? { category: top[0], value: r2(top[1]) } : null, converted, count: paid.length, days };
 }
 
 // ---------- deterministic ids & card numbers ----------
@@ -185,7 +229,7 @@ const hash = (n: number) => {
   return h >>> 0;
 };
 const hex = (n: number) => hash(n).toString(16).toUpperCase().padStart(8, '0');
-export const txId = (seq: number) => `NX-${hex(seq).slice(0, 4)}-${hex(seq + 7919).slice(0, 4)}`;
+export const txId = (seq: number) => `TS-${hex(seq).slice(0, 4)}-${hex(seq + 7919).slice(0, 4)}`;
 
 const luhn = (digits: string) => {
   let sum = 0;
@@ -201,64 +245,102 @@ export function cardNumber(seq: number) {
   return body + luhn(body);
 }
 export const last4 = (n: string) => n.slice(-4);
-export const cvvOf = (n: string) => String(hash(+n.slice(-6)) % 900 + 100);
+export const cvvOf = (n: string) => String((hash(+n.slice(-6)) % 900) + 100);
 export function expiryOf(issuedAt: number) {
   const d = new Date(issuedAt);
   return `${String(d.getMonth() + 1).padStart(2, '0')}/${String((d.getFullYear() + 3) % 100).padStart(2, '0')}`;
 }
+/** The card shown before anyone has one: the landing showcase. */
+export const SHOWCASE_CARD: CardState = { number: '4319872051634821', finish: 'graphite', name: 'ALEX MORGAN', issuedAt: Date.UTC(2026, 8, 1) };
 
-// ---------- seed ----------
+// ---------- seeds ----------
 
 const H = 3600000;
-const D = 24 * H;
+const EXTERNAL_WALLET: Record<Asset, number> = { USDT: 1250, USDC: 640, ETH: 0.25 };
+const CONTROLS: Controls = { frozen: false, online: true, contactless: true, atm: false, intl: true, limit: 1500 };
+const SETTINGS: Settings = { privacy: false, notifications: true, biometric: false };
+const ZERO: Record<Wallet, number> = { USDT: 0, USDC: 0, ETH: 0, EUR: 0 };
 
-function seed(): State {
-  const now = Date.now();
-  const number = '4319872051634821';
-  const l4 = last4(number);
-  const buy = (n: number, merchant: MerchantId, at: number, asset: Asset, extra: Partial<Tx> = {}): Tx => {
-    const m = MERCHANTS[merchant];
-    const fee = m.channel === 'atm' ? ATM_FEE : 0;
-    return { id: txId(n), kind: 'purchase', merchant, channel: m.channel, status: 'paid', fiat: m.price.EUR, base: 'EUR', fee, asset, crypto: debitFor(m.price.EUR + fee, asset, 'EUR'), rate: RATE.EUR[asset], rule: 'stable', last4: l4, at: now - at, ...extra };
-  };
-  const dep = (n: number, asset: Asset, network: Network, sent: number, at: number): Tx => ({
-    id: txId(n), kind: 'deposit', merchant: 'deposit', channel: 'deposit', status: 'received', fiat: r2(valueOf(sent - networkFee(asset, network), asset, 'EUR')), base: 'EUR', fee: 0,
-    asset, crypto: roundTo(sent - networkFee(asset, network), DECIMALS[asset]), rate: RATE.EUR[asset], network, last4: l4, at: now - at,
-  });
+function initial(settings: Settings = SETTINGS): State {
   return {
-    v: 2,
-    base: 'EUR',
-    card: { number, finish: 'graphite', name: 'ALEX MORGAN', kind: 'multi', issuedAt: now - 41 * D },
-    balances: { USDT: 420, USDC: 180, ETH: 0.03 },
-    wallet: { USDT: 1250, USDC: 640, ETH: 0.25 },
-    controls: { frozen: false, online: true, contactless: true, atm: false, intl: true, limit: 1500 },
-    rule: 'stable',
-    order: ['USDT', 'USDC', 'ETH'],
-    tx: [
-      buy(9, 'spotify', 2 * H, 'USDT'),
-      buy(8, 'coffee', 5.3 * H, 'USDT'),
-      buy(7, 'taxi', D + 3 * H, 'USDT'),
-      { ...buy(6, 'atm', D + 6 * H, 'USDT'), status: 'declined', reason: 'atm', asset: undefined, crypto: undefined, rate: undefined, rule: undefined },
-      buy(5, 'nike', 2 * D + 2 * H, 'USDC', { rule: 'best' }),
-      buy(4, 'halle', 3 * D + 4 * H, 'USDT', { status: 'refunded', refundedAt: now - 2 * D }),
-      buy(3, 'market', 4 * D + 1 * H, 'USDT'),
-      dep(2, 'USDT', 'TRON', 250, 6 * D),
-      dep(1, 'USDC', 'Solana', 180, 12 * D),
-    ],
-    seq: 10,
+    v: 3, path: null, base: 'EUR', card: null, balances: { ...ZERO }, wallet: { ...EXTERNAL_WALLET }, controls: { ...CONTROLS },
+    rule: 'stable', primary: 'USDT', order: ['USDT', 'USDC', 'ETH'], settings, tx: [], seq: 1,
   };
 }
 
+/** A lived-in account: three weeks of everyday spending, one decline, one refund, an exchange, two top ups. */
+function demoAccount(settings: Settings): State {
+  const now = Date.now();
+  const card = { ...SHOWCASE_CARD, issuedAt: now - 41 * 24 * H };
+  const l4 = last4(card.number);
+  let n = 100;
+  const buy = (merchant: MerchantId, ago: number, asset: Asset, extra: Partial<Tx> = {}): Tx => {
+    const m = MERCHANTS[merchant];
+    const fee = m.channel === 'atm' ? ATM_FEE.EUR : 0;
+    return { id: txId(n--), kind: 'purchase', merchant, channel: m.channel, status: 'paid', fiat: m.price.EUR, base: 'EUR', fee, asset, crypto: debitFor(m.price.EUR + fee, asset, 'EUR'), rate: rateOf(asset, 'EUR'), rule: 'stable', last4: l4, at: now - ago, ...extra };
+  };
+  const dep = (asset: Asset, network: Network, sent: number, ago: number): Tx => {
+    const credit = roundTo(sent - networkFee(asset, network), DECIMALS[asset]);
+    return { id: txId(n--), kind: 'deposit', merchant: 'deposit', channel: 'deposit', status: 'received', fiat: r2(valueOf(credit, asset, 'EUR')), base: 'EUR', fee: 0, asset, crypto: credit, rate: rateOf(asset, 'EUR'), network, last4: l4, at: now - ago };
+  };
+  const xch = (from: Wallet, to: Wallet, amount: number, ago: number): Tx => ({
+    id: txId(n--), kind: 'exchange', merchant: 'exchange', channel: 'exchange', status: 'done', fiat: r2(valueOf(amount, from, 'EUR')), base: 'EUR', fee: 0,
+    asset: from, crypto: amount, toAsset: to, toAmount: exchangeOut(from, to, amount), rate: exchangeRate(from, to), last4: l4, at: now - ago,
+  });
+  const declined = (merchant: MerchantId, ago: number, reason: Reason): Tx => ({ ...buy(merchant, ago, 'USDT'), status: 'declined', reason, asset: undefined, crypto: undefined, rate: undefined, rule: undefined });
+  const tx: Tx[] = [
+    buy('coffee', 2.2 * H, 'USDT'),
+    buy('spotify', 7 * H, 'USDT'),
+    declined('atm', 26 * H, 'atm'),
+    buy('nike', 29 * H, 'USDC', { rule: 'best' }),
+    buy('books', 46 * H, 'USDT', { status: 'refunded', refundedAt: now - 20 * H }),
+    buy('taxi', 51 * H, 'USDT'),
+    xch('USDT', 'EUR', 100, 74 * H),
+    buy('market', 98 * H, 'USDT'),
+    buy('tokyo', 6 * 24 * H, 'USDT'),
+    buy('coffee', 7 * 24 * H + 3 * H, 'USDT'),
+    buy('market', 9 * 24 * H, 'USDC'),
+    buy('taxi', 11 * 24 * H, 'USDT'),
+    buy('coffee', 13 * 24 * H, 'USDT'),
+    dep('USDT', 'TRON', 250, 15 * 24 * H),
+    buy('nike', 17 * 24 * H, 'USDT'),
+    buy('market', 19 * 24 * H, 'USDT'),
+    buy('coffee', 21 * 24 * H, 'USDT'),
+    buy('taxi', 23 * 24 * H, 'USDC'),
+    dep('USDC', 'Solana', 180, 26 * 24 * H),
+    buy('spotify', 30 * 24 * H + 7 * H, 'USDT'),
+  ];
+  return {
+    ...initial(settings),
+    path: 'demo',
+    card,
+    // 386.82 + 165.96 + 67.09 + 664.75 = €1,284.62
+    balances: { USDT: 420, USDC: 180, ETH: 0.03, EUR: 664.75 },
+    tx,
+    seq: 200,
+  };
+}
+
+export const DEMO_FUNDS: Record<Stable, number> = { USDT: 500, USDC: 200 };
+
 // ---------- reducer ----------
 
+export interface ActivateInput { finish: Finish; name: string; base: Base; primary: Stable; rule: Rule }
+
 export type Action =
-  | { type: 'issue'; finish: Finish; name: string; kind: CardKind; base: Base }
+  | { type: 'enter-demo' }
+  | { type: 'start-fresh' }
+  | { type: 'activate'; o: ActivateInput }
+  | { type: 'finish'; finish: Finish }
   | { type: 'fund'; asset: Asset; network: Network; amount: number }
+  | { type: 'exchange'; from: Wallet; to: Wallet; amount: number }
   | { type: 'control'; key: 'frozen' | 'online' | 'contactless' | 'atm' | 'intl'; on: boolean }
   | { type: 'limit'; value: number }
   | { type: 'rule'; rule: Rule }
   | { type: 'order'; order: Asset[] }
+  | { type: 'primary'; primary: Stable }
   | { type: 'base'; base: Base }
+  | { type: 'setting'; key: keyof Settings; on: boolean }
   | { type: 'pay'; auth: Auth }
   | { type: 'refund'; id: string }
   | { type: 'reset' };
@@ -267,35 +349,65 @@ const roundLimit = (n: number) => Math.max(250, Math.min(5000, Math.round(n / 50
 
 function reducer(s: State, a: Action): State {
   switch (a.type) {
-    case 'issue': {
+    case 'enter-demo': return demoAccount(s.settings);
+    case 'start-fresh': return { ...initial(s.settings), path: 'fresh' };
+    case 'activate': {
+      const now = Date.now();
       const seq = s.seq + 1;
-      const next: State = {
+      const card: CardState = { number: cardNumber(seq), finish: a.o.finish, name: a.o.name.trim().toUpperCase() || 'TAPSHIFT MEMBER', issuedAt: now };
+      const other: Stable = a.o.primary === 'USDT' ? 'USDC' : 'USDT';
+      const gift = (asset: Stable, i: number): Tx => ({
+        id: txId(seq + 1 + i), kind: 'deposit', merchant: 'deposit', channel: 'deposit', status: 'received', fiat: r2(valueOf(DEMO_FUNDS[asset], asset, a.o.base)), base: a.o.base, fee: 0,
+        asset, crypto: DEMO_FUNDS[asset], rate: rateOf(asset, a.o.base), last4: last4(card.number), at: now - i,
+      });
+      return {
         ...s,
-        seq,
-        card: { number: cardNumber(seq), finish: a.finish, name: a.name.trim().toUpperCase() || 'NEXUS MEMBER', kind: a.kind, issuedAt: Date.now() },
-        controls: { ...s.controls, frozen: false },
+        path: 'fresh',
+        card,
+        base: a.o.base,
+        rule: a.o.rule,
+        primary: a.o.primary,
+        order: [a.o.primary, other, 'ETH'],
+        balances: { ...ZERO, USDT: DEMO_FUNDS.USDT, USDC: DEMO_FUNDS.USDC },
+        controls: { ...CONTROLS, limit: roundLimit(toBase(CONTROLS.limit, 'EUR', a.o.base)) },
+        tx: [gift('USDC', 0), gift('USDT', 1)],
+        seq: seq + 3,
       };
-      return a.base === s.base ? next : reducer(next, { type: 'base', base: a.base });
     }
+    case 'finish': return s.card ? { ...s, card: { ...s.card, finish: a.finish } } : s;
     case 'fund': {
       const fee = networkFee(a.asset, a.network);
       const credit = roundTo(Math.max(0, a.amount - fee), DECIMALS[a.asset]);
-      if (a.amount <= 0 || a.amount > s.wallet[a.asset] + 1e-9 || credit <= 0) return s;
+      if (!s.card || a.amount <= 0 || a.amount > s.wallet[a.asset] + 1e-9 || credit <= 0) return s;
       const seq = s.seq + 1;
       return {
         ...s,
         seq,
         wallet: { ...s.wallet, [a.asset]: roundTo(s.wallet[a.asset] - a.amount, DECIMALS[a.asset]) },
         balances: { ...s.balances, [a.asset]: roundTo(s.balances[a.asset] + credit, DECIMALS[a.asset]) },
-        tx: [{ id: txId(seq), kind: 'deposit', merchant: 'deposit', channel: 'deposit', status: 'received', fiat: r2(valueOf(credit, a.asset, s.base)), base: s.base, fee: 0, asset: a.asset, crypto: credit, rate: RATE[s.base][a.asset], network: a.network, last4: last4(s.card.number), at: Date.now() }, ...s.tx],
+        tx: [{ id: txId(seq), kind: 'deposit', merchant: 'deposit', channel: 'deposit', status: 'received', fiat: r2(valueOf(credit, a.asset, s.base)), base: s.base, fee: 0, asset: a.asset, crypto: credit, rate: rateOf(a.asset, s.base), network: a.network, last4: last4(s.card.number), at: Date.now() }, ...s.tx],
+      };
+    }
+    case 'exchange': {
+      const out = exchangeOut(a.from, a.to, a.amount);
+      if (!s.card || a.from === a.to || a.amount <= 0 || a.amount > s.balances[a.from] + 1e-9 || out <= 0) return s;
+      const seq = s.seq + 1;
+      return {
+        ...s,
+        seq,
+        balances: { ...s.balances, [a.from]: roundTo(s.balances[a.from] - a.amount, DECIMALS[a.from]), [a.to]: roundTo(s.balances[a.to] + out, DECIMALS[a.to]) },
+        tx: [{ id: txId(seq), kind: 'exchange', merchant: 'exchange', channel: 'exchange', status: 'done', fiat: r2(valueOf(a.amount, a.from, s.base)), base: s.base, fee: 0, asset: a.from, crypto: a.amount, toAsset: a.to, toAmount: out, rate: exchangeRate(a.from, a.to), last4: last4(s.card.number), at: Date.now() }, ...s.tx],
       };
     }
     case 'control': return { ...s, controls: { ...s.controls, [a.key]: a.on } };
     case 'limit': return { ...s, controls: { ...s.controls, limit: roundLimit(a.value) } };
     case 'rule': return { ...s, rule: a.rule };
     case 'order': return { ...s, order: a.order };
+    case 'primary': return { ...s, primary: a.primary };
     case 'base': return a.base === s.base ? s : { ...s, base: a.base, controls: { ...s.controls, limit: roundLimit(toBase(s.controls.limit, s.base, a.base)) } };
+    case 'setting': return { ...s, settings: { ...s.settings, [a.key]: a.on } };
     case 'pay': {
+      if (!s.card) return s;
       const { auth } = a;
       const seq = s.seq + 1;
       const tx: Tx = {
@@ -303,12 +415,8 @@ function reducer(s: State, a: Action): State {
         fiat: auth.fiat, base: s.base, fee: auth.fee, asset: auth.asset, crypto: auth.crypto, rate: auth.rate, rule: auth.ok ? s.rule : undefined, reason: auth.reason,
         last4: last4(s.card.number), at: Date.now(),
       };
-      let next: State = { ...s, seq, tx: [tx, ...s.tx] };
-      if (auth.ok && auth.asset && auth.crypto) {
-        next.balances = { ...s.balances, [auth.asset]: roundTo(s.balances[auth.asset] - auth.crypto, DECIMALS[auth.asset]) };
-        // a single-use card burns its number after one approved purchase
-        if (s.card.kind === 'single') next = { ...next, seq: seq + 1, card: { ...s.card, number: cardNumber(seq + 1), issuedAt: Date.now() } };
-      }
+      const next: State = { ...s, seq, tx: [tx, ...s.tx] };
+      if (auth.ok && auth.asset && auth.crypto) next.balances = { ...s.balances, [auth.asset]: roundTo(s.balances[auth.asset] - auth.crypto, DECIMALS[auth.asset]) };
       return next;
     }
     case 'refund': {
@@ -320,7 +428,7 @@ function reducer(s: State, a: Action): State {
         tx: s.tx.map((x) => (x.id === a.id ? { ...x, status: 'refunded', refundedAt: Date.now() } : x)),
       };
     }
-    case 'reset': return seed();
+    case 'reset': return initial();
   }
 }
 
@@ -328,13 +436,14 @@ export const refundable = (t: Tx) => t.kind === 'purchase' && t.status === 'paid
 
 // ---------- persistence ----------
 
-const KEY = 'nexus-card-v2';
+const KEY = 'tapshift-v1';
 const load = (): State => {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) || 'null');
-    if (raw && raw.v === 2 && raw.card && raw.balances && Array.isArray(raw.tx)) return raw;
+    if (raw && raw.v === 3 && raw.balances && raw.settings && Array.isArray(raw.tx)) return raw;
   } catch { /* ignore */ }
-  return seed();
+  try { localStorage.removeItem('nexus-card-v2'); } catch { /* ignore */ }
+  return initial();
 };
 
 export function useStore() {

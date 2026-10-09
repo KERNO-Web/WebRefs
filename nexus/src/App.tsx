@@ -1,45 +1,73 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppProvider } from './ctx';
+import { AppProvider, useApp } from './ctx';
 import { Landing } from './site/Landing';
-import { DemoApp, TABS, type Tab } from './demo/DemoApp';
+import { Entry } from './site/Entry';
+import { Onboarding } from './onboarding/Onboarding';
+import { AppShell, TABS, type Tab } from './app/AppShell';
+import { Toasts } from './components/ui';
 
-/** #demo, #demo/card, #demo/activity, #demo/settings open the app; anything else is the site. */
-const parse = (): Tab | null => {
-  const m = location.hash.match(/^#demo(?:\/(\w+))?$/);
-  if (!m) return null;
-  return TABS.includes(m[1] as Tab) ? (m[1] as Tab) : 'home';
+/**
+ * Routes live in the hash so GitHub Pages serves one file:
+ *   ''            landing (+ entry dialog)
+ *   #start        onboarding for a fresh account
+ *   #app, #app/x  the product (old #demo links land here too)
+ */
+type Route = { name: 'site' } | { name: 'start' } | { name: 'app'; tab: Tab };
+const parse = (): Route => {
+  const h = location.hash.replace(/^#\/?/, '');
+  if (h === 'start') return { name: 'start' };
+  const m = h.match(/^(?:app|demo)(?:\/(\w+))?$/);
+  if (m) return { name: 'app', tab: TABS.includes(m[1] as Tab) ? (m[1] as Tab) : 'home' };
+  return { name: 'site' };
 };
 
 export default function App() {
-  const [tab, setTabState] = useState<Tab | null>(parse);
+  return (
+    <AppProvider>
+      <Router />
+    </AppProvider>
+  );
+}
+
+function Router() {
+  const { state } = useApp();
+  const [route, setRoute] = useState<Route>(parse);
+  const [entry, setEntry] = useState(false);
   const siteY = useRef(0);
 
   useEffect(() => {
-    const on = () => setTabState(parse());
+    const on = () => setRoute(parse());
     window.addEventListener('hashchange', on);
     return () => window.removeEventListener('hashchange', on);
   }, []);
 
-  // coming back from the app returns the visitor to where they left the site
-  const wasDemo = useRef(tab !== null);
+  const go = useCallback((r: string) => {
+    setEntry(false);
+    if (r === '') {
+      history.pushState(null, '', location.pathname + location.search);
+      setRoute({ name: 'site' });
+      requestAnimationFrame(() => window.scrollTo(0, siteY.current));
+      return;
+    }
+    if (parse().name === 'site') siteY.current = window.scrollY;
+    location.hash = r;
+  }, []);
+  const setTab = useCallback((t: Tab) => { history.replaceState(null, '', t === 'home' ? '#app' : '#app/' + t); setRoute({ name: 'app', tab: t }); }, []);
+
+  // the product needs an account: without one, the visitor picks a path first
+  const blocked = route.name === 'app' && !state.card;
   useEffect(() => {
-    if (tab === null && wasDemo.current) requestAnimationFrame(() => window.scrollTo(0, siteY.current));
-    wasDemo.current = tab !== null;
-  }, [tab]);
+    if (!blocked) return;
+    if (state.path === 'fresh') location.replace('#start');
+    else { history.replaceState(null, '', location.pathname); setRoute({ name: 'site' }); setEntry(true); }
+  }, [blocked, state.path]);
 
-  const openDemo = useCallback((t: string = 'home') => {
-    siteY.current = window.scrollY;
-    location.hash = t === 'home' ? 'demo' : 'demo/' + t;
-  }, []);
-  const setTab = useCallback((t: Tab) => { history.replaceState(null, '', t === 'home' ? '#demo' : '#demo/' + t); setTabState(t); }, []);
-  const exit = useCallback(() => {
-    history.pushState(null, '', location.pathname + location.search);
-    setTabState(null);
-  }, []);
-
+  if (route.name === 'start') return <><Onboarding go={go} /><Toasts /></>;
+  if (route.name === 'app' && state.card) return <AppShell tab={route.tab} setTab={setTab} go={go} />;
   return (
-    <AppProvider>
-      {tab ? <DemoApp tab={tab} setTab={setTab} onExit={exit} /> : <Landing openDemo={openDemo} />}
-    </AppProvider>
+    <>
+      <Landing onEnter={() => setEntry(true)} dimmed={entry} />
+      {entry && <Entry onClose={() => setEntry(false)} go={go} />}
+    </>
   );
 }

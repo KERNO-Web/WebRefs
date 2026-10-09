@@ -1,10 +1,10 @@
 import { useSyncExternalStore } from 'react';
-import type { Asset, Base } from './store';
+import type { Base, Wallet } from './store';
 import { RU } from './ru';
 
 export type Lang = 'en' | 'ru';
-const KEY = 'nexus-card-lang';
-let current: Lang = (() => { try { return localStorage.getItem(KEY) === 'ru' ? 'ru' : 'en'; } catch { return 'en'; } })();
+const KEY = 'tapshift-lang';
+let current: Lang = (() => { try { return (localStorage.getItem(KEY) ?? localStorage.getItem('nexus-card-lang')) === 'ru' ? 'ru' : 'en'; } catch { return 'en'; } })();
 document.documentElement.lang = current;
 const subs = new Set<() => void>();
 export function setLang(l: Lang) {
@@ -38,15 +38,19 @@ export function useI18n() {
     signOf(n, !!o.sign) + nf(locale, { style: 'currency', currency: cur, minimumFractionDigits: o.whole ? 0 : 2, maximumFractionDigits: o.whole ? 0 : 2 }).format(Math.abs(n));
   /** the number part only, for big display figures */
   const amount = (n: number, d = 2) => nf(locale, { minimumFractionDigits: d, maximumFractionDigits: d }).format(Math.abs(n));
-  const symbol = (cur: Base) => (cur === 'EUR' ? '€' : '$');
-  /** 9.13 USDT */
-  const crypto = (n: number, asset: Asset, o: { sign?: boolean } = {}) => {
+  const symbol = (cur: Base) => ({ EUR: '€', USD: '$', GBP: '£' })[cur];
+  /** 9.13 USDT; the EUR pocket reads as money: €92.10 */
+  const crypto = (n: number, asset: Wallet, o: { sign?: boolean } = {}) => {
+    if (asset === 'EUR') return fiat(n, 'EUR', o);
     const d = asset === 'ETH' ? { minimumFractionDigits: 2, maximumFractionDigits: 6 } : { minimumFractionDigits: 2, maximumFractionDigits: 2 };
     return `${signOf(n, !!o.sign)}${nf(locale, d).format(Math.abs(n))} ${asset}`;
   };
   /** 1 USDT = €0.921 */
-  const rate = (asset: Asset, r: number, cur: Base) =>
+  const rate = (asset: Wallet, r: number, cur: Base) =>
     `1 ${asset} = ${nf(locale, { style: 'currency', currency: cur, minimumFractionDigits: asset === 'ETH' ? 2 : 3, maximumFractionDigits: asset === 'ETH' ? 2 : 4 }).format(r)}`;
+  /** 1 USDT = 0.9989 USDC */
+  const pair = (from: Wallet, to: Wallet, r: number) =>
+    `1 ${from} = ${to === 'EUR' ? nf(locale, { style: 'currency', currency: 'EUR', minimumFractionDigits: 3, maximumFractionDigits: 4 }).format(r) : `${nf(locale, { minimumFractionDigits: 4, maximumFractionDigits: 4 }).format(r)} ${to}`}`;
   const time = (ts: number) => new Date(ts).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
   const day = (ts: number) => {
     const d = new Date(ts), now = new Date();
@@ -56,7 +60,7 @@ export function useI18n() {
     return d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
   };
   const dateTime = (ts: number) => new Date(ts).toLocaleString(locale, { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  return { lang, locale, t, fiat, amount, symbol, crypto, rate, time, day, dateTime };
+  return { lang, locale, t, fiat, amount, symbol, crypto, rate, pair, time, day, dateTime };
 }
 
 /** Renders "\n"-separated copy as stacked lines, so each language sets its own breaks. */

@@ -101,13 +101,13 @@ export const PROJECTS: Project[] = [
   {
     id: 8,
     slug: 'nexus',
-    title: 'NEXUS Card',
-    description: 'Продуктовый лендинг виртуальной карты для оплаты криптовалютой.',
+    title: 'TapShift',
+    description: 'Интерактивный продукт крипто-карты: онбординг, кабинет, платежи, обмен и управление картой.',
     thumbnail: 'nexus/og.jpg',
     href: 'nexus/',
     tags: ['Финтех', 'Продукт', 'UI'],
     year: 2026,
-    accent: '#5b8cff',
+    accent: '#59d9ff',
   },
   {
     id: 9,
