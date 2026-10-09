@@ -18,6 +18,7 @@
   const SESSION_KEY = 'kerno-end-cta-shown';
   const script = document.currentScript;
   const scope = script && script.dataset.kernoScope;
+  const backLabel = (script && script.dataset.kernoBack) || 'Вернуться к проекту';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const css = `
@@ -48,8 +49,6 @@
 .kerno-cta .kc-btn{display:inline-flex;align-items:center;gap:12px;min-height:62px;padding:0 28px;border-radius:6px;background:#7c6cff;color:#0b0b0d;font-size:16px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;cursor:pointer;transition:background .2s,transform .2s}
 .kerno-cta .kc-btn:hover{background:#8f81ff}
 .kerno-cta .kc-btn:active{transform:translateY(1px)}
-.kerno-cta .kc-btn span{display:inline-block;transition:transform .25s cubic-bezier(.16,1,.3,1)}
-.kerno-cta .kc-btn:hover span{transform:translate(3px,-3px)}
 .kerno-cta .kc-handle{font-size:17px;font-weight:600;color:#f4f3ef;border-bottom:1px solid rgba(244,243,239,.25);padding-bottom:2px;transition:border-color .2s}
 .kerno-cta .kc-handle:hover{border-bottom-color:#7c6cff}
 .kerno-cta .kc-foot{display:flex;justify-content:flex-start;gap:8px 18px;flex-wrap:wrap;max-width:calc(100% - 20vw);padding-top:16px;border-top:1px solid rgba(244,243,239,.1);font-size:13px;color:#8c8c92}
@@ -124,12 +123,12 @@
         '<g fill="none" stroke="url(#kc-og)"><ellipse cx="50" cy="55" rx="34" ry="41" stroke-width="16"/><path d="M86 6 14 104" stroke-width="12"/></g></svg>' +
       '<div class="kc-inner">' +
         '<div class="kc-top"><span class="kc-mark"><b>KERN<i>Ø</i></b><span>Digital products</span></span>' +
-        '<button type="button" class="kc-close">Вернуться <span aria-hidden="true">↑</span></button></div>' +
+        '<button type="button" class="kc-close">' + backLabel + ' <span aria-hidden="true">↑</span></button></div>' +
         '<div class="kc-main">' +
           '<h2 class="kc-h" id="kerno-cta-h">Хотите себе<br>такой же сайт?</h2>' +
-          '<p class="kc-p">Напишите мне в Telegram — обсудим задачу.</p>' +
+          '<p class="kc-p">Напишите мне в&nbsp;Telegram&nbsp;— обсудим задачу.</p>' +
           '<div class="kc-row">' +
-            '<a class="kc-btn" href="' + TG + '" target="_blank" rel="noopener">Написать в Telegram <span aria-hidden="true">↗</span></a>' +
+            '<a class="kc-btn" href="' + TG + '" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>' +
             '<a class="kc-handle" href="' + TG + '" target="_blank" rel="noopener">@kerno_web</a>' +
           '</div>' +
         '</div>' +

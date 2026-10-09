@@ -594,23 +594,8 @@ button {
   align-items: end;
   padding-block: clamp(72px, 9vw, 130px);
 }
-.contact-mark {
-  grid-column: 1 / span 2;
-  align-self: start;
-  width: clamp(72px, 7vw, 120px);
-  height: auto;
-  border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(20, 20, 22, 0.12);
-}
 .contact-main {
-  grid-column: 3 / span 6;
-}
-.contact-label {
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-2);
+  grid-column: 1 / span 7;
 }
 .contact h2 {
   margin-top: 16px;
@@ -630,6 +615,8 @@ button {
   display: grid;
   gap: 18px;
   justify-items: end;
+  align-self: end;
+  padding-bottom: 4px;
 }
 .contact-gh {
   font-size: 15px;
@@ -1105,10 +1092,10 @@ button {
     max-width: 640px;
   }
   .contact-main {
-    grid-column: 3 / -1;
+    grid-column: 1 / -1;
   }
   .contact-actions {
-    grid-column: 3 / -1;
+    grid-column: 1 / -1;
     justify-items: start;
   }
 }
@@ -1138,17 +1125,9 @@ button {
   text-transform: uppercase;
   color: var(--grey);
 }
-.kind.is-real {
-  color: var(--text-2);
-}
-.kind.is-real::before {
-  content: '';
-  display: inline-block;
-  width: 5px;
-  height: 5px;
-  margin-right: 9px;
-  vertical-align: 0.18em;
-  background: var(--accent);
+.kind b {
+  font-weight: 600;
+  color: var(--accent);
 }
 .info .num {
   padding-top: 1px;
@@ -1204,40 +1183,45 @@ button {
   font-size: clamp(16px, 1.25vw, 19px);
   color: var(--text-2);
 }
-.build-note {
+/* a pause between the work and the contact: one centred statement */
+.pause {
   display: grid;
-  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
-  align-items: end;
-  gap: 28px var(--gap);
-  margin-top: clamp(48px, 6vw, 88px);
+  justify-items: center;
+  gap: 26px;
+  margin-top: clamp(96px, 11vw, 168px);
+  text-align: center;
 }
-.build-claim {
+.pause-claim {
   margin: 0;
-  max-width: 25ch;
-  font-size: clamp(24px, 2.5vw, 40px);
+  max-width: 24em;
+  font-size: clamp(26px, 2.9vw, 46px);
   font-weight: 800;
-  line-height: 1.04;
+  line-height: 1.08;
   letter-spacing: -0.035em;
+  text-wrap: balance;
 }
-.process ol {
+.process {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 0;
-  margin: 0;
+  justify-content: center;
+  gap: 8px 0;
+  margin: 6px 0 0;
   padding: 0;
   list-style: none;
-  font-size: clamp(15px, 1.2vw, 18px);
+  font-size: clamp(17px, 1.5vw, 22px);
   font-weight: 700;
+  letter-spacing: -0.01em;
 }
 .process li + li::before {
   content: '→';
-  margin: 0 10px;
+  margin: 0 14px;
   font-weight: 500;
   color: var(--accent);
 }
-.process p {
-  margin: 12px 0 0;
-  font-size: 15px;
+.pause-note {
+  margin: 0;
+  max-width: 44em;
+  font-size: 16px;
   color: var(--grey);
 }
 .build + .contact {
@@ -1256,9 +1240,6 @@ button {
   }
   .build-list p {
     grid-column: 2;
-  }
-  .build-note {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 @media (max-width: 760px) {
@@ -1279,8 +1260,11 @@ button {
   .build-list h3 {
     font-size: 26px;
   }
-  .build-claim {
-    font-size: 26px;
+  .pause-claim br {
+    display: none;
+  }
+  .process li + li::before {
+    margin: 0 9px;
   }
 }
 
@@ -1314,7 +1298,6 @@ button {
   .contact-in {
     grid-template-columns: minmax(0, 1fr);
   }
-  .contact-mark,
   .contact-main,
   .contact-actions {
     grid-column: 1;

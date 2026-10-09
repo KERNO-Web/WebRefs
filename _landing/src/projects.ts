@@ -8,9 +8,7 @@ export interface Project {
   slug: string;
   title: string;
   description: string;
-  /** what the work is, honestly: real/commercial vs. concept, and its field */
-  kind: string;
-  /** shipped for a real person or business, not a concept */
+  /** shipped for a real person or business; everything else is a self-initiated concept */
   real?: boolean;
   /** preview image, 1200×630-ish */
   thumbnail: string;
@@ -27,7 +25,6 @@ export const PROJECTS: Project[] = [
   {
     id: 1,
     slug: 'roman',
-    kind: 'Персональный сайт · Реальный проект',
     real: true,
     title: 'Роман Переверзев',
     description: 'Персональный сайт о контенте, событиях и коммуникациях — с реальными работами, фото и контактами.',
@@ -41,7 +38,6 @@ export const PROJECTS: Project[] = [
   {
     id: 2,
     slug: 'key01',
-    kind: 'Интерактивный концепт · 3D',
     title: 'KEY/01',
     description: 'Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.',
     thumbnail: 'key01/og.jpg',
@@ -53,7 +49,6 @@ export const PROJECTS: Project[] = [
   {
     id: 3,
     slug: 'afterimage',
-    kind: 'Визуальный концепт · Editorial',
     title: 'Afterimage',
     description: 'Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.',
     thumbnail: 'afterimage/og.jpg',
@@ -65,7 +60,6 @@ export const PROJECTS: Project[] = [
   {
     id: 4,
     slug: 'noctis',
-    kind: 'Визуальный концепт · Бренд-кампания',
     title: 'NOCTIS',
     description: 'Визуальная кампания вымышленного парфюмерного бренда.',
     thumbnail: 'noctis/og.jpg',
@@ -77,7 +71,6 @@ export const PROJECTS: Project[] = [
   {
     id: 5,
     slug: 'null',
-    kind: 'Визуальный концепт · WebGL',
     title: 'NULL',
     description: 'Абстрактный digital-объект и эксперимент с формой, движением и WebGL.',
     thumbnail: 'null/og.jpg',
@@ -89,7 +82,6 @@ export const PROJECTS: Project[] = [
   {
     id: 6,
     slug: 'witcher',
-    kind: 'Фан-концепт · Игры',
     title: 'Wild Hunt',
     description: 'Визуальный трибьют The Witcher 3.',
     thumbnail: 'witcher/og.jpg',
@@ -101,7 +93,6 @@ export const PROJECTS: Project[] = [
   {
     id: 7,
     slug: 'ranked',
-    kind: 'Продуктовый концепт · E-commerce',
     title: 'RANKED',
     description: 'Концепт игрового сервиса с акцентом на каталоге и визуальном стиле.',
     thumbnail: 'ranked/og.jpg',
@@ -113,7 +104,6 @@ export const PROJECTS: Project[] = [
   {
     id: 8,
     slug: 'nexus',
-    kind: 'Продуктовый концепт · Крипто / финтех',
     title: 'TapShift',
     description: 'Интерактивный продукт крипто-карты: онбординг, кабинет, платежи, обмен и управление картой.',
     thumbnail: 'nexus/og.jpg',
@@ -125,7 +115,6 @@ export const PROJECTS: Project[] = [
   {
     id: 9,
     slug: 'route',
-    kind: 'Продуктовый концепт · Сервис',
     title: 'ROUTE',
     description: 'Спокойный трекер посылок: реальная карта, фото товаров, статусы.',
     thumbnail: 'route/og.jpg',
@@ -137,7 +126,6 @@ export const PROJECTS: Project[] = [
   {
     id: 10,
     slug: 'facemail',
-    kind: 'Коммерческий проект · Веб-почта',
     real: true,
     title: 'FACEMAIL',
     description:
@@ -152,7 +140,6 @@ export const PROJECTS: Project[] = [
   {
     id: 11,
     slug: 'brightline',
-    kind: 'Визуальный концепт · Локальный бизнес',
     title: 'BRIGHTLINE',
     description: 'Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.',
     thumbnail: 'brightline/og.jpg',
@@ -164,7 +151,6 @@ export const PROJECTS: Project[] = [
   {
     id: 12,
     slug: 'kvit',
-    kind: 'Продуктовый концепт · Финтех',
     title: 'KVIT',
     description:
       'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',
