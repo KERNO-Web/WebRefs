@@ -30,8 +30,16 @@ function Intro({ onDone }: { onDone: () => void }) {
 function Header() {
   const { t, lang } = useT();
   const [open, setOpen] = useState(false);
-  const go = (id: string) => { setOpen(false); scrollTo(id); };
-  useEffect(() => { document.documentElement.classList.toggle('menu-open', open); }, [open]);
+  // the menu only undoes its own lock (the intro uses the same one)
+  const menuLock = useRef(false);
+  const unlock = () => { if (menuLock.current) { menuLock.current = false; lockScroll(false); } };
+  // unlock before scrolling: a stopped Lenis ignores scrollTo
+  const go = (id: string) => { setOpen(false); unlock(); scrollTo(id); };
+  useEffect(() => {
+    document.documentElement.classList.toggle('menu-open', open);
+    // overflow alone doesn't stop Lenis, so the page kept moving under the menu
+    if (open) { menuLock.current = true; lockScroll(true); } else unlock();
+  }, [open]);
   return (
     <>
       <header className="hdr">

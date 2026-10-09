@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { mountLiquid } from '../fx/liquid';
 import { reduced, scrollTo, useProgress } from '../fx/motion';
 import { useT } from '../i18n';
@@ -6,9 +6,20 @@ import { useT } from '../i18n';
 export const img = (n: string) => `${import.meta.env.BASE_URL}img/${n}.webp`;
 
 export function Split({ text, className }: { text: string; className?: string }) {
+  // letters animate one by one, but each word stays unbreakable so a narrow
+  // screen wraps between words, never in the middle of one
+  let i = 0;
+  const words = text.split(' ');
   return (
     <span className={'split ' + (className ?? '')} aria-label={text}>
-      {[...text].map((ch, i) => <span key={i} aria-hidden="true" style={{ ['--i' as string]: i }}>{ch === ' ' ? ' ' : ch}</span>)}
+      {words.map((w, wi) => (
+        <Fragment key={wi}>
+          <span className="w" aria-hidden="true">
+            {[...w].map((ch) => <span key={i} className="ch" style={{ ['--i' as string]: i++ }}>{ch}</span>)}
+          </span>
+          {wi < words.length - 1 && (i++, ' ')}
+        </Fragment>
+      ))}
     </span>
   );
 }

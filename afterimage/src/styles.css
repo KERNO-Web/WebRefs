@@ -541,6 +541,16 @@ blockquote { font-family: var(--display); font-style: italic; font-size: clamp(3
 .colophon a:hover { color: var(--crimson); }
 
 /* ── recomposition for portrait screens ─────────────────────────── */
+/* a phone held sideways keeps the wide editorial layout but has only ~400px
+   of height: the cover line sits below the masthead and the presence inset
+   overlaps the big photo instead of the notes */
+@media (orientation: landscape) and (max-height: 500px) {
+  .cover-kicker, .cover-num { top: 50px; }
+  .w-after { top: calc(13vh + var(--fa) * 0.2 + 26px); }
+  .cover-photo { top: calc(17vh + 26px); }
+  .presence-inset { right: auto; left: calc(var(--gutter) + 46vw - 9vw); bottom: 6vh; width: 13vw; }
+}
+
 @media (max-aspect-ratio: 1/1) {
   .mast-c { display: none; }
   .mast { grid-template-columns: 1fr auto; }

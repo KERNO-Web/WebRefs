@@ -234,10 +234,13 @@ h2 { font-size: clamp(40px, 5vw, 84px); line-height: 1.04; text-transform: upper
   .places { grid-template-columns: 1fr 1fr; gap: 0 18px; }
   .place-name { font-size: 24px; }
   .place-line { font-size: 13px; }
-  .witcher { grid-template-columns: 1fr; }
+  .witcher { grid-template-columns: minmax(0, 1fr); }
   .witcher-art { position: relative; height: 70vh; }
   .witcher-art img { height: 100%; margin: 0; -webkit-mask-image: linear-gradient(0deg, transparent 0%, #000 35%); mask-image: linear-gradient(0deg, transparent 0%, #000 35%); }
   .witcher-copy { padding: 0 20px 12vh; margin-top: -14vh; }
+  /* five signs have to share the phone's width instead of widening the column */
+  .signs ul { gap: 0; justify-content: space-between; max-width: 360px; }
+  .sign { width: 46px; height: 46px; }
   .lead { font-size: 17px; }
   .fate { padding: 12vh 20px; }
   .fate-head { text-align: left; }

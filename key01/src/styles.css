@@ -297,7 +297,9 @@ html[data-active='press'] .press .tap { pointer-events: auto; }
 /* ── 7 final ─────────────────────────────────────────────────────── */
 .final { height: 112vh; color: #fffaf3; overflow: hidden; }
 .final-giant { left: 50%; top: 58%; translate: -50% -50%; font-size: 38vw; color: rgba(255, 250, 243, 0.2); }
-.final-copy { position: absolute; left: var(--gutter); top: 18vh; }
+/* the section is 12vh taller than the screen, so at the very end of the page
+   the copy has moved up by that much: keep it clear of the fixed nav */
+.final-copy { position: absolute; left: var(--gutter); top: calc(12vh + 104px); }
 .final-copy h2 { font-size: clamp(54px, 7.4vw, 136px); }
 .foot {
   position: absolute;
@@ -359,9 +361,40 @@ html[data-pinned='0'] [data-scene] > .sticky { opacity: 0; }
   .chip { padding: 6px 2px; }
   .chip .sw { width: 38px; height: 38px; }
   .details-copy { top: auto; bottom: 7vh; translate: none; width: auto; right: var(--gutter); height: 230px; }
-    .final-copy { top: 13vh; }
+  .final-copy { top: calc(12vh + 58px); }
   .final-giant { top: 66%; font-size: 48vw; }
   .foot { flex-direction: column; gap: 4px; }
+}
+/* a phone held sideways keeps the desktop composition but has only ~400px
+   of height: tighten the copy and lift it off the board so nothing collides */
+@media (orientation: landscape) and (max-height: 500px) {
+  .nav { padding: 12px var(--gutter); }
+  h1 { font-size: clamp(40px, 15vh, 64px); }
+  h2 { font-size: clamp(30px, 11vh, 46px); }
+  .layers-head h2, .colors-copy h2 { font-size: clamp(28px, 10vh, 42px); }
+  .final-copy h2 { font-size: clamp(36px, 13vh, 60px); }
+  .eyebrow { margin-bottom: 12px; }
+  .body { font-size: 15px; margin-top: 12px; }
+  .lede { font-size: 15px; margin-top: 14px; }
+  .ctas { margin-top: 18px; }
+  .btn { height: 44px; padding: 0 22px; font-size: 15px; }
+  .hero { min-height: 0; }
+  .hero-copy { top: 54%; }
+  /* the page-coloured wash the details scene uses, kept up under the copy */
+  .scrim { opacity: max(var(--scrim, 0), 0.92); }
+  .form-b { top: 72px; }
+  .deg { font-size: 22vh; }
+  .press-copy, .details-copy { top: 56%; height: 240px; }
+  .layers-head, .layers-end, .colors-copy { top: 70px; }
+  .cw-name { font-size: 18vw; }
+  .cw-notes { bottom: calc(4vh + 84px); }
+  .cw-note { font-size: 15px; }
+  .cw-note b { font-size: 24px; }
+  .chips { bottom: 4vh; }
+  .chip { gap: 6px; padding: 6px; }
+  .chip .sw { width: 34px; height: 34px; }
+  .final-copy { top: calc(12vh + 60px); }
+  .foot { bottom: 14px; }
 }
 @media (max-width: 560px) {
   .nav { padding: 16px var(--gutter); }
