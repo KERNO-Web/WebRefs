@@ -142,7 +142,7 @@ export const PROJECTS: Project[] = [
     title: 'FACEMAIL',
     description:
       'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Работает на facemail.site.',
-    thumbnail: 'facemail/og.jpg',
+    thumbnail: 'previews/facemail.jpg',
     href: 'https://facemail.site',
     tags: ['Веб-почта', 'UI', 'Продукт'],
     year: 2026,
