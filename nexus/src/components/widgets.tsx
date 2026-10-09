@@ -224,9 +224,8 @@ export function SmartSpend({ compact }: { compact?: boolean }) {
   return (
     <div className={'smart' + (compact ? ' compact' : '')}>
       <div className="smart-rules" role="radiogroup" aria-label={t('Smart Spend rule')}>
-        {(['stable', 'best', 'manual'] as Rule[]).map((r, i) => (
+        {(['stable', 'best', 'manual'] as Rule[]).map((r) => (
           <button key={r} role="radio" aria-checked={state.rule === r} className={'rule' + (state.rule === r ? ' on' : '')} onClick={() => dispatch({ type: 'rule', rule: r })}>
-            <span className="rule-n mono">0{i + 1}</span>
             <span className="rule-txt"><b>{t(RULE[r].title)}</b><span>{t(RULE[r].desc)}</span></span>
             <span className="rule-dot" aria-hidden="true" />
           </button>

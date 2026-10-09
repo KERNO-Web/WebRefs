@@ -53,14 +53,13 @@ function Hero({ onEnter }: { onEnter: () => void }) {
     <section className="hero grain" aria-labelledby="hero-h">
       <span className="hero-ghost num" aria-hidden="true">{fiat(coffee, base)}</span>
       <div className="hero-copy">
-        <span className="eyebrow mono">TAPSHIFT · {t('Virtual crypto card')} · {t('Concept')}</span>
+        <span className="eyebrow">{t('Virtual crypto card · portfolio concept')}</span>
         <h1 id="hero-h"><Lines text={t('SPEND\nCRYPTO.\nLIKE MONEY.')} /></h1>
         <p className="lede">{t('A simulated crypto card with conversion at checkout, real card controls and transaction logic. Step inside and use it.')}</p>
         <div className="cta">
           <button className="btn primary lg" onClick={onEnter}>{t('Enter TapShift')}<Icon name="arrow" size={18} /></button>
           <a className="btn ghost lg" href="#how" onClick={jump('how')}>{t('See how it works')}</a>
         </div>
-        <span className="print mono" aria-hidden="true">TAP. WE SHIFT THE REST. — TS/01</span>
       </div>
       <div className="hero-object">
         <TapCard {...cardProps(card)} frozen={state.controls.frozen && !!state.card} pose={[9, -17]} className="hero-card" />
@@ -116,7 +115,7 @@ function Moment({ onEnter }: { onEnter: () => void }) {
     <section className="moment grain" id="how" ref={ref} aria-labelledby="moment-h">
       <h2 id="moment-h" className="sr-only">{t('How it works')}</h2>
       <div className="moment-main">
-        <span className="idx mono">{t('HOW IT WORKS')}</span>
+        <span className="eyebrow">{t('How it works')}</span>
         <p className="moment-line">{rich(t('YOU PAY {fiat}.'), { fiat: fiatNode })}</p>
         <p className="moment-line second">{rich(t('TAPSHIFT USES {crypto}.'), { crypto: cryptoNode })}</p>
         <div className="moment-meta">

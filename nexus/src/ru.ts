@@ -1,10 +1,10 @@
 // Russian copy. Written for Russian, not translated word for word: own line breaks, own rhythm.
 export const RU: Record<string, string> = {
   // site
-  'Switch language': 'Переключить язык', 'Enter TapShift': 'Войти в TapShift', 'Virtual crypto card': 'Виртуальная крипто-карта', Concept: 'Концепт',
+  'Switch language': 'Переключить язык', 'Enter TapShift': 'Войти в TapShift', 'Virtual crypto card · portfolio concept': 'Виртуальная крипто-карта · концепт для портфолио',
   'SPEND\nCRYPTO.\nLIKE MONEY.': 'ПЛАТИТЕ\nКРИПТОЙ.\nКАК ДЕНЬГАМИ.',
   'A simulated crypto card with conversion at checkout, real card controls and transaction logic. Step inside and use it.': 'Симуляция крипто-карты: конвертация в момент оплаты, настоящее управление картой и логика транзакций. Заходите и пользуйтесь.',
-  'See how it works': 'Как это работает', 'How it works': 'Как это работает', 'HOW IT WORKS': 'КАК ЭТО РАБОТАЕТ', 'Example payment': 'Пример платежа',
+  'See how it works': 'Как это работает', 'How it works': 'Как это работает', 'Example payment': 'Пример платежа',
   Fee: 'Комиссия', 'Simulated. No real money.': 'Симуляция. Без настоящих денег.',
   'YOU PAY {fiat}.': 'ВЫ ПЛАТИТЕ {fiat}.', 'TAPSHIFT USES {crypto}.': 'TAPSHIFT СПИШЕТ {crypto}.',
   HOLD: 'ХРАНИТЕ', TAP: 'ПЛАТИТЕ', SHIFT: 'КОНВЕРТИРУЕМ',
@@ -18,7 +18,7 @@ export const RU: Record<string, string> = {
   'How do you want to start?': 'С чего начнём?', Close: 'Закрыть',
   'Demo account': 'Демо-аккаунт', 'Your account': 'Ваш аккаунт',
   'Continue setting up your card': 'Продолжить настройку карты', 'Continue where you left off': 'Продолжить с того же места',
-  READY: 'ГОТОВ', 'A ready-to-use account with an active card, balances, payments and transaction history.': 'Готовый аккаунт для демонстрации — с активной картой, балансами, платежами и историей операций.',
+  'A ready-to-use account with an active card, balances, payments and transaction history.': 'Готовый аккаунт для демонстрации — с активной картой, балансами, платежами и историей операций.',
   'Open demo': 'Открыть демо', 'Start from zero': 'Начать с нуля',
   'Create a fresh account, issue your card, choose its finish and configure your first balance.': 'Пройти создание аккаунта, выпустить свою карту, выбрать оформление и настроить первый баланс.',
   'Create account': 'Создать аккаунт',

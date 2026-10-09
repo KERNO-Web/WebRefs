@@ -64,7 +64,6 @@ export function Onboarding({ go }: { go: (route: string) => void }) {
       </header>
 
       <div className="onb-stage grain">
-        <span className="onb-ghost mono" aria-hidden="true">0{step + 1}</span>
         <TapCard
           ref={card}
           finish={shown.finish}
@@ -77,7 +76,7 @@ export function Onboarding({ go }: { go: (route: string) => void }) {
           className="onb-card"
         />
         <p className="onb-status mono" aria-live="polite">
-          {issued ? <><i className="state-dot">{t('Active')}</i> •••• {last4(state.card!.number)}</> : charge > 0 ? t('Activating…') : t('NOT ISSUED')}
+          {issued ? <><i className="state-dot">{t('Active')}</i> •••• {last4(state.card!.number)}</> : charge > 0 ? t('Activating…') : t('Not issued')}
         </p>
       </div>
 
@@ -136,9 +135,8 @@ export function Onboarding({ go }: { go: (route: string) => void }) {
               ))}
             </div>
             <div className="smart-rules" role="radiogroup" aria-label={t('Smart Spend rule')}>
-              {(['stable', 'best', 'manual'] as Rule[]).map((r, i) => (
+              {(['stable', 'best', 'manual'] as Rule[]).map((r) => (
                 <button key={r} role="radio" aria-checked={rule === r} className={'rule' + (rule === r ? ' on' : '')} onClick={() => setRule(r)}>
-                  <span className="rule-n mono">0{i + 1}</span>
                   <span className="rule-txt"><b>{t(RULE[r].title)}</b><span>{t(RULE[r].desc)}</span></span>
                   <span className="rule-dot" aria-hidden="true" />
                 </button>

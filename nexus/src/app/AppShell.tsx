@@ -38,9 +38,9 @@ export function AppShell({ tab, setTab, go }: { tab: Tab; setTab: (t: Tab) => vo
       <aside className="app-rail">
         <span className="brand"><Mark size={18} />TAPSHIFT</span>
         <nav aria-label={t('App')}>{nav(TABS)}</nav>
-        <button className="btn primary rail-pay" onClick={open.pay}><Icon name="contactless" size={18} /><span>{t('Test payment')}</span></button>
+        <button className="btn ghost rail-pay" onClick={open.pay}><Icon name="contactless" size={18} /><span>{t('Test payment')}</span></button>
         <div className="rail-foot">
-          <span className="rail-who mono"><i className="state-dot sm">{state.path === 'demo' ? t('Demo account') : t('Your account')}</i></span>
+          <span className="rail-who">{state.path === 'demo' ? t('Demo account') : t('Your account')}</span>
           <button className="rail-exit" onClick={() => go('')}><Icon name="exit" size={18} /><span>{t('Back to site')}</span></button>
         </div>
       </aside>
@@ -105,7 +105,7 @@ function Home({ open, setTab }: { open: Open; setTab: (t: Tab) => void }) {
   const actions = [
     { id: 'fund', label: t('Fund'), icon: 'plus', run: () => open.fund() },
     { id: 'exchange', label: t('Exchange'), icon: 'exchange', run: () => open.exchange() },
-    { id: 'pay', label: t('Test payment'), icon: 'contactless', run: open.pay },
+    { id: 'pay', label: t('Test payment'), icon: 'contactless', run: open.pay, primary: true },
     { id: 'freeze', label: fr ? t('Unfreeze') : t('Freeze'), icon: 'snow', run: () => dispatch({ type: 'control', key: 'frozen', on: !fr }), on: fr },
   ];
   return (
@@ -124,8 +124,8 @@ function Home({ open, setTab }: { open: Open; setTab: (t: Tab) => void }) {
         <TapCard ref={ref} {...cardProps(card)} frozen={fr} pose={[6, -9]} className="home-card" />
         <div className="actions">
           {actions.map((a) => (
-            <button key={a.id} className={'act' + (a.on ? ' on' : '')} onClick={a.run} aria-pressed={a.id === 'freeze' ? fr : undefined}>
-              <span className="act-ico"><Icon name={a.icon} /></span>{a.label}
+            <button key={a.id} className={'act' + (a.on ? ' on' : '') + (a.primary ? ' primary' : '')} onClick={a.run} aria-pressed={a.id === 'freeze' ? fr : undefined}>
+              <span className="act-ico"><Icon name={a.icon} size={18} /></span>{a.label}
             </button>
           ))}
         </div>

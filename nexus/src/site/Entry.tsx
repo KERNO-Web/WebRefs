@@ -51,7 +51,7 @@ export function Entry({ onClose, go }: { onClose: () => void; go: (route: string
 
         {resume && (
           <button className="entry-resume" onClick={() => go(resume)}>
-            <span className="state-dot">{state.path === 'demo' ? t('Demo account') : t('Your account')}</span>
+            <span className="muted small">{state.path === 'demo' ? t('Demo account') : t('Your account')}</span>
             <span>{resume === 'start' ? t('Continue setting up your card') : t('Continue where you left off')}</span>
             <Icon name="arrow" size={18} />
           </button>
@@ -72,7 +72,6 @@ export function Entry({ onClose, go }: { onClose: () => void; go: (route: string
               </ul>
             </div>
             <div className="eo-copy">
-              <span className="idx mono">A / {t('READY')}</span>
               <h3>{t('Demo account')}</h3>
               <p>{t('A ready-to-use account with an active card, balances, payments and transaction history.')}</p>
               <button className="btn primary wide" onClick={openDemo}>{t('Open demo')}<Icon name="arrow" size={18} /></button>
@@ -87,7 +86,6 @@ export function Entry({ onClose, go }: { onClose: () => void; go: (route: string
               </ol>
             </div>
             <div className="eo-copy">
-              <span className="idx mono">B / {t('NOT ISSUED')}</span>
               <h3>{t('Start from zero')}</h3>
               <p>{t('Create a fresh account, issue your card, choose its finish and configure your first balance.')}</p>
               <button className="btn ghost wide" onClick={startFresh}>{t('Create account')}<Icon name="arrow" size={18} /></button>
