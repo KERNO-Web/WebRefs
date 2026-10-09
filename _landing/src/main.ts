@@ -11,6 +11,7 @@ const esc = (s: string) =>
 const pad = (n: number) => String(n).padStart(2, '0');
 const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
 const accent = (p: Project) => (p.accent ? ` style="--a:${p.accent}"` : '');
+const kind = (p: Project) => `<p class="kind${p.real ? ' is-real' : ''}">${esc(p.kind)}</p>`;
 
 /* ---------- pinned project and the rest of the grid ---------- */
 
@@ -31,6 +32,7 @@ function render() {
       <a class="feat-card card" ${linkAttrs(p)}${accent(p)}>
         <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630"${i === 0 ? ' fetchpriority="high"' : ''} /></div>
         <div class="feat-info">
+          ${kind(p)}
           <h2 class="card-title">${esc(p.title)}</h2>
           <p class="desc">${esc(p.description)}</p>
           <span class="go">Открыть проект ${ARROW}</span>
@@ -46,6 +48,7 @@ function render() {
     <a class="feat-card card" ${linkAttrs(p)}>
       <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" fetchpriority="high" /></div>
       <div class="feat-info">
+        ${kind(p)}
         <h2 class="card-title">${esc(p.title)}</h2>
         <p class="desc">${esc(p.description)}</p>
         <span class="go">Открыть проект ${ARROW}</span>
@@ -60,6 +63,7 @@ function render() {
         <div class="shot"><img src="${esc(r.thumbnail)}" alt="${esc(r.title)}" loading="lazy" width="1200" height="630" /></div>
         <div class="info">
           <span class="num">${pad(i + 1)}</span>
+          ${kind(r)}
           <h3 class="card-title">${esc(r.title)}</h3>
           <p class="desc">${esc(r.description)}</p>
           <span class="go">Открыть проект ${ARROW}</span>
@@ -137,7 +141,7 @@ const spy = new IntersectionObserver(
   },
   { rootMargin: '-45% 0px -50% 0px' },
 );
-['works', 'contact'].forEach((id) => spy.observe(document.getElementById(id)!));
+['works', 'build', 'contact'].forEach((id) => spy.observe(document.getElementById(id)!));
 
 // two frames so the entrance transitions start from their initial state
 requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));

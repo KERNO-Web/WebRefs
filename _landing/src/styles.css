@@ -279,8 +279,8 @@ button {
 }
 .hero-side {
   justify-self: end;
+  width: min(100%, 530px);
   padding-bottom: 0.4em;
-  text-align: right;
 }
 .role {
   font-size: clamp(22px, 2vw, 32px);
@@ -291,12 +291,11 @@ button {
 .kinds {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   gap: 4px 0;
-  margin-top: 10px;
-  font-size: clamp(16px, 1.3vw, 19px);
+  margin-top: 16px;
+  font-size: 15px;
   font-weight: 500;
-  color: var(--text-2);
+  color: var(--grey);
 }
 .kinds li + li::before {
   content: '';
@@ -1117,6 +1116,177 @@ button {
   }
 }
 
+/* ---------- hero: what and how to start ---------- */
+
+.lead {
+  margin-top: 14px;
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.5;
+  color: var(--text-2);
+}
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+/* ---------- honest project type on cards ---------- */
+
+.kind {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.kind.is-real {
+  color: var(--text-2);
+}
+.kind.is-real::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 9px;
+  vertical-align: 0.18em;
+  background: var(--accent);
+}
+.info .num {
+  padding-top: 1px;
+}
+
+/* ---------- what I build ---------- */
+
+.build {
+  margin-top: clamp(110px, 13vw, 190px);
+}
+.build .grid-head {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+.build-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.build-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 5fr);
+  align-items: baseline;
+  gap: 8px var(--gap);
+  padding-block: clamp(18px, 2vw, 28px);
+  border-bottom: 1px solid var(--line);
+}
+.build-n {
+  font-size: clamp(40px, 4.4vw, 76px);
+  font-weight: 800;
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  color: var(--grey);
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+  transition: color 0.4s, opacity 0.4s;
+}
+.build-list li:hover .build-n {
+  color: var(--accent);
+  opacity: 1;
+}
+.build-list h3 {
+  margin: 0;
+  font-size: clamp(26px, 2.8vw, 44px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.build-list p {
+  margin: 0;
+  max-width: 34em;
+  font-size: clamp(16px, 1.25vw, 19px);
+  color: var(--text-2);
+}
+.build-note {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+  align-items: end;
+  gap: 28px var(--gap);
+  margin-top: clamp(48px, 6vw, 88px);
+}
+.build-claim {
+  margin: 0;
+  max-width: 25ch;
+  font-size: clamp(24px, 2.5vw, 40px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+.process ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: clamp(15px, 1.2vw, 18px);
+  font-weight: 700;
+}
+.process li + li::before {
+  content: '→';
+  margin: 0 10px;
+  font-weight: 500;
+  color: var(--accent);
+}
+.process p {
+  margin: 12px 0 0;
+  font-size: 15px;
+  color: var(--grey);
+}
+.build + .contact {
+  margin-top: clamp(96px, 11vw, 160px);
+}
+
+@media (max-width: 1080px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hero-side {
+    justify-self: start;
+  }
+  .build-list li {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
+  }
+  .build-list p {
+    grid-column: 2;
+  }
+  .build-note {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .hero-side {
+    width: 100%;
+  }
+  .hero-cta .btn {
+    flex: 1 1 auto;
+  }
+  .build-list li {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+  }
+  .build-n {
+    font-size: 40px;
+    min-width: 1.4em;
+  }
+  .build-list h3 {
+    font-size: 26px;
+  }
+  .build-claim {
+    font-size: 26px;
+  }
+}
+
 /* ---------- phone ---------- */
 
 @media (max-width: 760px) {
@@ -1137,7 +1307,8 @@ button {
     gap: 18px;
     font-size: 14px;
   }
-  .top-nav a[href='#contact'] {
+  .top-nav a[href='#contact'],
+  .top-nav a[href='#build'] {
     display: none;
   }
   .tg {
