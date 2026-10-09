@@ -1,20 +1,24 @@
 {
   "featured": [
-    "brightline"
+    "kvit",
+    "nexus"
   ],
   "order": [
+    "brightline",
     "roman",
-    "key01",
     "afterimage",
     "noctis",
     "null",
+    "key01",
     "witcher",
-    "ranked",
-    "nexus",
-    "route",
     "facemail",
-    "brightline",
-    "kvit"
+    "ranked",
+    "route",
+    "kvit",
+    "nexus"
   ],
-  "hidden": []
+  "hidden": [
+    "ranked",
+    "route"
+  ]
 }
