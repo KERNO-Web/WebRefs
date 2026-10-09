@@ -167,19 +167,27 @@ export function HoldButton({ label, doneLabel, ms = 1500, done, onProgress, onDo
   const pct = Math.round(p.current * 100);
   return (
     <button
-      className={'hold' + (done ? ' done' : '') + (holding.current ? ' holding' : '')}
-      style={{ ['--p' as string]: done ? 1 : p.current }}
+      className={'hold' + (done ? ' is-done' : '') + (holding.current ? ' is-holding' : '')}
+      style={{ ['--p' as string]: done ? 1 : p.current.toFixed(3) }}
       onPointerDown={(e) => { e.currentTarget.setPointerCapture?.(e.pointerId); start(); }}
       onPointerUp={stop}
       onPointerCancel={stop}
       onKeyDown={(e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); start(); } }}
       onKeyUp={(e) => { if (e.key === ' ' || e.key === 'Enter') stop(); }}
+      onBlur={stop}
       onContextMenu={(e) => e.preventDefault()}
       aria-disabled={done}
-      aria-valuenow={pct}
+      aria-label={done ? doneLabel : `${label}, ${pct}%`}
     >
       <span className="hold-fill" aria-hidden="true" />
-      <span className="hold-label">{done ? doneLabel : label}{!done && pct > 0 ? ` · ${pct}%` : ''}</span>
+      <span className="hold-label" aria-hidden="true">
+        <span className="hold-ico">
+          <svg className="hold-ring" viewBox="0 0 34 34"><circle className="track" cx="17" cy="17" r="15.9" pathLength={100} /><circle className="bar" cx="17" cy="17" r="15.9" pathLength={100} /></svg>
+          <Icon name={done ? 'check' : 'finger'} size={done ? 18 : 17} stroke={done ? 2.2 : 1.7} />
+        </span>
+        <span>{done ? doneLabel : label}</span>
+        {!done && pct > 0 && <span className="hold-pct mono">{pct}%</span>}
+      </span>
     </button>
   );
 }
