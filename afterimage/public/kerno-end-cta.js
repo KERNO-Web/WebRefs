@@ -30,6 +30,9 @@
   font-family:Onest,-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
 .kerno-cta[hidden]{display:none}
 .kerno-cta:focus{outline:none}
+html body .kerno-cta.kerno-cta,html body .kerno-cta.kerno-cta *{cursor:default!important;pointer-events:auto}
+html body .kerno-cta.kerno-cta .kc-btn,html body .kerno-cta.kerno-cta .kc-handle,html body .kerno-cta.kerno-cta .kc-close,html body .kerno-cta.kerno-cta .kc-btn *,html body .kerno-cta.kerno-cta .kc-close *{cursor:pointer!important}
+html body .kerno-cta.kerno-cta .kc-o{pointer-events:none}
 .kerno-cta.is-open{transform:none}
 .kerno-cta *{box-sizing:border-box;margin:0;padding:0;font:inherit;color:inherit;letter-spacing:normal;text-transform:none;text-decoration:none;background:none;border:0;box-shadow:none}
 .kerno-cta::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
