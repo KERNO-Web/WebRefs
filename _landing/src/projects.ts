@@ -141,12 +141,13 @@ export const PROJECTS: Project[] = [
     real: true,
     title: 'FACEMAIL',
     description:
-      'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Здесь — урезанная демо-версия, полная работает на facemail.site.',
+      'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Работает на facemail.site.',
     thumbnail: 'facemail/og.jpg',
-    href: 'facemail/',
-    tags: ['Демо-версия', 'Веб-почта', 'UI', 'Продукт'],
+    href: 'https://facemail.site',
+    tags: ['Веб-почта', 'UI', 'Продукт'],
     year: 2026,
     accent: '#5b93f5',
+    external: true,
   },
   {
     id: 11,
