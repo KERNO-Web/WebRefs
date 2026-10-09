@@ -10,7 +10,7 @@ const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const pad = (n: number) => String(n).padStart(2, '0');
 const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
-const kind = (p: Project) => `<p class="kind"><b>${p.real ? 'Коммерческий' : 'Авторский'}</b> ${p.real ? 'проект' : 'концепт'}</p>`;
+const kind = (p: Project) => `<p class="kind">${p.real ? 'Коммерческий проект' : 'Авторский концепт'}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');
 

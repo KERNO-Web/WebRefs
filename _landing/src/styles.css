@@ -1123,10 +1123,6 @@ button {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--grey);
-}
-.kind b {
-  font-weight: 600;
   color: var(--accent);
 }
 .info .num {
