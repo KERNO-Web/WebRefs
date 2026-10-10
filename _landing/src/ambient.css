@@ -13,60 +13,63 @@
 }
 .light {
   position: absolute;
-  width: 70vmax;
-  height: 70vmax;
+  width: 48vmax;
+  height: 48vmax;
   border-radius: 50%;
   /* soft enough on its own that no blur filter is needed */
   background: radial-gradient(closest-side, var(--c) 0%, transparent 100%);
   opacity: var(--o);
   will-change: transform;
 }
+/* violet, behind the name: the one you are meant to notice */
 .light-a {
-  --c: rgba(124, 108, 255, 0.55);
-  --o: 0.28;
-  left: -24vmax;
-  top: -30vmax;
+  --c: rgba(124, 108, 255, 0.75);
+  --o: 0.42;
+  left: -14vmax;
+  top: -12vmax;
   animation:
-    la-move 23s cubic-bezier(0.45, 0, 0.4, 1) infinite alternate,
-    l-scale 31s ease-in-out infinite;
+    la-move 13s cubic-bezier(0.45, 0, 0.4, 1) infinite alternate,
+    l-scale 9s ease-in-out infinite;
 }
+/* cool, right side */
 .light-b {
-  --c: rgba(150, 172, 210, 0.5);
-  --o: 0.17;
-  right: -30vmax;
-  top: 18vh;
+  --c: rgba(140, 170, 230, 0.6);
+  --o: 0.26;
+  right: -16vmax;
+  top: 30vh;
   animation:
-    lb-move 31s cubic-bezier(0.4, 0, 0.5, 1) infinite alternate,
-    l-scale 37s ease-in-out -11s infinite;
+    lb-move 17s cubic-bezier(0.4, 0, 0.5, 1) infinite alternate,
+    l-scale 11s ease-in-out -4s infinite;
 }
+/* warm, low */
 .light-c {
-  --c: rgba(236, 214, 186, 0.45);
-  --o: 0.13;
-  left: 10vw;
-  bottom: -46vmax;
+  --c: rgba(240, 200, 160, 0.5);
+  --o: 0.18;
+  left: 18vw;
+  bottom: -26vmax;
   animation:
-    lc-move 37s cubic-bezier(0.5, 0, 0.45, 1) infinite alternate,
-    l-scale 43s ease-in-out -23s infinite;
+    lc-move 19s cubic-bezier(0.5, 0, 0.45, 1) infinite alternate,
+    l-scale 13s ease-in-out -7s infinite;
 }
 @keyframes la-move {
   0% { translate: 0 0; }
-  45% { translate: 120px 60px; }
-  100% { translate: 40px 140px; }
+  45% { translate: 24vw 6vh; }
+  100% { translate: 10vw 18vh; }
 }
 @keyframes lb-move {
   0% { translate: 0 0; }
-  60% { translate: -130px 50px; }
-  100% { translate: -60px -80px; }
+  60% { translate: -20vw 10vh; }
+  100% { translate: -8vw -14vh; }
 }
 @keyframes lc-move {
   0% { translate: 0 0; }
-  50% { translate: 90px -60px; }
-  100% { translate: -50px -110px; }
+  50% { translate: 22vw -8vh; }
+  100% { translate: -6vw -16vh; }
 }
 @keyframes l-scale {
   0%, 100% { scale: 1; }
-  35% { scale: 1.1; }
-  70% { scale: 0.95; }
+  40% { scale: 1.18; }
+  75% { scale: 0.9; }
 }
 /* the rare "background swell": one field leans in for a few seconds */
 .swell .light-a {
@@ -120,12 +123,12 @@
 
 /* Roman: the photograph breathes; now and then a warm light gathers by the folder */
 .live[data-idle='breathe'] .shot-in {
-  animation: breathe 9s ease-in-out infinite alternate;
+  animation: breathe 5.5s ease-in-out infinite alternate;
   transform-origin: 70% 60%;
 }
 @keyframes breathe {
   from { scale: 1; }
-  to { scale: 1.035; }
+  to { scale: 1.055; }
 }
 [data-idle='breathe'] .fx {
   /* warm light thrown back by the red folder onto the wall around it */
@@ -144,39 +147,39 @@
 [data-idle='haze'] .fx {
   inset: -12%;
   background:
-    radial-gradient(38% 30% at 30% 62%, rgba(214, 192, 170, 0.26), transparent 70%),
-    radial-gradient(30% 26% at 70% 34%, rgba(176, 156, 144, 0.2), transparent 70%);
+    radial-gradient(38% 30% at 30% 62%, rgba(220, 196, 172, 0.38), transparent 70%),
+    radial-gradient(30% 26% at 70% 34%, rgba(180, 160, 146, 0.3), transparent 70%);
   opacity: 1;
 }
 .live[data-idle='haze'] .fx {
-  animation: haze 29s ease-in-out infinite alternate;
+  animation: haze 11s ease-in-out infinite alternate;
 }
 .live[data-idle='haze'] .shot-in {
-  animation: haze-back 41s ease-in-out infinite alternate;
+  animation: haze-back 14s ease-in-out infinite alternate;
 }
 @keyframes haze {
   0% { translate: 0 0; opacity: 0.6; }
   50% { opacity: 1; }
-  100% { translate: 9% -5%; opacity: 0.75; }
+  100% { translate: 14% -8%; opacity: 0.7; }
 }
 @keyframes haze-back {
-  from { translate: 0 0; scale: 1.02; }
-  to { translate: -7px 3px; scale: 1.02; }
+  from { translate: 0 0; scale: 1.03; }
+  to { translate: -12px 5px; scale: 1.03; }
 }
 
 /* NULL: one soft highlight wanders across the object */
 [data-idle='tonal'] .fx {
-  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.42), transparent 70%);
+  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.6), transparent 70%);
   mix-blend-mode: soft-light;
   opacity: 1;
 }
 .live[data-idle='tonal'] .fx {
-  animation: tonal 21s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+  animation: tonal 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
 @keyframes tonal {
-  0% { translate: 0% -8%; }
-  55% { translate: 20% 8%; }
-  100% { translate: -4% 12%; }
+  0% { translate: -6% -10%; }
+  55% { translate: 26% 8%; }
+  100% { translate: -8% 14%; }
 }
 
 /* TapShift card (nexus): a reflection crosses the card itself from time to time.
@@ -220,33 +223,33 @@
   to { translate: 25% 0; }
 }
 .live[data-idle='sweep'] .shot-in {
-  animation: depth 23s ease-in-out infinite alternate;
+  animation: depth 9s ease-in-out infinite alternate;
 }
 
 /* KEY/01: the frame floats a pixel or two, nothing else */
 .live[data-idle='depth'] .shot-in {
-  animation: depth 24s ease-in-out -7s infinite alternate;
+  animation: depth 6.5s ease-in-out -2s infinite alternate;
 }
 @keyframes depth {
-  from { translate: 0 3px; }
-  to { translate: 0 -5px; }
+  from { translate: 0 5px; }
+  to { translate: 0 -8px; }
 }
 
 /* Afterimage: the crop slides very slowly, like a camera settling */
 .live[data-idle='crop'] .shot-in {
-  animation: crop 24s ease-in-out infinite alternate;
+  animation: crop 10s ease-in-out infinite alternate;
 }
 @keyframes crop {
-  from { translate: 0 0; scale: 1.05; }
-  to { translate: -2.6% 0.9%; scale: 1.05; }
+  from { translate: 1.5% 0; scale: 1.08; }
+  to { translate: -3.5% 1.2%; scale: 1.08; }
 }
 
-/* BRIGHTLINE: a light line runs along the bodywork, clipped to the car */
+/* BRIGHTLINE: a sheen runs across the hood, clipped to the hood's outline */
 [data-idle='streak'] .fx {
-  clip-path: polygon(46% 33%, 63% 34%, 71% 46%, 86% 58%, 100% 65%, 100% 100%, 46% 100%);
+  clip-path: polygon(46% 63%, 55% 57.5%, 71% 53.5%, 85% 60%, 100% 68.5%, 100% 86%, 89% 85%, 62% 88%, 46% 99%);
 }
 [data-idle='streak'] .fx::before {
-  background: linear-gradient(115deg, transparent 43%, rgba(255, 255, 255, 0.12) 47%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.12) 53%, transparent 57%);
+  background: linear-gradient(97deg, transparent 42%, rgba(255, 255, 255, 0.18) 47%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0.18) 53%, transparent 58%);
   mix-blend-mode: screen;
 }
 .ev[data-idle='streak'] .fx {
@@ -258,27 +261,30 @@
 
 /* Wild Hunt: warm firelight rises and falls at the bottom of the frame */
 [data-idle='ember'] .fx {
-  background: radial-gradient(60% 40% at 62% 100%, rgba(255, 120, 50, 0.34), transparent 70%);
+  background: radial-gradient(60% 40% at 62% 100%, rgba(255, 110, 40, 0.55), transparent 72%);
   mix-blend-mode: screen;
 }
 .live[data-idle='ember'] .fx {
-  animation: ember 19s ease-in-out infinite;
+  animation: ember 6.3s ease-in-out infinite;
 }
 @keyframes ember {
-  0%, 100% { opacity: 0.25; }
-  30% { opacity: 0.9; }
-  45% { opacity: 0.55; }
-  70% { opacity: 1; }
+  0%, 100% { opacity: 0.2; }
+  18% { opacity: 0.85; }
+  27% { opacity: 0.45; }
+  41% { opacity: 1; }
+  58% { opacity: 0.35; }
+  76% { opacity: 0.9; }
+  88% { opacity: 0.5; }
 }
 
 /* KVIT: a soft teal light travels across the payment panel */
 [data-idle='glow'] .fx {
-  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 220, 190, 0.32), transparent 70%);
+  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 230, 195, 0.5), transparent 70%);
   mix-blend-mode: soft-light;
   opacity: 1;
 }
 .live[data-idle='glow'] .fx {
-  animation: glow 27s ease-in-out infinite alternate;
+  animation: glow 8s ease-in-out infinite alternate;
 }
 @keyframes glow {
   0% { translate: -14% -6%; }
@@ -288,11 +294,11 @@
 /* FACEMAIL: a soft shadow band slides down the interface */
 [data-idle='shade'] .fx {
   inset: -30% 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.13) 50%, transparent 60%);
+  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.2) 50%, transparent 60%);
   opacity: 1;
 }
 .live[data-idle='shade'] .fx {
-  animation: shade 26s ease-in-out infinite alternate;
+  animation: shade 9s ease-in-out infinite alternate;
 }
 @keyframes shade {
   from { translate: 0 -18%; }
@@ -302,11 +308,11 @@
 /* ---------- 4. typography: the name's weight breathes, barely ---------- */
 
 .ready .hero.live .word {
-  animation: weight 14s ease-in-out 2s infinite alternate;
+  animation: weight 7s ease-in-out 1.5s infinite alternate;
 }
 @keyframes weight {
   from { font-weight: 800; }
-  to { font-weight: 720; }
+  to { font-weight: 660; }
 }
 
 /* ---------- yielding ---------- */
@@ -321,14 +327,11 @@
 /* phones: keep the light, drop everything that costs battery or attention */
 @media (max-width: 760px) {
   .light {
-    width: 110vmax;
-    height: 110vmax;
+    width: 70vmax;
+    height: 70vmax;
   }
-  .light-a { animation-duration: 29s, 37s; }
   .grain { animation: none; }
-  .shot :is(.shot-in, .fx) { animation: none !important; }
-  .shot .fx { opacity: 0; }
-  .ready .hero.live .word { animation: none; }
+  .dust { display: none; }
 }
 
 /* reduced motion: the still picture only */

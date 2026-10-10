@@ -95,6 +95,5 @@ export function startAmbient() {
     }
     setTimeout(fire, rand(5000, 10000));
   };
-  // phones keep only the background light; card events stay a desktop detail
-  if (!small) setTimeout(fire, rand(2500, 4500));
+  setTimeout(fire, rand(2500, 4500));
 }
