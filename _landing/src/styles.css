@@ -332,6 +332,10 @@ button {
   background: var(--panel);
   aspect-ratio: 1200 / 630;
 }
+.shot-in {
+  position: absolute;
+  inset: 0;
+}
 .shot img {
   position: absolute;
   inset: 0;

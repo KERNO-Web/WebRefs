@@ -19,12 +19,30 @@ export interface Project {
   accent?: string;
   /** external sites open in a new tab */
   external?: boolean;
+  /**
+   * The preview's own quiet idle behaviour on the homepage (see ambient.css).
+   * Each work gets a different one, so no two cards move alike.
+   */
+  idle?: Idle;
 }
+
+export type Idle =
+  | 'breathe' // photo breathes, a warm light gathers by the red folder now and then
+  | 'haze' // smoke drifts, the frame barely shifts against it
+  | 'tonal' // a soft highlight wanders over the object
+  | 'sweep' // a reflection crosses the card from time to time
+  | 'depth' // the frame floats a pixel or two
+  | 'crop' // the crop slides very slowly
+  | 'streak' // a light line runs along the bodywork from time to time
+  | 'ember' // warm light rises and falls at the bottom
+  | 'glow' // a soft teal light travels across the panel
+  | 'shade'; // a soft shadow band slides down the interface
 
 export const PROJECTS: Project[] = [
   {
     id: 1,
     slug: 'roman',
+    idle: 'breathe',
     real: true,
     title: 'Роман Переверзев',
     description: 'Персональный сайт о контенте, событиях и коммуникациях — с реальными работами, фото и контактами.',
@@ -38,6 +56,7 @@ export const PROJECTS: Project[] = [
   {
     id: 2,
     slug: 'key01',
+    idle: 'depth',
     title: 'KEY/01',
     description: 'Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.',
     thumbnail: 'key01/og.jpg',
@@ -49,6 +68,7 @@ export const PROJECTS: Project[] = [
   {
     id: 3,
     slug: 'afterimage',
+    idle: 'crop',
     title: 'Afterimage',
     description: 'Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.',
     thumbnail: 'afterimage/og.jpg',
@@ -60,6 +80,7 @@ export const PROJECTS: Project[] = [
   {
     id: 4,
     slug: 'noctis',
+    idle: 'haze',
     title: 'NOCTIS',
     description: 'Визуальная кампания вымышленного парфюмерного бренда.',
     thumbnail: 'noctis/og.jpg',
@@ -71,6 +92,7 @@ export const PROJECTS: Project[] = [
   {
     id: 5,
     slug: 'null',
+    idle: 'tonal',
     title: 'NULL',
     description: 'Абстрактный digital-объект и эксперимент с формой, движением и WebGL.',
     thumbnail: 'null/og.jpg',
@@ -82,6 +104,7 @@ export const PROJECTS: Project[] = [
   {
     id: 6,
     slug: 'witcher',
+    idle: 'ember',
     title: 'Wild Hunt',
     description: 'Визуальный трибьют The Witcher 3.',
     thumbnail: 'witcher/og.jpg',
@@ -104,6 +127,7 @@ export const PROJECTS: Project[] = [
   {
     id: 8,
     slug: 'nexus',
+    idle: 'sweep',
     title: 'TapShift',
     description: 'Интерактивный продукт крипто-карты: онбординг, кабинет, платежи, обмен и управление картой.',
     thumbnail: 'nexus/og.jpg',
@@ -126,6 +150,7 @@ export const PROJECTS: Project[] = [
   {
     id: 10,
     slug: 'facemail',
+    idle: 'shade',
     real: true,
     title: 'FACEMAIL',
     description:
@@ -140,6 +165,7 @@ export const PROJECTS: Project[] = [
   {
     id: 11,
     slug: 'brightline',
+    idle: 'streak',
     title: 'BRIGHTLINE',
     description: 'Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.',
     thumbnail: 'brightline/og.jpg',
@@ -151,6 +177,7 @@ export const PROJECTS: Project[] = [
   {
     id: 12,
     slug: 'kvit',
+    idle: 'glow',
     title: 'KVIT',
     description:
       'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',

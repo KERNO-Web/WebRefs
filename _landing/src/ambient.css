@@ -1,0 +1,323 @@
+/* Ambient motion. Everything here animates transform or opacity only, runs on
+   unsynchronised clocks (no two durations share a factor that lines them up)
+   and should be felt after a few seconds of looking, not on first glance. */
+
+/* ---------- 1. light, far behind the page ---------- */
+
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.light {
+  position: absolute;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 50%;
+  /* soft enough on its own that no blur filter is needed */
+  background: radial-gradient(closest-side, var(--c) 0%, transparent 100%);
+  opacity: var(--o);
+  will-change: transform;
+}
+.light-a {
+  --c: rgba(124, 108, 255, 0.55);
+  --o: 0.15;
+  left: -24vmax;
+  top: -30vmax;
+  animation:
+    la-move 23s cubic-bezier(0.45, 0, 0.4, 1) infinite alternate,
+    l-scale 31s ease-in-out infinite;
+}
+.light-b {
+  --c: rgba(150, 172, 210, 0.5);
+  --o: 0.09;
+  right: -30vmax;
+  top: 18vh;
+  animation:
+    lb-move 31s cubic-bezier(0.4, 0, 0.5, 1) infinite alternate,
+    l-scale 37s ease-in-out -11s infinite;
+}
+.light-c {
+  --c: rgba(236, 214, 186, 0.45);
+  --o: 0.07;
+  left: 10vw;
+  bottom: -46vmax;
+  animation:
+    lc-move 37s cubic-bezier(0.5, 0, 0.45, 1) infinite alternate,
+    l-scale 43s ease-in-out -23s infinite;
+}
+@keyframes la-move {
+  0% { translate: 0 0; }
+  45% { translate: 52px 34px; }
+  100% { translate: 18px 76px; }
+}
+@keyframes lb-move {
+  0% { translate: 0 0; }
+  60% { translate: -64px 28px; }
+  100% { translate: -30px -40px; }
+}
+@keyframes lc-move {
+  0% { translate: 0 0; }
+  50% { translate: 44px -30px; }
+  100% { translate: -26px -58px; }
+}
+@keyframes l-scale {
+  0%, 100% { scale: 1; }
+  35% { scale: 1.05; }
+  70% { scale: 0.98; }
+}
+/* the rare "background swell": one field leans in for a few seconds */
+.swell .light-a {
+  opacity: calc(var(--o) * 1.6);
+  transition: opacity 3s ease-in-out;
+}
+.light-a {
+  transition: opacity 3s ease-in-out;
+}
+
+/* ---------- 2. atmosphere: grain and a few motes ---------- */
+
+.grain {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 19s ease-in-out infinite alternate;
+}
+@keyframes grain {
+  0% { translate: 0 0; }
+  50% { translate: -2.5% 1.5%; }
+  100% { translate: 1.5% -2%; }
+}
+.dust i {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(242, 239, 233, 0.9), rgba(242, 239, 233, 0));
+  opacity: 0;
+  animation-name: mote;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes mote {
+  0% { opacity: 0; translate: 0 0; }
+  25% { opacity: var(--o); }
+  75% { opacity: calc(var(--o) * 0.8); }
+  100% { opacity: 0; translate: var(--dx) var(--dy); }
+}
+
+/* ---------- 3. each preview's own idle ---------- */
+
+.fx {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Roman: the photograph breathes; now and then a warm light gathers by the folder */
+.live[data-idle='breathe'] .shot-in {
+  animation: breathe 17s ease-in-out infinite alternate;
+}
+@keyframes breathe {
+  from { scale: 1; }
+  to { scale: 1.012; }
+}
+[data-idle='breathe'] .fx {
+  /* warm light thrown back by the red folder onto the wall around it */
+  background: radial-gradient(24% 34% at 76% 70%, rgba(255, 96, 70, 0.2), transparent 72%);
+  mix-blend-mode: multiply;
+}
+.ev[data-idle='breathe'] .fx {
+  animation: warm 3.4s ease-in-out;
+}
+@keyframes warm {
+  0%, 100% { opacity: 0; }
+  45% { opacity: 1; }
+}
+
+/* NOCTIS: smoke drifts one way, the frame a pixel the other */
+[data-idle='haze'] .fx {
+  inset: -12%;
+  background:
+    radial-gradient(38% 30% at 30% 62%, rgba(210, 190, 170, 0.14), transparent 70%),
+    radial-gradient(30% 26% at 70% 34%, rgba(170, 150, 140, 0.1), transparent 70%);
+  opacity: 1;
+}
+.live[data-idle='haze'] .fx {
+  animation: haze 29s ease-in-out infinite alternate;
+}
+.live[data-idle='haze'] .shot-in {
+  animation: haze-back 41s ease-in-out infinite alternate;
+}
+@keyframes haze {
+  0% { translate: 0 0; opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { translate: 5% -3%; opacity: 0.75; }
+}
+@keyframes haze-back {
+  from { translate: 0 0; scale: 1.006; }
+  to { translate: -2px 1px; scale: 1.006; }
+}
+
+/* NULL: one soft highlight wanders across the object */
+[data-idle='tonal'] .fx {
+  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.22), transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: 1;
+}
+.live[data-idle='tonal'] .fx {
+  animation: tonal 21s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
+}
+@keyframes tonal {
+  0% { translate: 6% -4%; }
+  55% { translate: 16% 6%; }
+  100% { translate: 2% 8%; }
+}
+
+/* TapShift card (nexus): a reflection crosses the card from time to time */
+[data-idle='sweep'] .fx {
+  inset: 0 -40%;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.2) 49%, rgba(255, 255, 255, 0.06) 53%, transparent 62%);
+  -webkit-mask-image: radial-gradient(34% 46% at 66% 46%, #000 60%, transparent 100%);
+  mask-image: radial-gradient(34% 46% at 66% 46%, #000 60%, transparent 100%);
+}
+.ev[data-idle='sweep'] .fx {
+  animation: sweep 2.6s cubic-bezier(0.6, 0, 0.35, 1);
+}
+@keyframes sweep {
+  0% { opacity: 0; translate: -18% 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; translate: 18% 0; }
+}
+.live[data-idle='sweep'] .shot-in {
+  animation: depth 23s ease-in-out infinite alternate;
+}
+
+/* KEY/01: the frame floats a pixel or two, nothing else */
+.live[data-idle='depth'] .shot-in {
+  animation: depth 24s ease-in-out -7s infinite alternate;
+}
+@keyframes depth {
+  from { translate: 0 1px; }
+  to { translate: 0 -2px; }
+}
+
+/* Afterimage: the crop slides very slowly, like a camera settling */
+.live[data-idle='crop'] .shot-in {
+  animation: crop 33s ease-in-out infinite alternate;
+}
+@keyframes crop {
+  from { translate: 0 0; scale: 1.024; }
+  to { translate: -1.1% 0.4%; scale: 1.024; }
+}
+
+/* BRIGHTLINE: a light line runs along the bodywork from time to time */
+[data-idle='streak'] .fx {
+  background: linear-gradient(112deg, transparent 46%, rgba(255, 255, 255, 0.2) 50%, transparent 54%);
+  /* only over the car, not the text column */
+  -webkit-mask-image: linear-gradient(90deg, transparent 46%, #000 56%);
+  mask-image: linear-gradient(90deg, transparent 46%, #000 56%);
+  mix-blend-mode: screen;
+}
+.ev[data-idle='streak'] .fx {
+  animation: streak 2.2s cubic-bezier(0.55, 0, 0.3, 1);
+}
+@keyframes streak {
+  0% { opacity: 0; translate: -10% 0; }
+  25% { opacity: 1; }
+  100% { opacity: 0; translate: 46% 0; }
+}
+
+/* Wild Hunt: warm firelight rises and falls at the bottom of the frame */
+[data-idle='ember'] .fx {
+  background: radial-gradient(60% 40% at 62% 100%, rgba(255, 120, 50, 0.2), transparent 70%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='ember'] .fx {
+  animation: ember 19s ease-in-out infinite;
+}
+@keyframes ember {
+  0%, 100% { opacity: 0.25; }
+  30% { opacity: 0.9; }
+  45% { opacity: 0.55; }
+  70% { opacity: 1; }
+}
+
+/* KVIT: a soft teal light travels across the payment panel */
+[data-idle='glow'] .fx {
+  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 220, 190, 0.16), transparent 70%);
+  mix-blend-mode: soft-light;
+  opacity: 1;
+}
+.live[data-idle='glow'] .fx {
+  animation: glow 27s ease-in-out infinite alternate;
+}
+@keyframes glow {
+  0% { translate: -8% -4%; }
+  100% { translate: 14% 6%; }
+}
+
+/* FACEMAIL: a soft shadow band slides down the interface */
+[data-idle='shade'] .fx {
+  inset: -30% 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.07) 50%, transparent 60%);
+  opacity: 1;
+}
+.live[data-idle='shade'] .fx {
+  animation: shade 26s ease-in-out infinite alternate;
+}
+@keyframes shade {
+  from { translate: 0 -18%; }
+  to { translate: 0 18%; }
+}
+
+/* ---------- 4. typography: the name's weight breathes, barely ---------- */
+
+.ready .hero.live .word {
+  animation: weight 26s ease-in-out 2s infinite alternate;
+}
+@keyframes weight {
+  from { font-weight: 800; }
+  to { font-weight: 768; }
+}
+
+/* ---------- yielding ---------- */
+
+/* scrolling and hover take priority over idle */
+.scrolling .shot:not(.ev) :is(.shot-in, .fx),
+.card:hover .shot:not(.ev) :is(.shot-in, .fx) {
+  animation-play-state: paused;
+}
+/* off-screen previews stop entirely (their idle rules all require .live) */
+
+/* phones: keep the light, drop everything that costs battery or attention */
+@media (max-width: 760px) {
+  .light {
+    width: 110vmax;
+    height: 110vmax;
+  }
+  .light-a { animation-duration: 29s, 37s; }
+  .grain { animation: none; }
+  .shot :is(.shot-in, .fx) { animation: none !important; }
+  .shot .fx { opacity: 0; }
+  .ready .hero.live .word { animation: none; }
+}
+
+/* reduced motion: the still picture only */
+.still .ambient *,
+.still .shot :is(.shot-in, .fx),
+.still .word {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient *,
+  .shot :is(.shot-in, .fx),
+  .word {
+    animation: none !important;
+  }
+}

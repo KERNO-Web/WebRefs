@@ -1,4 +1,6 @@
 import './styles.css';
+import './ambient.css';
+import { startAmbient } from './ambient';
 import type { Project } from './projects';
 import { visibleProjects } from './settings';
 
@@ -10,6 +12,10 @@ const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const pad = (n: number) => String(n).padStart(2, '0');
 const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
+// the image sits in its own wrapper so idle motion, hover zoom and reveals
+// each own a different transform and never fight
+const shot = (p: Project, alt: string, extra = '') =>
+  `<div class="shot"${p.idle ? ` data-idle="${p.idle}"` : ''}><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} /></div>${p.idle ? '<span class="fx" aria-hidden="true"></span>' : ''}</div>`;
 const kind = (p: Project) => `<p class="kind">${p.real ? 'Коммерческий проект' : 'Авторский концепт'}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');
@@ -31,7 +37,7 @@ function render() {
         .map(
           (p, i) => `
       <a class="feat-card card" ${linkAttrs(p)}>
-        <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630"${i === 0 ? ' fetchpriority="high"' : ''} /></div>
+        ${shot(p, `${p.title} — первый экран`, i === 0 ? ' fetchpriority="high"' : '')}
         <div class="feat-info">
           ${kind(p)}
           <h2 class="card-title">${esc(p.title)}</h2>
@@ -47,7 +53,7 @@ function render() {
     feat.removeAttribute('style');
     feat.innerHTML = `${head}
     <a class="feat-card card" ${linkAttrs(p)}>
-      <div class="shot"><img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" fetchpriority="high" /></div>
+      ${shot(p, `${p.title} — первый экран`, ' fetchpriority="high"')}
       <div class="feat-info">
         ${kind(p)}
         <h2 class="card-title">${esc(p.title)}</h2>
@@ -61,7 +67,7 @@ function render() {
     .map(
       (r, i) => `
       <a class="card rv" ${linkAttrs(r)}>
-        <div class="shot"><img src="${esc(r.thumbnail)}" alt="${esc(r.title)}" loading="lazy" width="1200" height="630" /></div>
+        ${shot(r, r.title, ' loading="lazy"')}
         <div class="info">
           <span class="num">${pad(i + 1)}</span>
           ${kind(r)}
@@ -148,3 +154,4 @@ const spy = new IntersectionObserver(
 requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
 route();
 render();
+startAmbient();
