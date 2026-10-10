@@ -9,7 +9,7 @@
 const root = document.documentElement;
 
 /** Cards whose idle includes a one-shot event, and how long that event runs. */
-const EVENTS: Record<string, number> = { sweep: 2600, breathe: 3400, streak: 2200 };
+const EVENTS: Record<string, number> = { sweep: 2600, breathe: 3400, streak: 2400 };
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -27,7 +27,7 @@ export function startAmbient() {
     const count = 11;
     for (let i = 0; i < count; i++) {
       const m = document.createElement('i');
-      const size = rand(1.2, 2.8);
+      const size = rand(1.6, 3.4);
       m.style.cssText = [
         `left:${rand(4, 96).toFixed(1)}%`,
         `top:${rand(6, 94).toFixed(1)}%`,
@@ -35,7 +35,7 @@ export function startAmbient() {
         `height:${size.toFixed(1)}px`,
         `--dx:${rand(-46, 46).toFixed(0)}px`,
         `--dy:${rand(-40, 18).toFixed(0)}px`,
-        `--o:${rand(0.18, 0.42).toFixed(2)}`,
+        `--o:${rand(0.35, 0.7).toFixed(2)}`,
         `animation-duration:${rand(14, 30).toFixed(1)}s`,
         `animation-delay:-${rand(0, 30).toFixed(1)}s`,
       ].join(';');
@@ -93,8 +93,8 @@ export function startAmbient() {
         setTimeout(() => pick.classList.remove(cls), dur + 100);
       }
     }
-    setTimeout(fire, rand(8000, 18000));
+    setTimeout(fire, rand(5000, 10000));
   };
   // phones keep only the background light; card events stay a desktop detail
-  if (!small) setTimeout(fire, rand(4500, 7000));
+  if (!small) setTimeout(fire, rand(2500, 4500));
 }

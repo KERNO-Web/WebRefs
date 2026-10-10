@@ -23,7 +23,7 @@
 }
 .light-a {
   --c: rgba(124, 108, 255, 0.55);
-  --o: 0.15;
+  --o: 0.28;
   left: -24vmax;
   top: -30vmax;
   animation:
@@ -32,7 +32,7 @@
 }
 .light-b {
   --c: rgba(150, 172, 210, 0.5);
-  --o: 0.09;
+  --o: 0.17;
   right: -30vmax;
   top: 18vh;
   animation:
@@ -41,7 +41,7 @@
 }
 .light-c {
   --c: rgba(236, 214, 186, 0.45);
-  --o: 0.07;
+  --o: 0.13;
   left: 10vw;
   bottom: -46vmax;
   animation:
@@ -50,27 +50,27 @@
 }
 @keyframes la-move {
   0% { translate: 0 0; }
-  45% { translate: 52px 34px; }
-  100% { translate: 18px 76px; }
+  45% { translate: 120px 60px; }
+  100% { translate: 40px 140px; }
 }
 @keyframes lb-move {
   0% { translate: 0 0; }
-  60% { translate: -64px 28px; }
-  100% { translate: -30px -40px; }
+  60% { translate: -130px 50px; }
+  100% { translate: -60px -80px; }
 }
 @keyframes lc-move {
   0% { translate: 0 0; }
-  50% { translate: 44px -30px; }
-  100% { translate: -26px -58px; }
+  50% { translate: 90px -60px; }
+  100% { translate: -50px -110px; }
 }
 @keyframes l-scale {
   0%, 100% { scale: 1; }
-  35% { scale: 1.05; }
-  70% { scale: 0.98; }
+  35% { scale: 1.1; }
+  70% { scale: 0.95; }
 }
 /* the rare "background swell": one field leans in for a few seconds */
 .swell .light-a {
-  opacity: calc(var(--o) * 1.6);
+  opacity: calc(var(--o) * 1.9);
   transition: opacity 3s ease-in-out;
 }
 .light-a {
@@ -82,7 +82,7 @@
 .grain {
   position: absolute;
   inset: -50%;
-  opacity: 0.045;
+  opacity: 0.06;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grain 19s ease-in-out infinite alternate;
 }
@@ -120,15 +120,16 @@
 
 /* Roman: the photograph breathes; now and then a warm light gathers by the folder */
 .live[data-idle='breathe'] .shot-in {
-  animation: breathe 17s ease-in-out infinite alternate;
+  animation: breathe 9s ease-in-out infinite alternate;
+  transform-origin: 70% 60%;
 }
 @keyframes breathe {
   from { scale: 1; }
-  to { scale: 1.012; }
+  to { scale: 1.035; }
 }
 [data-idle='breathe'] .fx {
   /* warm light thrown back by the red folder onto the wall around it */
-  background: radial-gradient(24% 34% at 76% 70%, rgba(255, 96, 70, 0.2), transparent 72%);
+  background: radial-gradient(22% 36% at 76% 82%, rgba(255, 80, 56, 0.4), transparent 72%);
   mix-blend-mode: multiply;
 }
 .ev[data-idle='breathe'] .fx {
@@ -143,8 +144,8 @@
 [data-idle='haze'] .fx {
   inset: -12%;
   background:
-    radial-gradient(38% 30% at 30% 62%, rgba(210, 190, 170, 0.14), transparent 70%),
-    radial-gradient(30% 26% at 70% 34%, rgba(170, 150, 140, 0.1), transparent 70%);
+    radial-gradient(38% 30% at 30% 62%, rgba(214, 192, 170, 0.26), transparent 70%),
+    radial-gradient(30% 26% at 70% 34%, rgba(176, 156, 144, 0.2), transparent 70%);
   opacity: 1;
 }
 .live[data-idle='haze'] .fx {
@@ -156,16 +157,16 @@
 @keyframes haze {
   0% { translate: 0 0; opacity: 0.6; }
   50% { opacity: 1; }
-  100% { translate: 5% -3%; opacity: 0.75; }
+  100% { translate: 9% -5%; opacity: 0.75; }
 }
 @keyframes haze-back {
-  from { translate: 0 0; scale: 1.006; }
-  to { translate: -2px 1px; scale: 1.006; }
+  from { translate: 0 0; scale: 1.02; }
+  to { translate: -7px 3px; scale: 1.02; }
 }
 
 /* NULL: one soft highlight wanders across the object */
 [data-idle='tonal'] .fx {
-  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.22), transparent 70%);
+  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.42), transparent 70%);
   mix-blend-mode: soft-light;
   opacity: 1;
 }
@@ -173,26 +174,50 @@
   animation: tonal 21s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
 }
 @keyframes tonal {
-  0% { translate: 6% -4%; }
-  55% { translate: 16% 6%; }
-  100% { translate: 2% 8%; }
+  0% { translate: 0% -8%; }
+  55% { translate: 20% 8%; }
+  100% { translate: -4% 12%; }
 }
 
-/* TapShift card (nexus): a reflection crosses the card from time to time */
+/* TapShift card (nexus): a reflection crosses the card itself from time to time.
+   .fx is clipped to the card's outline and stays put; the light moves inside. */
+[data-idle='sweep'] .fx,
+[data-idle='streak'] .fx {
+  overflow: hidden;
+  border-radius: 0;
+}
 [data-idle='sweep'] .fx {
-  inset: 0 -40%;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.2) 49%, rgba(255, 255, 255, 0.06) 53%, transparent 62%);
-  -webkit-mask-image: radial-gradient(34% 46% at 66% 46%, #000 60%, transparent 100%);
-  mask-image: radial-gradient(34% 46% at 66% 46%, #000 60%, transparent 100%);
+  clip-path: polygon(50.6% 25.6%, 94.5% 18.4%, 94.9% 75.8%, 51% 78.2%);
+}
+[data-idle='sweep'] .fx::before,
+[data-idle='streak'] .fx::before {
+  content: '';
+  position: absolute;
+  inset: -20% -60%;
+  translate: -60% 0;
+}
+[data-idle='sweep'] .fx::before {
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.07) 46%, rgba(255, 255, 255, 0.42) 50%, rgba(255, 255, 255, 0.08) 54%, transparent 58%);
 }
 .ev[data-idle='sweep'] .fx {
-  animation: sweep 2.6s cubic-bezier(0.6, 0, 0.35, 1);
+  animation: ev-fade 2.6s ease-in-out;
 }
-@keyframes sweep {
-  0% { opacity: 0; translate: -18% 0; }
-  20% { opacity: 1; }
-  80% { opacity: 1; }
-  100% { opacity: 0; translate: 18% 0; }
+.ev[data-idle='sweep'] .fx::before {
+  animation: ev-card 2.6s cubic-bezier(0.45, 0, 0.4, 1);
+}
+@keyframes ev-fade {
+  0%, 100% { opacity: 0; }
+  15%, 85% { opacity: 1; }
+}
+/* the moving layer is 2.2× the frame wide with the band in its middle, so the
+   band sits at 50% + 2.2 × translate: these ranges keep it on the object */
+@keyframes ev-card {
+  from { translate: -2% 0; }
+  to { translate: 23% 0; }
+}
+@keyframes ev-car {
+  from { translate: -4% 0; }
+  to { translate: 25% 0; }
 }
 .live[data-idle='sweep'] .shot-in {
   animation: depth 23s ease-in-out infinite alternate;
@@ -203,39 +228,37 @@
   animation: depth 24s ease-in-out -7s infinite alternate;
 }
 @keyframes depth {
-  from { translate: 0 1px; }
-  to { translate: 0 -2px; }
+  from { translate: 0 3px; }
+  to { translate: 0 -5px; }
 }
 
 /* Afterimage: the crop slides very slowly, like a camera settling */
 .live[data-idle='crop'] .shot-in {
-  animation: crop 33s ease-in-out infinite alternate;
+  animation: crop 24s ease-in-out infinite alternate;
 }
 @keyframes crop {
-  from { translate: 0 0; scale: 1.024; }
-  to { translate: -1.1% 0.4%; scale: 1.024; }
+  from { translate: 0 0; scale: 1.05; }
+  to { translate: -2.6% 0.9%; scale: 1.05; }
 }
 
-/* BRIGHTLINE: a light line runs along the bodywork from time to time */
+/* BRIGHTLINE: a light line runs along the bodywork, clipped to the car */
 [data-idle='streak'] .fx {
-  background: linear-gradient(112deg, transparent 46%, rgba(255, 255, 255, 0.2) 50%, transparent 54%);
-  /* only over the car, not the text column */
-  -webkit-mask-image: linear-gradient(90deg, transparent 46%, #000 56%);
-  mask-image: linear-gradient(90deg, transparent 46%, #000 56%);
+  clip-path: polygon(46% 33%, 63% 34%, 71% 46%, 86% 58%, 100% 65%, 100% 100%, 46% 100%);
+}
+[data-idle='streak'] .fx::before {
+  background: linear-gradient(115deg, transparent 43%, rgba(255, 255, 255, 0.12) 47%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0.12) 53%, transparent 57%);
   mix-blend-mode: screen;
 }
 .ev[data-idle='streak'] .fx {
-  animation: streak 2.2s cubic-bezier(0.55, 0, 0.3, 1);
+  animation: ev-fade 2.4s ease-in-out;
 }
-@keyframes streak {
-  0% { opacity: 0; translate: -10% 0; }
-  25% { opacity: 1; }
-  100% { opacity: 0; translate: 46% 0; }
+.ev[data-idle='streak'] .fx::before {
+  animation: ev-car 2.4s cubic-bezier(0.45, 0, 0.4, 1);
 }
 
 /* Wild Hunt: warm firelight rises and falls at the bottom of the frame */
 [data-idle='ember'] .fx {
-  background: radial-gradient(60% 40% at 62% 100%, rgba(255, 120, 50, 0.2), transparent 70%);
+  background: radial-gradient(60% 40% at 62% 100%, rgba(255, 120, 50, 0.34), transparent 70%);
   mix-blend-mode: screen;
 }
 .live[data-idle='ember'] .fx {
@@ -250,7 +273,7 @@
 
 /* KVIT: a soft teal light travels across the payment panel */
 [data-idle='glow'] .fx {
-  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 220, 190, 0.16), transparent 70%);
+  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 220, 190, 0.32), transparent 70%);
   mix-blend-mode: soft-light;
   opacity: 1;
 }
@@ -258,14 +281,14 @@
   animation: glow 27s ease-in-out infinite alternate;
 }
 @keyframes glow {
-  0% { translate: -8% -4%; }
-  100% { translate: 14% 6%; }
+  0% { translate: -14% -6%; }
+  100% { translate: 20% 8%; }
 }
 
 /* FACEMAIL: a soft shadow band slides down the interface */
 [data-idle='shade'] .fx {
   inset: -30% 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.07) 50%, transparent 60%);
+  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.13) 50%, transparent 60%);
   opacity: 1;
 }
 .live[data-idle='shade'] .fx {
@@ -279,11 +302,11 @@
 /* ---------- 4. typography: the name's weight breathes, barely ---------- */
 
 .ready .hero.live .word {
-  animation: weight 26s ease-in-out 2s infinite alternate;
+  animation: weight 14s ease-in-out 2s infinite alternate;
 }
 @keyframes weight {
   from { font-weight: 800; }
-  to { font-weight: 768; }
+  to { font-weight: 720; }
 }
 
 /* ---------- yielding ---------- */
