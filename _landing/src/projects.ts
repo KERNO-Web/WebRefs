@@ -27,22 +27,22 @@ export interface Project {
 }
 
 export type Idle =
-  | 'breathe' // photo breathes, a warm light gathers by the red folder now and then
-  | 'haze' // smoke drifts, the frame barely shifts against it
+  | 'folder' // the red folder throws a soft red light on the wall
+  | 'led' // the keyboard's red knob glows like an indicator
+  | 'flash' // a camera flash blooms over the portrait now and then
+  | 'backlight' // warm backlight breathes in the hair
   | 'tonal' // a soft highlight wanders over the object
-  | 'sweep' // a reflection crosses the card from time to time
-  | 'depth' // the frame floats a pixel or two
-  | 'crop' // the crop slides very slowly
-  | 'streak' // a light line runs along the bodywork from time to time
-  | 'ember' // warm light rises and falls at the bottom
-  | 'glow' // a soft teal light travels across the panel
-  | 'shade'; // a soft shadow band slides down the interface
+  | 'sweep' // light under the card; a reflection crosses it from time to time
+  | 'lamps' // the wall lamps pulse; a sheen crosses the hood from time to time
+  | 'ember' // firelight flickers at the bottom of the frame
+  | 'scan' // a scan line runs down the QR code
+  | 'mailbox'; // blue light glows under the mailbox
 
 export const PROJECTS: Project[] = [
   {
     id: 1,
     slug: 'roman',
-    idle: 'breathe',
+    idle: 'folder',
     real: true,
     title: 'Роман Переверзев',
     description: 'Персональный сайт о контенте, событиях и коммуникациях — с реальными работами, фото и контактами.',
@@ -56,7 +56,7 @@ export const PROJECTS: Project[] = [
   {
     id: 2,
     slug: 'key01',
-    idle: 'depth',
+    idle: 'led',
     title: 'KEY/01',
     description: 'Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.',
     thumbnail: 'key01/og.jpg',
@@ -68,7 +68,7 @@ export const PROJECTS: Project[] = [
   {
     id: 3,
     slug: 'afterimage',
-    idle: 'crop',
+    idle: 'flash',
     title: 'Afterimage',
     description: 'Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.',
     thumbnail: 'afterimage/og.jpg',
@@ -80,7 +80,7 @@ export const PROJECTS: Project[] = [
   {
     id: 4,
     slug: 'noctis',
-    idle: 'haze',
+    idle: 'backlight',
     title: 'NOCTIS',
     description: 'Визуальная кампания вымышленного парфюмерного бренда.',
     thumbnail: 'noctis/og.jpg',
@@ -150,7 +150,7 @@ export const PROJECTS: Project[] = [
   {
     id: 10,
     slug: 'facemail',
-    idle: 'shade',
+    idle: 'mailbox',
     real: true,
     title: 'FACEMAIL',
     description:
@@ -165,7 +165,7 @@ export const PROJECTS: Project[] = [
   {
     id: 11,
     slug: 'brightline',
-    idle: 'streak',
+    idle: 'lamps',
     title: 'BRIGHTLINE',
     description: 'Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.',
     thumbnail: 'brightline/og.jpg',
@@ -177,7 +177,7 @@ export const PROJECTS: Project[] = [
   {
     id: 12,
     slug: 'kvit',
-    idle: 'glow',
+    idle: 'scan',
     title: 'KVIT',
     description:
       'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',

@@ -110,7 +110,9 @@
   100% { opacity: 0; translate: var(--dx) var(--dy); }
 }
 
-/* ---------- 3. each preview's own idle ---------- */
+/* ---------- 3. one living element per preview ----------
+   The frame never moves. A single detail of the picture comes alive: a glow,
+   a flame, a scan line. Coordinates are percentages of the preview image. */
 
 .fx {
   position: absolute;
@@ -120,146 +122,149 @@
   pointer-events: none;
   opacity: 0;
 }
-
-/* Roman: the photograph breathes; now and then a warm light gathers by the folder */
-.live[data-idle='breathe'] .shot-in {
-  animation: breathe 5.5s ease-in-out infinite alternate;
-  transform-origin: 70% 60%;
-}
-@keyframes breathe {
-  from { scale: 1; }
-  to { scale: 1.055; }
-}
-[data-idle='breathe'] .fx {
-  /* warm light thrown back by the red folder onto the wall around it */
-  background: radial-gradient(22% 36% at 76% 82%, rgba(255, 80, 56, 0.4), transparent 72%);
-  mix-blend-mode: multiply;
-}
-.ev[data-idle='breathe'] .fx {
-  animation: warm 3.4s ease-in-out;
-}
-@keyframes warm {
-  0%, 100% { opacity: 0; }
-  45% { opacity: 1; }
-}
-
-/* NOCTIS: smoke drifts one way, the frame a pixel the other */
-[data-idle='haze'] .fx {
-  inset: -12%;
-  background:
-    radial-gradient(38% 30% at 30% 62%, rgba(220, 196, 172, 0.38), transparent 70%),
-    radial-gradient(30% 26% at 70% 34%, rgba(180, 160, 146, 0.3), transparent 70%);
-  opacity: 1;
-}
-.live[data-idle='haze'] .fx {
-  animation: haze 11s ease-in-out infinite alternate;
-}
-.live[data-idle='haze'] .shot-in {
-  animation: haze-back 14s ease-in-out infinite alternate;
-}
-@keyframes haze {
-  0% { translate: 0 0; opacity: 0.6; }
-  50% { opacity: 1; }
-  100% { translate: 14% -8%; opacity: 0.7; }
-}
-@keyframes haze-back {
-  from { translate: 0 0; scale: 1.03; }
-  to { translate: -12px 5px; scale: 1.03; }
-}
-
-/* NULL: one soft highlight wanders across the object */
-[data-idle='tonal'] .fx {
-  background: radial-gradient(22% 30% at 50% 45%, rgba(255, 255, 255, 0.6), transparent 70%);
-  mix-blend-mode: soft-light;
-  opacity: 1;
-}
-.live[data-idle='tonal'] .fx {
-  animation: tonal 9s cubic-bezier(0.45, 0, 0.55, 1) infinite alternate;
-}
-@keyframes tonal {
-  0% { translate: -6% -10%; }
-  55% { translate: 26% 8%; }
-  100% { translate: -8% 14%; }
-}
-
-/* TapShift card (nexus): a reflection crosses the card itself from time to time.
-   .fx is clipped to the card's outline and stays put; the light moves inside. */
-[data-idle='sweep'] .fx,
-[data-idle='streak'] .fx {
-  overflow: hidden;
-  border-radius: 0;
-}
-[data-idle='sweep'] .fx {
-  clip-path: polygon(50.6% 25.6%, 94.5% 18.4%, 94.9% 75.8%, 51% 78.2%);
-}
-[data-idle='sweep'] .fx::before,
-[data-idle='streak'] .fx::before {
+.fx::before,
+.fx::after {
   content: '';
   position: absolute;
-  inset: -20% -60%;
-  translate: -60% 0;
 }
-[data-idle='sweep'] .fx::before {
+
+/* Roman: the red folder throws a soft red light on the wall */
+[data-idle='folder'] .fx {
+  background: radial-gradient(26% 40% at 76% 80%, rgba(255, 50, 35, 0.42), rgba(255, 50, 35, 0.12) 50%, transparent 78%);
+  mix-blend-mode: multiply;
+}
+.live[data-idle='folder'] .fx {
+  animation: folder 7s ease-in-out infinite;
+}
+@keyframes folder {
+  0%, 100% { opacity: 0.15; }
+  45% { opacity: 1; }
+  60% { opacity: 0.8; }
+}
+
+/* KEY/01: the red knob glows like an indicator */
+[data-idle='led'] .fx {
+  background: radial-gradient(4.5% 8.5% at 90.8% 47.8%, rgba(255, 70, 45, 0.75), rgba(255, 70, 45, 0.18) 55%, transparent 100%);
+}
+.live[data-idle='led'] .fx {
+  animation: led 4.2s ease-in-out infinite;
+}
+@keyframes led {
+  0%, 100% { opacity: 0.1; }
+  50% { opacity: 1; }
+}
+
+/* Afterimage: a camera flash blooms over the portrait now and then */
+[data-idle='flash'] .fx {
+  background: radial-gradient(20% 38% at 50% 34%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.45) 45%, transparent 80%);
+}
+.live[data-idle='flash'] .fx {
+  animation: flash 6.5s ease-out infinite;
+}
+@keyframes flash {
+  0%, 70% { opacity: 0; }
+  71.5% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* NOCTIS: warm backlight breathes in the hair */
+[data-idle='backlight'] .fx {
+  background: radial-gradient(10% 34% at 55.5% 30%, rgba(255, 150, 70, 0.55), rgba(255, 140, 60, 0.12) 55%, transparent 85%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='backlight'] .fx {
+  animation: backlight 8s ease-in-out infinite;
+}
+@keyframes backlight {
+  0%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+  65% { opacity: 0.65; }
+}
+
+/* NULL: a soft highlight wanders over the object */
+[data-idle='tonal'] .fx {
+  inset: 0;
+  opacity: 1;
+  -webkit-mask-image: radial-gradient(14% 26% at 59% 40%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(14% 26% at 59% 40%, #000 55%, transparent 100%);
+}
+[data-idle='tonal'] .fx::before {
+  inset: 0;
+  background: radial-gradient(7% 12% at 59% 40%, rgba(255, 255, 255, 0.7), transparent 100%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='tonal'] .fx::before {
+  animation: tonal 7s ease-in-out infinite alternate;
+}
+@keyframes tonal {
+  0% { translate: -5% -9%; }
+  50% { translate: 4% 2%; }
+  100% { translate: -2% 11%; }
+}
+
+/* TapShift: a cool light pulses under the card */
+[data-idle='sweep'] .fx {
+  background: radial-gradient(26% 14% at 73% 82%, rgba(140, 150, 255, 0.45), transparent 100%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='sweep'] .fx {
+  animation: under 6s ease-in-out infinite;
+}
+@keyframes under {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+/* BRIGHTLINE: the wall lamps pulse */
+[data-idle='lamps'] .fx {
+  background: linear-gradient(90deg, transparent 76%, rgba(220, 210, 255, 0.3) 84%, rgba(220, 210, 255, 0.3) 100%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 32%, #000 40%, #000 56%, transparent 64%);
+  mask-image: linear-gradient(180deg, transparent 32%, #000 40%, #000 56%, transparent 64%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='lamps'] .fx {
+  animation: lamps 5.4s ease-in-out infinite;
+}
+@keyframes lamps {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 1; }
+}
+
+/* the rare reflections: a box clipped to the object's outline that never
+   moves, with the light travelling inside it */
+.ev-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ev-clip i {
+  position: absolute;
+  inset: -20% -60%;
+  opacity: 0;
+}
+[data-idle='sweep'] .ev-clip {
+  clip-path: polygon(50.6% 25.6%, 94.5% 18.4%, 94.9% 75.8%, 51% 78.2%);
+}
+[data-idle='sweep'] .ev-clip i {
   background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.07) 46%, rgba(255, 255, 255, 0.42) 50%, rgba(255, 255, 255, 0.08) 54%, transparent 58%);
 }
-.ev[data-idle='sweep'] .fx {
-  animation: ev-fade 2.6s ease-in-out;
-}
-.ev[data-idle='sweep'] .fx::before {
+.ev[data-idle='sweep'] .ev-clip i {
   animation: ev-card 2.6s cubic-bezier(0.45, 0, 0.4, 1);
 }
-@keyframes ev-fade {
-  0%, 100% { opacity: 0; }
-  15%, 85% { opacity: 1; }
-}
-/* the moving layer is 2.2× the frame wide with the band in its middle, so the
-   band sits at 50% + 2.2 × translate: these ranges keep it on the object */
-@keyframes ev-card {
-  from { translate: -2% 0; }
-  to { translate: 23% 0; }
-}
-@keyframes ev-car {
-  from { translate: -4% 0; }
-  to { translate: 25% 0; }
-}
-.live[data-idle='sweep'] .shot-in {
-  animation: depth 9s ease-in-out infinite alternate;
-}
-
-/* KEY/01: the frame floats a pixel or two, nothing else */
-.live[data-idle='depth'] .shot-in {
-  animation: depth 6.5s ease-in-out -2s infinite alternate;
-}
-@keyframes depth {
-  from { translate: 0 5px; }
-  to { translate: 0 -8px; }
-}
-
-/* Afterimage: the crop slides very slowly, like a camera settling */
-.live[data-idle='crop'] .shot-in {
-  animation: crop 10s ease-in-out infinite alternate;
-}
-@keyframes crop {
-  from { translate: 1.5% 0; scale: 1.08; }
-  to { translate: -3.5% 1.2%; scale: 1.08; }
-}
-
-/* BRIGHTLINE: a sheen runs across the hood, clipped to the hood's outline */
-[data-idle='streak'] .fx {
+[data-idle='lamps'] .ev-clip {
   clip-path: polygon(46% 63%, 55% 57.5%, 71% 53.5%, 85% 60%, 100% 68.5%, 100% 86%, 89% 85%, 62% 88%, 46% 99%);
 }
-[data-idle='streak'] .fx::before {
+[data-idle='lamps'] .ev-clip i {
   background: linear-gradient(97deg, transparent 42%, rgba(255, 255, 255, 0.18) 47%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0.18) 53%, transparent 58%);
   mix-blend-mode: screen;
 }
-.ev[data-idle='streak'] .fx {
-  animation: ev-fade 2.4s ease-in-out;
-}
-.ev[data-idle='streak'] .fx::before {
+.ev[data-idle='lamps'] .ev-clip i {
   animation: ev-car 2.4s cubic-bezier(0.45, 0, 0.4, 1);
 }
 
-/* Wild Hunt: warm firelight rises and falls at the bottom of the frame */
+/* Wild Hunt: firelight flickers at the bottom of the frame */
 [data-idle='ember'] .fx {
   background: radial-gradient(60% 40% at 62% 100%, rgba(255, 110, 40, 0.55), transparent 72%);
   mix-blend-mode: screen;
@@ -277,32 +282,56 @@
   88% { opacity: 0.5; }
 }
 
-/* KVIT: a soft teal light travels across the payment panel */
-[data-idle='glow'] .fx {
-  background: radial-gradient(26% 40% at 60% 50%, rgba(80, 230, 195, 0.5), transparent 70%);
-  mix-blend-mode: soft-light;
+/* KVIT: a scan line runs down the QR code */
+[data-idle='scan'] .fx {
+  inset: 28% 31.5% 47.5% 56%;
+  overflow: hidden;
+  border-radius: 0;
   opacity: 1;
 }
-.live[data-idle='glow'] .fx {
-  animation: glow 8s ease-in-out infinite alternate;
+[data-idle='scan'] .fx::before {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 3px;
+  background: rgba(16, 190, 150, 1);
+  box-shadow: 0 0 12px 4px rgba(16, 190, 150, 0.55), 0 -18px 22px -6px rgba(16, 190, 150, 0.25);
+  opacity: 0;
 }
-@keyframes glow {
-  0% { translate: -14% -6%; }
-  100% { translate: 20% 8%; }
+.live[data-idle='scan'] .fx::before {
+  animation: scan 3.6s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+@keyframes scan {
+  0% { top: 0; opacity: 0; }
+  8% { opacity: 1; }
+  62% { opacity: 1; }
+  70%, 100% { top: 100%; opacity: 0; }
 }
 
-/* FACEMAIL: a soft shadow band slides down the interface */
-[data-idle='shade'] .fx {
-  inset: -30% 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(20, 30, 60, 0.2) 50%, transparent 60%);
-  opacity: 1;
+/* FACEMAIL: blue light glows under the mailbox */
+[data-idle='mailbox'] .fx {
+  background: radial-gradient(22% 18% at 80% 76%, rgba(80, 140, 255, 0.55), transparent 100%);
+  mix-blend-mode: screen;
 }
-.live[data-idle='shade'] .fx {
-  animation: shade 9s ease-in-out infinite alternate;
+.live[data-idle='mailbox'] .fx {
+  animation: mailbox 6.8s ease-in-out infinite;
 }
-@keyframes shade {
-  from { translate: 0 -18%; }
-  to { translate: 0 18%; }
+@keyframes mailbox {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 1; }
+}
+
+/* the reflections travel inside a box the width of 2.2 frames with the band in
+   its middle, so the band sits at 50% + 2.2 × translate: these keep it on target */
+@keyframes ev-card {
+  0% { translate: -2% 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { translate: 23% 0; opacity: 0; }
+}
+@keyframes ev-car {
+  0% { translate: -4% 0; opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { translate: 25% 0; opacity: 0; }
 }
 
 /* ---------- 4. typography: the name's weight breathes, barely ---------- */
@@ -318,8 +347,10 @@
 /* ---------- yielding ---------- */
 
 /* scrolling and hover take priority over idle */
-.scrolling .shot:not(.ev) :is(.shot-in, .fx),
-.card:hover .shot:not(.ev) :is(.shot-in, .fx) {
+.scrolling .shot .fx,
+.scrolling .shot .fx::before,
+.card:hover .shot .fx,
+.card:hover .shot .fx::before {
   animation-play-state: paused;
 }
 /* off-screen previews stop entirely (their idle rules all require .live) */
@@ -336,13 +367,15 @@
 
 /* reduced motion: the still picture only */
 .still .ambient *,
-.still .shot :is(.shot-in, .fx),
+.still .shot :is(.fx, .ev-clip i),
+.still .shot .fx::before,
 .still .word {
   animation: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .ambient *,
-  .shot :is(.shot-in, .fx),
+  .shot :is(.fx, .ev-clip i),
+  .shot .fx::before,
   .word {
     animation: none !important;
   }

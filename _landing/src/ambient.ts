@@ -1,15 +1,16 @@
 // Idle life for the homepage. Four layers, from always-on to rare:
 //   1. three soft light fields drifting behind everything (ambient.css)
 //   2. grain and a handful of dust motes in the same back layer
-//   3. each project preview's own quiet behaviour, only while it is on screen
-//   4. one rare event at a time: a reflection, a warm glow, a light line
+//   3. on each preview one element of the picture comes alive (a glow, a flame,
+//      a scan line) while the frame itself stays still; only while on screen
+//   4. one rare event at a time: a reflection on the card or across the hood
 // Scrolling pauses layers 3 and 4; hover pauses a card; reduced motion keeps
 // only the still picture. The motion is meant to be noticed late, not first.
 
 const root = document.documentElement;
 
 /** Cards whose idle includes a one-shot event, and how long that event runs. */
-const EVENTS: Record<string, number> = { sweep: 2600, breathe: 3400, streak: 2400 };
+const EVENTS: Record<string, number> = { sweep: 2600, lamps: 2400 };
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
