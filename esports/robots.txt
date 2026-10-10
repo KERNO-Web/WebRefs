@@ -1,0 +1,4 @@
+User-Agent: *
+Disallow: /
+
+Sitemap: https://kerno-web.github.io/WebRefs/esports/sitemap.xml

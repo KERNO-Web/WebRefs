@@ -35,6 +35,8 @@ jobs:
             cp -R "$p/dist" "_site/$p"
             echo "::endgroup::"
           done
+          # Esports Pro: Next.js + Postgres app, committed as a prebuilt static snapshot.
+          cp -R esports "_site/esports"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
