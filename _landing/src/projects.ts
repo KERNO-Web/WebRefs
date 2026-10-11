@@ -36,7 +36,8 @@ export type Idle =
   | 'lamps' // the wall lamps pulse; a sheen crosses the hood from time to time
   | 'ember' // firelight flickers at the bottom of the frame
   | 'scan' // a scan line runs down the QR code
-  | 'mailbox'; // blue light glows under the mailbox
+  | 'mailbox' // blue light glows under the mailbox
+  | 'gloss'; // a glint slides along the rim of the drop
 
 export const PROJECTS: Project[] = [
   {
@@ -186,6 +187,20 @@ export const PROJECTS: Project[] = [
     tags: ['Финтех', 'Продукт', 'Демо'],
     year: 2026,
     accent: '#0e7c6e',
+  },
+  {
+    id: 13,
+    slug: 'lumi',
+    idle: 'gloss',
+    title: 'LUMI',
+    description:
+      'Сайт студии маникюра с онлайн-записью: прайс, работы по мастерам, запись только на реально свободные окна и кабинет мастера с графиком.',
+    thumbnail: 'previews/lumi.jpg',
+    href: 'https://kerno-web.github.io/nails-beauty/',
+    tags: ['Бьюти', 'Онлайн-запись', 'Локальный бизнес'],
+    year: 2026,
+    accent: '#c9a49a',
+    external: true,
   },
 ];
 

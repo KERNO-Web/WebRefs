@@ -230,6 +230,20 @@
   50% { opacity: 1; }
 }
 
+/* LUMI: a glint slides along the rim of the drop */
+[data-idle='gloss'] .fx {
+  background: radial-gradient(5% 9% at 55% 33%, rgba(255, 245, 240, 0.75), rgba(255, 235, 230, 0.15) 55%, transparent 100%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='gloss'] .fx {
+  animation: gloss 7.8s ease-in-out infinite;
+}
+@keyframes gloss {
+  0%, 100% { opacity: 0; translate: 0 0; }
+  45% { opacity: 1; translate: 3% -6%; }
+  70% { opacity: 0.3; translate: 7% -10%; }
+}
+
 /* the rare reflections: a box clipped to the object's outline that never
    moves, with the light travelling inside it */
 .ev-clip {
