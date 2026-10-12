@@ -2,10 +2,12 @@
    (useBlossomTimeline). The track only needs to be long enough to hold the stage while it plays. ── */
 .journey { position: relative; height: 170svh; }
 .stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--night-black); isolation: isolate; }
-.ph { position: absolute; left: 0; top: 0; max-width: none; object-fit: fill; pointer-events: none; will-change: transform, opacity; }
+.cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cv-back { z-index: 1; }
+.cv-front { z-index: 3; }
+.pool { display: none; }
 .wash { position: absolute; inset: 0; pointer-events: none; }
 
-.day { z-index: 1; }
 .wordmark {
   position: absolute; z-index: 2; left: 4.2vw; top: 16.5%;
   font: 800 var(--hero-display-size)/.84 var(--font-display); font-variation-settings: var(--display-axes);
@@ -15,10 +17,6 @@
 }
 .wordmark span { display: block; }
 .wm-b { margin-left: .8em; }
-.front { z-index: 3; }
-.soft { z-index: 4; opacity: 0; }
-.night-soft { z-index: 5; }
-.night { z-index: 6; opacity: 0; }
 /* the single exposure layer: warm plum, never grey */
 .scrim { z-index: 7; opacity: 0; background: radial-gradient(120% 90% at 50% 45%, rgba(58, 22, 38, .75), rgba(26, 12, 20, 1)); }
 
