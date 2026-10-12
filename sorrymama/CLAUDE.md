@@ -14,7 +14,7 @@ Single-page restaurant site for Sorry Mama rest-lounge, Kazan. Russian copy. Not
 
 ## Non-negotiables
 - Only real photos of this venue. No stretched 960px images as full-bleed desktop heroes.
-- `research/` holds unlicensed map-gallery photos: private, gitignored, never deployed until rights are cleared.
+- `research/` holds the raw map-gallery originals: private, gitignored. The processed photos in `public/assets/venue/` are committed and deployed to GitHub Pages (WebRefs) at the owner's decision on 13.10.2026, rights still not cleared; the footers say so. Keep unused files out of `public/` (they ship).
 - No link to `sorrymama-lounge.ru` (reported gambling redirect).
 - Booking: popup (`[data-book]` opens `BookingDialog`) — guests, name, phone. `src/data/booking.ts` has no endpoint in the concept, so nothing is sent and the guest is told to call `tel:+78432033303`. Never show a confirmation for a request nobody received.
 - Russian short words (в, с, к, у, о, и, а, на, по, за, из) never end a line in headings: use `nb()`.

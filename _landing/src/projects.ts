@@ -202,6 +202,18 @@ export const PROJECTS: Project[] = [
     accent: '#c9a49a',
     external: true,
   },
+  {
+    id: 14,
+    slug: 'sorrymama',
+    title: 'SORRY MAMA',
+    description:
+      'Концепт сайта рест-лаунжа в Казани: дневная терраса уходит в вечерний зал под цветущим деревом, меню с фото блюд и бронь стола.',
+    thumbnail: 'sorrymama/og.jpg',
+    href: 'sorrymama/',
+    tags: ['Ресторан', 'Локальный бизнес', 'Интерфейс'],
+    year: 2026,
+    accent: '#e4afb9',
+  },
 ];
 
 /** Pinned when Supabase is not configured or cannot be reached. */
