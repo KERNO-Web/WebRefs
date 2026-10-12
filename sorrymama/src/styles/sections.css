@@ -23,7 +23,7 @@
 .menu-door { position: relative; display: block; overflow: hidden; color: var(--day-paper); text-decoration: none; }
 .menu-door > img[width][height] { width: 100%; height: clamp(440px, 66vh, 720px); object-fit: cover; transition: transform .9s cubic-bezier(.2, .7, .2, 1); }
 .mc-kitchen > img[width][height] { object-position: 50% 72%; } /* the salad plate */
-.mc-mains > img[width][height] { object-position: 50% 50%; }
+.mc-bar > img[width][height] { object-position: 50% 88%; }    /* the glasses, the tree behind */
 .menu-door:hover > img, .menu-door:focus-visible > img { transform: scale(1.04); }
 .md-label {
   position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: space-between; align-items: flex-end;

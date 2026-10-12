@@ -87,6 +87,33 @@ export const menu: MenuCategory[] = [
 /** The only photo a menu card may show next to a dish name. */
 export const itemPhoto = (i: MenuItem) => (i.photo?.match === 'exact' ? i.photo.src : undefined);
 
+/*
+ * Bar. The only drinks list the venue has published is a board photographed in the hall (2GIS «Меню»
+ * album, m12, 2024): six alcohol-free cocktails, two sizes. The smoothies below it are covered by a
+ * finger and are left out. No photos and no recipes exist, so a drink shows its name, kind and sizes —
+ * nothing invented.
+ */
+export type Drink = { id: string; name: string; info: string; sizes: { label: string; price: number }[] };
+export type DrinkGroup = { id: string; title: string; items: Drink[] };
+
+const lemonade = (id: string, name: string): Drink => ({
+  id, name, info: 'Безалкогольный коктейль', sizes: [{ label: '330 мл', price: 320 }, { label: '1 л', price: 600 }],
+});
+export const bar: { id: string; category: string; note: string; groups: DrinkGroup[] } = {
+  id: 'bar', category: 'Бар',
+  note: 'По барной доске в зале (2024). Цены и позиции могли измениться — уточняйте у официанта.',
+  groups: [{
+    id: 'mocktails', title: 'Безалкогольные коктейли', items: [
+      lemonade('pineapple-mango', 'Ананас — манго'),
+      lemonade('strawberry-orange', 'Клубника — апельсин'),
+      lemonade('passion-cherry', 'Маракуйя — вишня'),
+      lemonade('watermelon-basil', 'Арбуз — базилик'),
+      lemonade('strawberry-yuzu', 'Клубника — юдзу'),
+      lemonade('blueberry-lychee', 'Черника — личи'),
+    ],
+  }],
+};
+
 /** «32 блюда», «21 блюдо», «35 блюд» */
 export const dishesWord = (n: number) => {
   const d = n % 10, h = n % 100;

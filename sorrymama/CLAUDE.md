@@ -10,7 +10,7 @@ Single-page restaurant site for Sorry Mama rest-lounge, Kazan. Russian copy. Not
 - Full art direction: `docs/MASTER_SPEC.md` (read sections on demand, don't import whole).
 - Photo choices, provenance, crops: `docs/ASSET_SELECTION.md` (copy also in research/).
 - Facts: `src/data/venue.ts` (address/phone verified across map cards; hours unverified → not shown).
-- Menu: `src/data/menu.ts`, transcribed from the 11 current cards of the venue's 2GIS «Меню» album (originals in `research/2gis/menu/`). Rendered on its own page `menu.html` (`src/menu/`). Never invent dishes or prices: a price cut off on the card stays `null` («цену уточняйте»). A dish photo is shown only when it unambiguously shows that dish; otherwise a typographic plate.
+- Menu: `src/data/menu.ts`, transcribed from the 11 current cards of the venue's 2GIS «Меню» album (originals in `research/2gis/menu/`). Rendered on its own page `menu.html` (`src/menu/`). Never invent dishes or prices: a price cut off on the card stays `null` («цену уточняйте»). A dish photo is shown only when it unambiguously shows that dish; otherwise a typographic plate. Bar (`bar` in menu.ts): six alcohol-free cocktails from the 2024 board, set as type — no invented recipes.
 
 ## Non-negotiables
 - Only real photos of this venue. No stretched 960px images as full-bleed desktop heroes.

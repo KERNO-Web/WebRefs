@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { menu, itemPhoto, menuSourceNote, dishesWord, type MenuItem } from '../data/menu';
+import { menu, bar, itemPhoto, menuSourceNote, dishesWord, type MenuItem } from '../data/menu';
+import { assets } from '../data/assets';
 import { venue } from '../data/venue';
 import { nb } from '../app/nb';
 import { BookingDialog } from '../features/booking/BookingDialog';
@@ -29,16 +30,55 @@ function Card({ i }: { i: MenuItem }) {
   );
 }
 
-/** The full menu: categories as chapters, square photo cards, booking at hand. */
+/** The bar: no photographs of the drinks exist, so it is set as type on the night palette. */
+function Bar() {
+  return (
+    <section id={bar.id} className="mp-sec mp-bar" aria-labelledby="bar-h">
+      <div className="mb-head">
+        <h2 id="bar-h" className="mp-h">{bar.category}</h2>
+        <p className="mb-note">{bar.note}</p>
+      </div>
+      {/* mood, not illustration: guest photos of drinks in the hall and on the terrace */}
+      <div className="mb-mood" aria-hidden="true">
+        <img src={assets.cocktail.src} alt="" loading="lazy" width={1240} height={1500} />
+        <img src={assets.drink.src} alt="" loading="lazy" width={580} height={860} />
+      </div>
+      <div className="mb-list">
+        {bar.groups.map((g) => (
+          <div key={g.id} className="mb-group">
+            <h3 className="mb-gt">{g.title}<span>{g.items[0].sizes.map((z) => z.label).join(' / ')}</span></h3>
+            <ul>
+              {g.items.map((d) => (
+                <li key={d.id} className="mb-row">
+                  <span className="mb-name">{d.name}</span>
+                  <span className="mb-dots" aria-hidden="true" />
+                  <span className="mb-price">{d.sizes.map((z) => <span key={z.label}><i className="mb-size">{z.label}</i>{rub(z.price)}</span>)}</span>
+                  <span className="mb-info">{d.info}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** The full menu: categories as chapters, square photo cards, the bar as type, booking at hand. */
 export function MenuPage() {
   const [active, setActive] = useState(menu[0].id);
   useEffect(() => {
     const io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) setActive(e.target.id); }, { rootMargin: '-30% 0px -60% 0px' });
-    menu.forEach((c) => { const el = document.getElementById(c.id); if (el) io.observe(el); });
+    [...menu.map((c) => c.id), bar.id].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
     return () => io.disconnect();
   }, []);
-  // keep the active chip in view in the horizontally scrolling bar
-  useEffect(() => { document.querySelector(`.mp-cats a[href="#${active}"]`)?.scrollIntoView({ block: 'nearest', inline: 'center' }); }, [active]);
+  // keep the active chip in view by scrolling the bar sideways only. (scrollIntoView also scrolled the page:
+  // for a sticky bar it aims at the bar's place in the flow, at the top — the page jumped up.)
+  useEffect(() => {
+    const bar = document.querySelector<HTMLElement>('.mp-cats');
+    const chip = bar?.querySelector<HTMLElement>(`a[href="#${active}"]`);
+    if (bar && chip) bar.scrollTo({ left: chip.offsetLeft - (bar.clientWidth - chip.offsetWidth) / 2, behavior: 'smooth' });
+  }, [active]);
 
   return (
     <>
@@ -52,12 +92,12 @@ export function MenuPage() {
         <section className="mp-intro" aria-labelledby="mp-h">
           <h1 id="mp-h" className="title-xl mp-title">Меню</h1>
           <div className="mp-intro-side">
-            <p className="mp-lead">{nb(`${dishesWord(count)} кухни: от брускетт и поке до бешбармака и арабского плова с верблюдом.`)}</p>
+            <p className="mp-lead">{nb(`${dishesWord(count)} кухни — от брускетт и поке до бешбармака и арабского плова с верблюдом — и барная карта.`)}</p>
             <p className="mp-note">{menuSourceNote}</p>
           </div>
         </section>
         <nav className="mp-cats" aria-label="Разделы меню">
-          {menu.map((c) => <a key={c.id} href={`#${c.id}`} className={active === c.id ? 'is-active' : undefined} aria-current={active === c.id ? 'true' : undefined}>{c.category}</a>)}
+          {[...menu, bar].map((c) => <a key={c.id} href={`#${c.id}`} className={active === c.id ? 'is-active' : undefined} aria-current={active === c.id ? 'true' : undefined}>{c.category}</a>)}
         </nav>
         {menu.map((c) => (
           <section key={c.id} id={c.id} className="mp-sec" aria-labelledby={`${c.id}-h`}>
@@ -65,6 +105,7 @@ export function MenuPage() {
             <ul className="mp-grid">{c.items.map((i) => <Card key={i.id} i={i} />)}</ul>
           </section>
         ))}
+        <Bar />
         <section className="mp-book" aria-label="Бронь">
           <p className="mp-book-t">{nb('Выбрали? Забронируйте стол — на террасе или в зале под деревом.')}</p>
           <div className="mp-book-a">
