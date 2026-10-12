@@ -14,7 +14,7 @@
   if (window.__kernoEndCta) return;
   window.__kernoEndCta = true;
 
-  const TG = 'https://t.me/kerno_web';
+  const TG = 'https://t.me/Kernodev';
   const SESSION_KEY = 'kerno-end-cta-shown';
   const script = document.currentScript;
   const scope = script && script.dataset.kernoScope;
