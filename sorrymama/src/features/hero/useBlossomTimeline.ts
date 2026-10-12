@@ -21,19 +21,24 @@ const put = (el: HTMLElement, b: Box) => {
   el.style.width = `${b.w}px`; el.style.height = `${b.h}px`;
 };
 
-// how far into the track the reader scrolls before the passage takes over (share of the track = of a screen)
-const ARM = 0.12;
-const FORWARD = 1.5, BACK = 1.05; // seconds
+// Share of the track the reader scrolls before the passage takes over (track travel = 70svh → ≈10% of a screen),
+// and the same distance back up before it rewinds.
+const ARM = 0.14;
+const FORWARD = 1.5, BACK = 1.05; // seconds for a full run on its own
+// layers that leave the frame keep this much opacity: at exactly 0 the browser drops their pixels and
+// re-rasterises them when they come back — that was the black flicker on the way up
+const GONE = 0.001;
 
 /**
- * Canopy occlusion match cut, played rather than scrubbed: the reader starts it with a short scroll
- * and it runs to the end on its own, so nobody is left holding a half-blurred frame.
+ * Canopy occlusion match cut. A short scroll starts it and it plays on by itself, so nobody is left
+ * holding a half-blurred frame; scrolling faster than it plays simply drives it faster. The page scroll is
+ * never blocked or moved by script — the stage is pinned, the reader's scroll is only read.
  *   0.00–0.62 the camera travels into the crown; the wordmark lifts and goes
  *   0.32–0.57 the near foliage goes out of focus
  *   0.50–0.72 soft day blossom → soft night blossom (the hidden cut)
  *   0.60–1.45 the camera eases back into the lounge; focus returns at 0.78
  *   1.15–1.55 the chapter heading arrives
- * Scrolling back up past the armed point rewinds it the same way.
+ * Scrolling back up by the same short distance rewinds it the same way.
  */
 export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void) {
   useEffect(() => {
@@ -74,12 +79,12 @@ export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void
     tl.fromTo(day, { scale: 1, x: 0, y: 0 }, { scale: () => dn().scale, x: () => dn().x, y: () => dn().y, duration: 0.62, ease: 'power2.in' }, 0);
     tl.fromTo(el.title, { y: 0, scale: 1 }, { y: -12, scale: 1.04, duration: 0.4, ease: 'sine.in' }, 0);
     tl.to(el.title, { autoAlpha: 0, duration: 0.18 }, 0.22);
-    // opacity only, never visibility: hidden layers can lose their decoded pixels and flash black when shown
-    tl.fromTo(el.daySoft, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'sine.in' }, 0.32);
+    // opacity only, never visibility, and never quite 0 (see GONE)
+    tl.fromTo(el.daySoft, { opacity: GONE }, { opacity: 1, duration: 0.25, ease: 'sine.in' }, 0.32);
     // the hidden cut, soft blossom into soft blossom
-    tl.fromTo(el.nightSoft, { opacity: 0, ...near() }, { opacity: 1, duration: 0.22, ease: 'sine.inOut' }, 0.5);
-    tl.fromTo(el.night, { opacity: 0, ...near() }, { opacity: 0, duration: 0.001 }, 0.5);
-    tl.set(day, { opacity: 0 }, 0.72);
+    tl.fromTo(el.nightSoft, { opacity: GONE, ...near() }, { opacity: 1, duration: 0.22, ease: 'sine.inOut' }, 0.5);
+    tl.fromTo(el.night, { opacity: GONE, ...near() }, { opacity: GONE, duration: 0.001 }, 0.5);
+    tl.set(day, { opacity: GONE }, 0.72);
     tl.to([el.night, el.nightSoft], { x: 0, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' }, 0.6);
     tl.to(el.night, { opacity: 1, duration: 0.35, ease: 'sine.inOut' }, 0.78);
     // one exposure scalar for the passage: dusk, held through the cut, eased once the room is lit
@@ -88,90 +93,51 @@ export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void
     tl.to(el.scrim, { opacity: 0.18, duration: 0.45, ease: 'sine.out' }, 1.0);
     tl.fromTo(el.chapter, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 1.15);
 
-    // ── scroll control ──
-    const root = document.documentElement;
-    const coarse = matchMedia('(pointer: coarse)').matches;
-    const travel = () => track.offsetHeight - stage.offsetHeight;
-    const local = () => window.scrollY - track.offsetTop;
-    let night = false, busy = false, jumping = false;
-    const playing: gsap.core.Tween[] = [];
-
-    const block = (e: Event) => { if (busy) e.preventDefault(); };
-    const KEYS = new Set([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End']);
-    const blockKeys = (e: KeyboardEvent) => { if (busy && KEYS.has(e.key)) e.preventDefault(); };
-    const instant = (y: number) => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
-
-    // The stage is pinned for the whole track, so the scroll position inside it is invisible: the page is
-    // not moved while the passage plays (moving it every frame fought the browser's own smooth scrolling
-    // and made the pinned stage shimmer) — it is set once, at the end, where nothing on screen changes.
-    const go = (toNight: boolean) => {
-      busy = true; night = toNight;
-      if (coarse) root.classList.add('hero-busy'); // stops touch momentum while it plays
-      const ready = toNight ? Promise.race([el.night.decode().catch(() => {}), new Promise((r) => setTimeout(r, 180))]) : Promise.resolve();
-      ready.then(() => {
-        playing.push(gsap.to(tl, {
-          progress: toNight ? 1 : 0, duration: toNight ? FORWARD : BACK, ease: 'none',
-          onComplete: () => {
-            instant(track.offsetTop + (toNight ? travel() : 0));
-            busy = false; playing.length = 0; root.classList.remove('hero-busy');
-          },
-        }));
-      });
+    // ── scroll → progress ──
+    // mode: where the passage is heading. from/peak: scroll share when the mode began / furthest since.
+    // shown progress = the self-running clock, or the reader's scroll if that is further along, eased per frame.
+    const travel = () => Math.max(1, track.offsetHeight - stage.offsetHeight);
+    const share = () => Math.min(1, Math.max(0, (window.scrollY - track.offsetTop) / travel()));
+    let mode: 'day' | 'night' = 'day', from = 0, peak = 0, shown = 0;
+    const clock = { p: 0 };
+    let run: gsap.core.Tween | null = null;
+    const head = (m: 'day' | 'night', s: number) => {
+      mode = m; from = peak = s;
+      run?.kill();
+      clock.p = shown;
+      const to = m === 'night' ? 1 : 0;
+      run = gsap.to(clock, { p: to, duration: (m === 'night' ? FORWARD : BACK) * Math.abs(to - shown), ease: 'none' });
     };
-    // snap without animation: anchors, reloads mid-page, resizes
-    const settle = () => {
-      const y = local(), t = travel();
-      night = y >= t * 0.5;
-      tl.progress(night ? 1 : 0);
+    const tick = () => {
+      const s = share();
+      if (mode === 'day') { peak = Math.min(peak, s); if (s >= 1 || s > peak + ARM) head('night', s); }
+      else { peak = Math.max(peak, s); if (s <= 0 || s < peak - ARM) head('day', s); }
+      const byScroll = mode === 'night' ? (from >= 1 ? 1 : (s - from) / (1 - from)) : (from <= 0 ? 0 : s / from);
+      const target = mode === 'night' ? Math.max(clock.p, byScroll) : Math.min(clock.p, byScroll);
+      const next = Math.abs(target - shown) < 1e-4 ? target : shown + (target - shown) * 0.2;
+      if (next !== shown) { shown = next; tl.progress(shown); }
     };
-    const onScroll = () => {
-      if (busy || jumping) return;
-      const y = local(), t = travel();
-      if (!night && y >= t) { settle(); return; }          // arrived from far below or by a jump
-      if (!night && y > t * ARM) go(true);
-      else if (night && y >= 0 && y < t * (1 - ARM)) go(false);
-    };
-    // in-page links pass straight through the hero in the state they are heading for
-    const onClick = (e: MouseEvent) => {
-      const a = (e.target as Element).closest?.('a[href^="#"]') as HTMLAnchorElement | null;
-      if (!a) return;
-      const dest = document.querySelector(a.getAttribute('href')!) as HTMLElement | null;
-      if (!dest) return;
-      playing.forEach((p) => p.kill()); playing.length = 0; busy = false; root.classList.remove('hero-busy');
-      jumping = true;
-      night = dest.offsetTop >= track.offsetTop + travel();
-      tl.progress(night ? 1 : 0);
-      const done = () => { jumping = false; window.removeEventListener('scrollend', done); };
-      window.addEventListener('scrollend', done);
-      setTimeout(done, 1400);
-    };
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('wheel', block, { passive: false });
-    window.addEventListener('touchmove', block, { passive: false });
-    window.addEventListener('keydown', blockKeys);
-    document.addEventListener('click', onClick);
+    // a reload or a link that lands below the hero starts in the night
+    if (share() >= 1) { mode = 'night'; from = peak = 1; clock.p = shown = 1; tl.progress(1); }
+    gsap.ticker.add(tick);
 
     const ro = new ResizeObserver(() => {
       const p = tl.progress();
       tl.progress(0); apply(); tl.invalidate(); tl.progress(p);
     });
     ro.observe(stage);
-    settle();
 
     let alive = true;
-    Promise.all([el.day.decode(), document.fonts.ready]).catch(() => {}).then(() => { if (alive && !busy) { apply(); tl.invalidate(); settle(); } });
+    Promise.all([el.day.decode(), document.fonts.ready]).catch(() => {}).then(() => {
+      if (!alive) return;
+      const p = tl.progress(); tl.progress(0); apply(); tl.invalidate(); tl.progress(p);
+    });
     // decode the night ahead of time, off the critical path
     const warm = () => { for (const i of [el.night, el.nightSoft, el.daySoft]) i.decode().catch(() => {}); };
     'requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 2500 }) : setTimeout(warm, 1200);
     return () => {
       alive = false; ro.disconnect();
-      playing.forEach((p) => p.kill()); tl.kill(); root.classList.remove('hero-busy');
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('wheel', block);
-      window.removeEventListener('touchmove', block);
-      window.removeEventListener('keydown', blockKeys);
-      document.removeEventListener('click', onClick);
+      gsap.ticker.remove(tick); run?.kill(); tl.kill();
     };
     // refs are stable for the component's lifetime
     // eslint-disable-next-line react-hooks/exhaustive-deps

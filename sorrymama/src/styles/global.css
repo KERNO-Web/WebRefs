@@ -1,7 +1,7 @@
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--hdr-h); }
 @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
-html.menu-open, html.hero-busy { overflow: hidden; }
+html.menu-open { overflow: hidden; }
 body { margin: 0; background: var(--night-black); color: var(--day-ink); font: 400 var(--body-size)/1.5 var(--font-ui); -webkit-font-smoothing: antialiased; }
 img { display: block; max-width: 100%; }
 /* width/height attributes reserve space; CSS aspect-ratio decides the crop */

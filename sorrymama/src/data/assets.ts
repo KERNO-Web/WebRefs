@@ -10,8 +10,8 @@ export const assets = {
   // day scene in two layers on the same 1440×1820 grid (2× files 2880×3640):
   // sky = the original photo with wires and bulbs removed; front = the owner's cut of the terrace,
   // wires and tree (Real-ESRGAN 4× → resampled), so the wordmark sits behind all of it
-  terrace: { src: v('terrace-sky.webp'), src2x: v('terrace-sky-2x.webp'), w: 1440, h: 1820, focus: { x: 1000, y: 760 }, crown: { w: 600, h: 470 }, wordmark: { x: 205, y: 490, size: 155 } },
-  front: { src: v('terrace-front.webp'), src2x: v('terrace-front-2x.webp') },
+  terrace: { src: v('terrace-sky.webp'), src15x: v('terrace-sky-15x.webp'), src2x: v('terrace-sky-2x.webp'), w: 1440, h: 1820, focus: { x: 1000, y: 760 }, crown: { w: 600, h: 470 }, wordmark: { x: 205, y: 490, size: 155 } },
+  front: { src: v('terrace-front.webp'), src15x: v('terrace-front-15x.webp'), src2x: v('terrace-front-2x.webp') },
   daySoft: { src: v('day-soft.webp') },
   // night master: 2× is Real-ESRGAN with the bartender patched back in from the original (no plastic face)
   lounge: { src: v('lounge-master.webp'), src15x: v('lounge-master-15x.webp'), src2x: v('lounge-master-2x.webp'), w: 1440, h: 2440, focus: { x: 760, y: 1150 }, canopy: { x: 760, y: 820 } },

@@ -1,6 +1,6 @@
-/* ── hero: one sticky stage over the track; one extra viewport of scroll arms the passage ── */
-/* one extra screen of track: the passage plays itself once ~12% of it is scrolled (useBlossomTimeline) */
-.journey { position: relative; height: 200svh; }
+/* ── hero: one sticky stage over a short track; ~12% of a screen arms the passage, which then plays itself
+   (useBlossomTimeline). The track only needs to be long enough to hold the stage while it plays. ── */
+.journey { position: relative; height: 170svh; }
 .stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--night-black); isolation: isolate; }
 .ph { position: absolute; left: 0; top: 0; max-width: none; object-fit: fill; pointer-events: none; will-change: transform, opacity; }
 .wash { position: absolute; inset: 0; pointer-events: none; }

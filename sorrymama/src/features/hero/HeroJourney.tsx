@@ -21,7 +21,7 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
       <section className="journey" ref={r.track} id="top" aria-label="Sorry Mama">
         <div className="stage" ref={r.stage}>
           <img ref={r.day} className="ph day" src={assets.terrace.src}
-            srcSet={`${assets.terrace.src} 1440w, ${assets.terrace.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
+            srcSet={`${assets.terrace.src} 1440w, ${assets.terrace.src15x} 2160w, ${assets.terrace.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
             alt="" aria-hidden="true" {...hi} />
           <h1 ref={r.title} className="wordmark" aria-label="Sorry Mama">
             <span className="wm-a" aria-hidden="true">SORRY</span>
@@ -29,7 +29,7 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
           </h1>
           {/* terrace, wires and tree in front of the wordmark */}
           <img ref={r.front} className="ph front" src={assets.front.src}
-            srcSet={`${assets.front.src} 1440w, ${assets.front.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
+            srcSet={`${assets.front.src} 1440w, ${assets.front.src15x} 2160w, ${assets.front.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
             alt="Летняя терраса Sorry Mama: цветущее дерево, голубые диваны и гирлянды" {...hi} />
           <img ref={r.daySoft} className="ph soft" src={assets.daySoft.src} alt="" aria-hidden="true" />
           <img ref={r.nightSoft} className="ph soft night-soft" src={assets.nightSoft.src} alt="" aria-hidden="true" />
