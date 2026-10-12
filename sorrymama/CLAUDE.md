@@ -16,8 +16,8 @@ Single-page restaurant site for Sorry Mama rest-lounge, Kazan. Russian copy. Not
 - Only real photos of this venue. No stretched 960px images as full-bleed desktop heroes.
 - `research/` holds unlicensed map-gallery photos: private, gitignored, never deployed until rights are cleared.
 - No link to `sorrymama-lounge.ru` (reported gambling redirect).
-- Booking = verified phone `tel:+78432033303`; no fake confirmations, no data collection.
+- Booking: popup (`[data-book]` opens `BookingDialog`) — guests, name, phone. `src/data/booking.ts` has no endpoint in the concept, so nothing is sent and the guest is told to call `tel:+78432033303`. Never show a confirmation for a request nobody received.
 - Russian short words (в, с, к, у, о, и, а, на, по, за, из) never end a line in headings: use `nb()`.
-- Hero: day terrace → blossoms occlude the huge `SORRY MAMA` → hidden cut → night lounge. A played GSAP timeline (not scrubbed): ~12% of a screen of scroll arms it, it runs ~1.5 s and glides the page to the end of the track; scrolling back rewinds it. Transforms/opacity only.
+- Hero: day terrace → blossoms occlude the huge `SORRY MAMA` → hidden cut → night lounge. A played GSAP timeline (not scrubbed): ~12% of a screen of scroll arms it, it runs ~1.5 s with input held, then sets the scroll to the end of the track once (never per frame: that made the pinned stage shimmer); scrolling back rewinds it. Night/soft layers hide by opacity, never visibility. Transforms/opacity only.
 - Page order: Hero → Atmosphere → Menu → Terrace → Details → Booking → Contacts. Menu and Booking are header buttons of their own; never bury them.
-- Fonts: Commissioner 800 with `--display-axes` (display: `.title-xl`, `.subhead`), Onest (UI). Every chapter: `.kicker` (NN / name) above a `.title-xl`.
+- Fonts: Commissioner 800 with `--display-axes` (display: `.title-xl`, `.subhead`), Onest (UI). Titles flush left (no staggered lines), no chapter numbers or tag rows.

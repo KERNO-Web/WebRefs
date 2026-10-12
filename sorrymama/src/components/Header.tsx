@@ -48,7 +48,7 @@ export function Header() {
       </nav>
       <div className="hdr-cta">
         <a className={'btn btn-hdr btn-ghost' + (active === 'menu' ? ' is-active' : '')} href="#menu">Меню</a>
-        <a className="btn btn-hdr" href="#booking"><span className="long">Забронировать</span><span className="short">Бронь</span></a>
+        <button className="btn btn-hdr" type="button" data-book><span className="long">Забронировать</span><span className="short">Бронь</span></button>
       </div>
       <button ref={toggle} className="hdr-toggle" aria-expanded={open} aria-controls="menu-panel" aria-label={open ? 'Закрыть навигацию' : 'Открыть навигацию'} onClick={() => setOpen(!open)}><i /><i /></button>
       <div id="menu-panel" ref={panel} className="menu-panel" hidden={!open}>
@@ -56,7 +56,7 @@ export function Header() {
           {PANEL.map(([t, h]) => <a key={h} href={h} onClick={() => setOpen(false)}>{t}</a>)}
         </nav>
         <div className="menu-foot">
-          <a className="btn btn-gold" href={venue.phone.href}>Забронировать стол</a>
+          <button className="btn btn-gold" type="button" data-book onClick={() => setOpen(false)}>Забронировать стол</button>
           <a className="link" href={venue.phone.href}>{venue.phone.display}</a>
         </div>
       </div>

@@ -8,6 +8,7 @@ import { Terrace } from '../features/terrace/Terrace';
 import { Menu } from '../features/menu/Menu';
 import { Gallery } from '../features/gallery/Gallery';
 import { Booking } from '../features/booking/Booking';
+import { BookingDialog } from '../features/booking/BookingDialog';
 import { Visit } from '../features/contacts/Visit';
 
 export default function App() {
@@ -50,6 +51,7 @@ export default function App() {
         <Visit />
       </main>
       <Footer />
+      <BookingDialog />
       <Cursor />
     </>
   );

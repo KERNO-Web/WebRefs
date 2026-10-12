@@ -1,4 +1,4 @@
-/* ── hero: one sticky stage over the track; ~2 extra viewports of scroll for the passage ── */
+/* ── hero: one sticky stage over the track; one extra viewport of scroll arms the passage ── */
 /* one extra screen of track: the passage plays itself once ~12% of it is scrolled (useBlossomTimeline) */
 .journey { position: relative; height: 200svh; }
 .stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--night-black); isolation: isolate; }
@@ -16,21 +16,20 @@
 .wordmark span { display: block; }
 .wm-b { margin-left: .8em; }
 .front { z-index: 3; }
-.soft { z-index: 4; opacity: 0; visibility: hidden; }
+.soft { z-index: 4; opacity: 0; }
 .night-soft { z-index: 5; }
-.night { z-index: 6; opacity: 0; visibility: hidden; }
+.night { z-index: 6; opacity: 0; }
 /* the single exposure layer: warm plum, never grey */
 .scrim { z-index: 7; opacity: 0; background: radial-gradient(120% 90% at 50% 45%, rgba(58, 22, 38, .75), rgba(26, 12, 20, 1)); }
 
 /* crafted masthead along the bottom edge */
 .masthead {
   position: absolute; z-index: 8; left: 0; right: 0; bottom: 0;
-  display: grid; grid-template-columns: auto 1fr auto auto; align-items: end; column-gap: clamp(20px, 3vw, 48px);
+  display: grid; grid-template-columns: 1fr auto auto; align-items: end; column-gap: clamp(20px, 3vw, 48px);
   padding: 90px var(--page-gutter) clamp(22px, 3.4vh, 34px); color: var(--day-ink);
   background: linear-gradient(0deg, rgba(245, 240, 236, .78) 0%, rgba(245, 240, 236, .42) 55%, rgba(245, 240, 236, 0) 100%);
   font-size: var(--label-size);
 }
-.mh-index { font-variant-numeric: tabular-nums; } .mh-index b { font-weight: 600; }
 .mh-place { font-weight: 500; letter-spacing: .02em; text-transform: uppercase; }
 .mh-actions { display: flex; align-items: center; gap: 12px; font-size: 15px; }
 .mh-cue { position: relative; padding-top: 36px; writing-mode: vertical-rl; letter-spacing: .04em; opacity: .7; }
@@ -40,16 +39,13 @@
 /* the night frame's chapter, set into the photograph */
 .chapter {
   position: absolute; z-index: 8; left: 0; right: 0; bottom: 0; opacity: 0; visibility: hidden;
-  display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(18px, 2.4vw, 40px); align-items: end;
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: end;
   padding: 220px var(--page-gutter) clamp(30px, 6vh, 64px); color: var(--night-ink);
   /* ends on the page colour, so the next chapter starts without a seam */
   background: linear-gradient(0deg, var(--night-black) 0%, rgba(25, 19, 23, .8) 22%, rgba(25, 14, 20, .45) 55%, rgba(25, 14, 20, 0) 100%);
 }
-.ch-index { grid-row: 1 / span 3; align-self: stretch; writing-mode: vertical-rl; transform: rotate(180deg); font-size: var(--label-size); letter-spacing: .06em; text-transform: uppercase; color: var(--lantern-gold); border-left: 1px solid var(--line-night); padding-left: 12px; }
-.ch-index b { font-weight: 600; }
 .ch-title { font: 800 clamp(72px, 7.8vw, 124px)/.9 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.04em; }
 .ch-title span { display: block; }
-.ch-title span + span { margin-left: .6em; }
 .ch-line { margin-top: 22px; max-width: 42ch; font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--night-muted); }
 .ch-actions { display: flex; align-items: center; gap: 26px; margin-top: 26px; }
 

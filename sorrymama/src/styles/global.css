@@ -17,16 +17,10 @@ h1, h2, p { margin: 0; }
 .body { max-width: 44ch; font-size: clamp(16px, 1.15vw, 19px); line-height: 1.55; text-wrap: pretty; }
 
 /* ── type system: one display voice (Commissioner, the terrace cut), one UI voice (Onest) ──
-   kicker  → chapter number + name, small caps line above every title
-   title-xl → chapter titles; size per section through --t
+   title-xl → chapter titles, every line flush left; size per section through --t
    subhead → editorial headline inside a chapter */
-.kicker { margin: 0 0 clamp(14px, 1.6vw, 24px); font-size: var(--label-size); font-weight: 500; letter-spacing: .07em; text-transform: uppercase; color: var(--day-muted); font-variant-numeric: tabular-nums; }
-.kicker b { font-weight: 600; color: var(--day-ink); }
-[data-tone='night'] .kicker { color: var(--lantern-gold); }
-[data-tone='night'] .kicker b { color: var(--night-ink); }
 .title-xl { --t: clamp(72px, 9.6vw, 184px); font: 800 var(--t)/.86 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.05em; }
 .title-xl span { display: block; }
-.title-xl span + span { margin-left: .5em; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px;
@@ -35,6 +29,8 @@ h1, h2, p { margin: 0; }
   transition: background .2s ease, transform .15s ease;
 }
 .btn:hover { background: #4a3740; }
+button.btn, button.link { border: 0; cursor: pointer; }
+button.link { padding: 0; background-color: transparent; font: inherit; font-weight: 500; }
 .btn:active { transform: translateY(1px); }
 .btn-gold { background: var(--lantern-gold); color: var(--night-black); }
 .btn-gold:hover { background: #dcab7b; }

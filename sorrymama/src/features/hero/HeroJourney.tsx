@@ -34,26 +34,24 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
           <img ref={r.daySoft} className="ph soft" src={assets.daySoft.src} alt="" aria-hidden="true" />
           <img ref={r.nightSoft} className="ph soft night-soft" src={assets.nightSoft.src} alt="" aria-hidden="true" />
           <img ref={r.night} className="ph night" src={assets.lounge.src}
-            srcSet={`${assets.lounge.src} 1440w, ${assets.lounge.src2x} 2880w`} sizes="(max-width: 767px) 110vw, 134vw" alt="Зал Sorry Mama вечером: цветущее дерево с фонарями, бархатные диваны и бар" />
+            srcSet={`${assets.lounge.src} 1440w, ${assets.lounge.src15x} 2160w, ${assets.lounge.src2x} 2880w`} sizes="(max-width: 767px) 110vw, 134vw" alt="Зал Sorry Mama вечером: цветущее дерево с фонарями, бархатные диваны и бар" />
           <div ref={r.scrim} className="wash scrim" aria-hidden="true" />
 
           <div ref={r.masthead} className="masthead">
-            <p className="mh-index"><b>01</b> / 02</p>
             <p className="mh-place">Казань — рест-лаунж</p>
             <div className="mh-actions">
               <a className="btn btn-arrow" href="#menu">Смотреть меню <span aria-hidden="true">↓</span></a>
-              <a className="btn btn-ghost" href="#booking">Забронировать</a>
+              <button className="btn btn-ghost" type="button" data-book>Забронировать</button>
             </div>
             <span className="mh-cue" aria-hidden="true">Листайте</span>
           </div>
 
           <div ref={r.chapter} className="chapter">
-            <p className="ch-index" aria-hidden="true"><b>02</b> / Вечер</p>
             <h2 className="ch-title"><span>Свет</span><span>{nb('в ветвях')}</span></h2>
             <p className="ch-line">{nb('Днём — летняя терраса, вечером — зал под цветущим деревом с фонарями.')}</p>
             <div className="ch-actions">
               <a className="btn btn-gold btn-arrow" href="#menu">Смотреть меню <span aria-hidden="true">↓</span></a>
-              <a className="link link-night" href="#booking">Забронировать стол</a>
+              <button className="link link-night" type="button" data-book>Забронировать стол</button>
             </div>
           </div>
         </div>

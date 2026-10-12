@@ -10,10 +10,8 @@ export function Atmosphere() {
   return (
     <section className="atmo" id="atmosphere" data-tone="night" aria-labelledby="atmo-h" ref={ref}>
       <div className="atmo-text reveal-type">
-        <p className="kicker"><b>02</b> / Зал вечером</p>
         <h2 id="atmo-h" className="subhead">{nb('Бархатные диваны, бар и фонари прямо в кроне')}</h2>
         <p className="body">{nb('Дерево стоит посреди зала: гирлянды в ветвях, красные фонари, вокруг зелёный бархат и кресла. Бар — за кроной.')}</p>
-        <p className="track"><span>Зал</span><span>Вечер</span><span>Фото гостей · 2ГИС</span></p>
       </div>
       <figure className="atmo-photo reveal-img">
         <img src={assets.lanterns.src} srcSet={`${assets.lanterns.src} 1440w, ${assets.lanterns.src2x} 2880w`} sizes="(max-width: 899px) 100vw, 58vw"

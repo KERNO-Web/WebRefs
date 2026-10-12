@@ -18,24 +18,32 @@ export function Cursor() {
       r.style.transform = `translate3d(${rx}px, ${ry}px, 0)`;
       raf = requestAnimationFrame(tick);
     };
+    // the mode follows whatever is under the pointer — also when the page scrolls beneath a still mouse
+    const mode = () => {
+      const t = document.elementFromPoint(x, y);
+      const a = t?.closest('a, button, [data-cursor]') as HTMLElement | null;
+      r.dataset.mode = !a ? '' : a.dataset.cursor === 'view' ? 'view' : a.getAttribute('target') === '_blank' ? 'ext' : 'link';
+    };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return;
       x = e.clientX; y = e.clientY;
+      // dialogs live in the top layer above the cursor: give the native one back while one is open
+      if (document.querySelector('dialog[open]')) { off(); return; }
       if (!live) { live = true; rx = x; ry = y; root.classList.add('has-cursor'); }
-      const t = e.target as Element;
-      const a = t.closest?.('a, button, [data-cursor]') as HTMLElement | null;
-      const mode = !a ? '' : a.dataset.cursor === 'view' ? 'view' : a.getAttribute('target') === '_blank' ? 'ext' : 'link';
-      r.dataset.mode = mode;
+      mode();
     };
+    const onScroll = () => { if (live) mode(); };
     const off = () => { live = false; root.classList.remove('has-cursor'); };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Tab') off(); };
     window.addEventListener('pointermove', onMove, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('keydown', onKey);
     document.addEventListener('pointerleave', off);
     raf = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(raf); off();
       window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('keydown', onKey);
       document.removeEventListener('pointerleave', off);
     };

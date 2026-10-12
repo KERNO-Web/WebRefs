@@ -34,7 +34,6 @@ export function Gallery() {
   return (
     <section className="gallery" id="gallery" data-tone="day" aria-labelledby="gallery-h">
       <div className="g-head">
-        <p className="kicker"><b>05</b> / Фото гостей</p>
         <h2 id="gallery-h" className="title-xl g-title">Детали</h2>
       </div>
       <div className="g-grid">

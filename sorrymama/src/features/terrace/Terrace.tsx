@@ -10,12 +10,11 @@ export function Terrace() {
   return (
     <section className="terrace" id="terrace" data-tone="day" aria-labelledby="terrace-h" ref={ref}>
       <div className="tr-head reveal-type">
-        <p className="kicker"><b>04</b> / День</p>
         <h2 id="terrace-h" className="title-xl tr-title">Терраса</h2>
       </div>
       <div className="tr-copy reveal-type reveal-late">
         <p className="body">{nb('Летняя терраса: белые деревянные диваны с голубыми подушками, гирлянды над столами и цветущие деревья среди них.')}</p>
-        <a className="btn btn-arrow" href="#booking">Забронировать стол <span aria-hidden="true">→</span></a>
+        <button className="btn btn-arrow" type="button" data-book>Забронировать стол <span aria-hidden="true">→</span></button>
       </div>
       <figure className="tr-main reveal-img">
         <img src={assets.terraceDay.src} srcSet={`${assets.terraceDay.src} 1178w, ${assets.terraceDay.src2x} 2356w`} sizes="(max-width: 899px) 100vw, 62vw"

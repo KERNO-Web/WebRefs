@@ -10,7 +10,6 @@ export function Visit() {
   return (
     <section className="visit" id="contacts" data-tone="night" aria-labelledby="visit-h" ref={ref}>
       <div className="visit-main reveal-type">
-        <p className="kicker"><b>07</b> / Контакты</p>
         <h2 id="visit-h" className="title-xl visit-title"><span>Как</span><span>добраться</span></h2>
         <div className="visit-rows">
           <div className="visit-cell">

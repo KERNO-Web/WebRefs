@@ -24,7 +24,6 @@ export function Menu() {
     <section className="menu" id="menu" data-tone="day" aria-labelledby="menu-h" ref={ref}>
       <div className="menu-head reveal-type">
         <div>
-          <p className="kicker"><b>03</b> / Кухня и бар</p>
           <h2 id="menu-h" className="title-xl menu-title">Меню</h2>
           <p className="menu-lead">{nb('Блюда кухни, коктейли и напитки бара — с актуальными ценами.')}</p>
           {ready && <ul className="menu-cats">{menu.map((c) => <li key={c.id}>{c.category}</li>)}</ul>}

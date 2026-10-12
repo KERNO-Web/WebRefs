@@ -14,7 +14,7 @@ export const assets = {
   front: { src: v('terrace-front.webp'), src2x: v('terrace-front-2x.webp') },
   daySoft: { src: v('day-soft.webp') },
   // night master: 2× is Real-ESRGAN with the bartender patched back in from the original (no plastic face)
-  lounge: { src: v('lounge-master.webp'), src2x: v('lounge-master-2x.webp'), w: 1440, h: 2440, focus: { x: 760, y: 1150 }, canopy: { x: 760, y: 820 } },
+  lounge: { src: v('lounge-master.webp'), src15x: v('lounge-master-15x.webp'), src2x: v('lounge-master-2x.webp'), w: 1440, h: 2440, focus: { x: 760, y: 1150 }, canopy: { x: 760, y: 820 } },
   nightSoft: { src: v('night-soft.webp') },
   bloom: { src: v('bloom-source.webp'), w: 1440, h: 1800 },
   lanterns: { src: v('lounge-lanterns.webp'), src2x: v('lounge-lanterns-2x.webp'), w: 1440, h: 1800 },

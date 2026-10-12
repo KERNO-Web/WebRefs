@@ -74,13 +74,14 @@ export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void
     tl.fromTo(day, { scale: 1, x: 0, y: 0 }, { scale: () => dn().scale, x: () => dn().x, y: () => dn().y, duration: 0.62, ease: 'power2.in' }, 0);
     tl.fromTo(el.title, { y: 0, scale: 1 }, { y: -12, scale: 1.04, duration: 0.4, ease: 'sine.in' }, 0);
     tl.to(el.title, { autoAlpha: 0, duration: 0.18 }, 0.22);
-    tl.fromTo(el.daySoft, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, ease: 'sine.in' }, 0.32);
+    // opacity only, never visibility: hidden layers can lose their decoded pixels and flash black when shown
+    tl.fromTo(el.daySoft, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: 'sine.in' }, 0.32);
     // the hidden cut, soft blossom into soft blossom
-    tl.fromTo(el.nightSoft, { autoAlpha: 0, ...near() }, { autoAlpha: 1, duration: 0.22, ease: 'sine.inOut' }, 0.5);
-    tl.fromTo(el.night, { autoAlpha: 0, ...near() }, { autoAlpha: 0, duration: 0.001 }, 0.5);
-    tl.set(day, { autoAlpha: 0 }, 0.72);
+    tl.fromTo(el.nightSoft, { opacity: 0, ...near() }, { opacity: 1, duration: 0.22, ease: 'sine.inOut' }, 0.5);
+    tl.fromTo(el.night, { opacity: 0, ...near() }, { opacity: 0, duration: 0.001 }, 0.5);
+    tl.set(day, { opacity: 0 }, 0.72);
     tl.to([el.night, el.nightSoft], { x: 0, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' }, 0.6);
-    tl.to(el.night, { autoAlpha: 1, duration: 0.35, ease: 'sine.inOut' }, 0.78);
+    tl.to(el.night, { opacity: 1, duration: 0.35, ease: 'sine.inOut' }, 0.78);
     // one exposure scalar for the passage: dusk, held through the cut, eased once the room is lit
     tl.fromTo(el.scrim, { opacity: 0 }, { opacity: 0.32, duration: 0.3, ease: 'sine.in' }, 0.2);
     tl.to(el.scrim, { opacity: 0.38, duration: 0.2 }, 0.5);
@@ -100,19 +101,22 @@ export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void
     const blockKeys = (e: KeyboardEvent) => { if (busy && KEYS.has(e.key)) e.preventDefault(); };
     const instant = (y: number) => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
 
+    // The stage is pinned for the whole track, so the scroll position inside it is invisible: the page is
+    // not moved while the passage plays (moving it every frame fought the browser's own smooth scrolling
+    // and made the pinned stage shimmer) — it is set once, at the end, where nothing on screen changes.
     const go = (toNight: boolean) => {
       busy = true; night = toNight;
-      if (coarse) root.classList.add('hero-busy'); // stops touch momentum fighting the glide
-      const dur = toNight ? FORWARD : BACK;
-      const glide = { y: window.scrollY };
-      const target = track.offsetTop + (toNight ? travel() : 0);
-      playing.push(
-        gsap.to(tl, { progress: toNight ? 1 : 0, duration: dur, ease: 'none' }),
-        gsap.to(glide, {
-          y: target, duration: dur * 0.85, ease: 'power2.inOut', onUpdate: () => instant(glide.y),
-          onComplete: () => { busy = false; playing.length = 0; root.classList.remove('hero-busy'); },
-        }),
-      );
+      if (coarse) root.classList.add('hero-busy'); // stops touch momentum while it plays
+      const ready = toNight ? Promise.race([el.night.decode().catch(() => {}), new Promise((r) => setTimeout(r, 180))]) : Promise.resolve();
+      ready.then(() => {
+        playing.push(gsap.to(tl, {
+          progress: toNight ? 1 : 0, duration: toNight ? FORWARD : BACK, ease: 'none',
+          onComplete: () => {
+            instant(track.offsetTop + (toNight ? travel() : 0));
+            busy = false; playing.length = 0; root.classList.remove('hero-busy');
+          },
+        }));
+      });
     };
     // snap without animation: anchors, reloads mid-page, resizes
     const settle = () => {
@@ -157,6 +161,9 @@ export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void
 
     let alive = true;
     Promise.all([el.day.decode(), document.fonts.ready]).catch(() => {}).then(() => { if (alive && !busy) { apply(); tl.invalidate(); settle(); } });
+    // decode the night ahead of time, off the critical path
+    const warm = () => { for (const i of [el.night, el.nightSoft, el.daySoft]) i.decode().catch(() => {}); };
+    'requestIdleCallback' in window ? requestIdleCallback(warm, { timeout: 2500 }) : setTimeout(warm, 1200);
     return () => {
       alive = false; ro.disconnect();
       playing.forEach((p) => p.kill()); tl.kill(); root.classList.remove('hero-busy');
