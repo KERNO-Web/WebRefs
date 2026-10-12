@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { Cursor } from '../components/Cursor';
 import { HeroJourney } from '../features/hero/HeroJourney';
 import { Atmosphere } from '../features/atmosphere/Atmosphere';
 import { Terrace } from '../features/terrace/Terrace';
@@ -45,6 +46,7 @@ export default function App() {
         <Visit />
       </main>
       <Footer />
+      <Cursor />
     </>
   );
 }

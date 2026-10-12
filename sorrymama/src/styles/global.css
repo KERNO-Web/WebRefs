@@ -4,6 +4,8 @@ html { -webkit-text-size-adjust: 100%; scroll-padding-top: var(--hdr-h); }
 html.menu-open { overflow: hidden; }
 body { margin: 0; background: var(--night-black); color: var(--day-ink); font: 400 var(--body-size)/1.5 var(--font-ui); -webkit-font-smoothing: antialiased; }
 img { display: block; max-width: 100%; }
+/* width/height attributes reserve space; CSS aspect-ratio decides the crop */
+img[width][height] { height: auto; }
 figure { margin: 0; }
 a { color: inherit; }
 h1, h2, p { margin: 0; }
@@ -53,3 +55,28 @@ html[data-tone='night'] .btn-hdr { background: var(--lantern-gold); color: var(-
 .btn-hdr .short { display: none; }
 .hdr-toggle { display: none; }
 .menu-panel { display: none; }
+
+/* active chapter in the header */
+.hdr-nav a.is-active { background-size: 100% 1px; }
+
+/* ── cursor (fine pointer only, see Cursor.tsx) ── */
+.cursor { position: fixed; inset: 0; z-index: 90; pointer-events: none; }
+.cursor-dot, .cursor-ring { position: fixed; left: 0; top: 0; opacity: 0; transition: opacity .2s ease; }
+.has-cursor .cursor-dot, .has-cursor .cursor-ring { opacity: 1; }
+.has-cursor, .has-cursor * { cursor: none !important; }
+.cursor-dot { width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; background: var(--day-ink); }
+.cursor-ring {
+  width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%; border: 1px solid rgba(49, 37, 43, .55);
+  display: grid; place-items: center; font: 600 11px/1 var(--font-ui); letter-spacing: .04em; text-transform: uppercase; color: var(--day-paper);
+  transition: width .25s ease, height .25s ease, margin .25s ease, background .25s ease, border-color .25s ease, opacity .2s ease;
+}
+.cursor-ring span { display: none; }
+.cursor-ring[data-mode='link'] { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
+.cursor-ring[data-mode='ext'] { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
+.cursor-ring[data-mode='ext'] .cr-ext { display: block; color: currentColor; font-size: 14px; }
+.cursor-ring[data-mode='view'] { width: 72px; height: 72px; margin: -36px 0 0 -36px; background: rgba(49, 37, 43, .82); border-color: transparent; }
+.cursor-ring[data-mode='view'] .cr-view { display: block; }
+html[data-tone='night'] .cursor-dot { background: var(--night-ink); }
+html[data-tone='night'] .cursor-ring { border-color: rgba(246, 234, 228, .6); }
+html[data-tone='night'] .cursor-ring[data-mode='ext'] { color: var(--night-ink); }
+.cursor-ring[data-mode='ext'] { color: var(--day-ink); }

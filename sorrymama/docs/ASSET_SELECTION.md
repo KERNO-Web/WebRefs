@@ -32,3 +32,25 @@ Recognisable guests (many selfies on the neon staircase, portraits), watermarked
 
 ## Needed for final quality
 Owner originals ≥2400 px: the terrace tree with sofas (landscape, soft daylight) and the lounge tree as a wide room shot; publication permission for any guest photo kept.
+
+## V3 audit (13.10.2026) — every photo on the page
+| file | source | drawn at 1440×900 (CSS) | DPR 2 need | crop | 100% sharpness | dup | verdict |
+|---|---|---|---|---|---|---|---|
+| terrace-master(-2x) | 097, 1440×1820 → Real-ESRGAN 2× 2880×3640 | 1613×2038 (scale 1.12) | 3226 | desktop band, focus (1000,760) | neural crisp, no doubling | hero only | **neural wins** |
+| terrace-branch-alpha | 097 2× region 280×360 | 157×202 | — | one sprig over last letter | clean at 100% after texture rule | — | kept (≥1180 px only) |
+| day-soft / night-soft | 097 / 085 → 720 px, gblur σ7 | only seen defocused | — | full frame | intentionally soft | — | kept |
+| lounge-master | 085, 1440×2440 | 1440×2440 (1:1) | 2880 | focus (760,1150) | original; neural made the bartender's face plastic | hero + tail | **original wins** |
+| lounge-lanterns(-2x) | 216 → neural 2× | ≈ 900 wide | 1800 | 4:3, lanterns | neural crisp | atmosphere only | **neural wins** |
+| terrace-evening | 081, 1440×1800 | ≈ 760 wide | 1520 | 5:4 bottom-anchored | 1:1 at 1x | terrace only | ok |
+| terrace-table | 191 crop 1080×1400 | ≈ 300 wide | 600 | fruit plate | sharp | — | ok |
+| lounge-cocktail | 014 crop 1240×1500 | ≈ 420 wide | 840 | full | sharp | menu only | ok |
+| terrace-drink | pack SM02 crop 580×860 | ≈ 330 wide | 660 | hand + glass, guests cut out | sharp | menu only | ok |
+| terrace-tree | 124, 1440×1800 | ≈ 860 wide | 1720 | 5:4 | 1:1 | gallery only | ok |
+| terrace-car-close | pack SM01 961×1280 | ≈ 400 wide | 800 | 4:3 | sharp | gallery only | ok |
+| bloom-source | 061, 1440×1800 | ≈ 400 wide | 800 | 4:3 | sharp | gallery only | ok |
+| lounge-canopy | 200 crop 1440×1100 (guests cut out) | 1440×≈700 | 2880 | upper canopy | soft on retina | contacts only | acceptable, dark scene |
+
+Rights: none cleared (2GIS guest uploads + owner's research pack). Local only.
+
+## V3 typography
+Auditioned Commissioner, Geologica and Manrope on the identical hero crop (scratch board, labels outside). Chosen: **Commissioner 800** with FLAR 60 / VOLM 80. Reason: its humanist construction and flared terminals sit with the blossoms instead of stamping over them; Geologica read colder and more geometric, Manrope rounder and corporate. Composition first: both lines over the sky, `MAMA` ending where one real sprig crosses its last letter. Onest stays for UI/body.

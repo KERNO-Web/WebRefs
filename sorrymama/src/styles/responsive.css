@@ -42,9 +42,9 @@
   .menu-photo { margin-left: calc(-1 * var(--page-gutter)); }
   .menu-body { margin-top: 32px; }
   .g-grid { row-gap: 28px; }
-  .visit { padding-right: var(--page-gutter); }
-  .visit-photo { margin: 0 calc(-1 * var(--page-gutter)); }
-  .visit-photo img { min-height: 0; aspect-ratio: 4 / 5; }
+  .visit-row { grid-template-columns: 1fr; row-gap: 28px; }
+  .visit-cell:nth-child(n) { grid-column: 1; }
+  .visit-hero { height: 62vh; min-height: 380px; }
 }
 
 /* ── phones ── */

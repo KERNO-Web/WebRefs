@@ -6,6 +6,7 @@ export type HeroLayout = {
   day: Box; dayFocus: { x: number; y: number };
   dayNear: { x: number; y: number; scale: number }; // camera inside the crown: crown centred, frame filled
   branch: Box;            // the one real branch allowed in front of a letter
+  wordmark: { x: number; y: number; size: number } | null; // locked to the photo where the crossing is exact
   night: Box;             // night photo at rest
   nightNear: Box;         // the same photo deep in its canopy, where the cut happens
   tail: number;
@@ -38,8 +39,13 @@ export function heroLayout(W: number, H: number): HeroLayout {
   const cw = T.crown.w * ds, ch = T.crown.h * ds;
   const dayNear = { x: W / 2 - dayFocus.x, y: H / 2 - dayFocus.y, scale: Math.max(W / cw, H / ch) * 1.12 };
 
+  // On wide screens the wordmark is placed in the photograph's own coordinates, so the last letter
+  // always meets the same sprig; narrower layouts fall back to CSS and drop the crossing.
+  const WM = T.wordmark;
+  const wordmark = !mobile && W >= 1180 ? { x: day.x + WM.x * ds, y: day.y + WM.y * ds, size: WM.size * ds } : null;
+
   return {
-    W, H, mobile, day, branch, night, nightNear, dayFocus, dayNear,
+    W, H, mobile, day, branch, wordmark, night, nightNear, dayFocus, dayNear,
     tail: Math.max(0, night.y + night.h - H),
   };
 }

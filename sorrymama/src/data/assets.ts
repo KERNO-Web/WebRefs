@@ -8,7 +8,7 @@ const v = (f: string) => `./assets/venue/${f}`;
 
 export const assets = {
   // day master: original 1440 + Real-ESRGAN 2× (chosen over Lanczos at 100% crops, see docs/ASSET_SELECTION.md)
-  terrace: { src: v('terrace-master.webp'), src2x: v('terrace-master-2x.webp'), w: 1440, h: 1820, focus: { x: 1000, y: 760 }, crown: { w: 600, h: 470 } },
+  terrace: { src: v('terrace-master.webp'), src2x: v('terrace-master-2x.webp'), w: 1440, h: 1820, focus: { x: 1000, y: 760 }, crown: { w: 600, h: 470 }, wordmark: { x: 205, y: 490, size: 155 } },
   // one small branch of the same photograph, keyed, so a single letter can pass behind it (1x coords)
   branch: { src: v('terrace-branch-alpha.webp'), x: 735, y: 600, w: 140, h: 180 },
   daySoft: { src: v('day-soft.webp') },

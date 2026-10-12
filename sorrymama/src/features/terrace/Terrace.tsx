@@ -11,7 +11,7 @@ export function Terrace() {
   return (
     <section className="terrace" id="terrace" data-tone="day" aria-labelledby="terrace-h" ref={ref}>
       <figure className="tr-main reveal-img">
-        <img src={assets.terraceTree.src} alt="Летняя терраса Sorry Mama: голубые диваны, белые деревянные рамы и розовое дерево" loading="lazy" width={1440} height={1800} />
+        <img src={assets.terraceEvening.src} alt="Терраса Sorry Mama на закате: гирлянды над белыми диванами и розовое дерево" loading="lazy" width={1440} height={1800} />
       </figure>
       <p className="tr-index reveal-type" aria-hidden="true"><b>03</b> / День</p>
       <h2 id="terrace-h" className="tr-title reveal-type">Терраса</h2>

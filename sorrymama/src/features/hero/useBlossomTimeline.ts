@@ -48,6 +48,9 @@ export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => voi
       L = heroLayout(stage.clientWidth, stage.clientHeight);
       for (const e of [el.day, el.daySoft]) put(e, L.day);
       put(el.branch, L.branch);
+      const t = el.title.style;
+      if (L.wordmark) { t.left = `${L.wordmark.x}px`; t.top = `${L.wordmark.y}px`; t.fontSize = `${L.wordmark.size}px`; el.branch.style.display = ''; }
+      else { t.left = t.top = t.fontSize = ''; el.branch.style.display = 'none'; }
       for (const e of [el.night, el.nightSoft]) put(e, L.night);
       // day layers scale about the tree; the branch must keep registration with its photograph
       const f = L.dayFocus;

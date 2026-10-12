@@ -1,45 +1,34 @@
-# QA report — Sorry Mama reborn (13.10.2026)
+# QA report — Sorry Mama V3 (13.10.2026)
 
-Run: `npm run dev` → http://localhost:5187 (Playwright, Chromium). Screenshots in `screenshots/` (gitignored).
+Run: `npm run dev` → http://localhost:5187 (Playwright Chromium). Proofs in `screenshots/v3/` (gitignored), video `screenshots/v3-scroll-desktop.mp4`.
 
-## Gates
-| gate | status | evidence |
-|---|---|---|
-| A asset reality | **PARTIAL** | 713-photo 2GIS gallery screened, 12 originals; best = 1440×1920 portrait, no ≥2000 px landscape. `research/ASSET_SELECTION.md` |
-| B static stills | PASS | desktop-p0.00 / p0.54 / p1.00, mobile-p0.00 |
-| C motion | PASS (one note) | desktop/mobile p0.00 p0.18 p0.38 p0.54 p0.78 p1.00; scroll-*-forward-reverse.mp4 |
-| D whole site | PASS | atmosphere, terrace, menu (2GIS link, empty data model), gallery + lightbox, contacts, footer |
-| E QA | PASS | below |
+## Brief's capture list
+Desktop 1440×900: D01-hero, D02-p025, D03-p048, D04-p061, D05-p085, D06-after400, D07-terrace, D08-menu, D09-details-hover + D09b-lightbox, D10-contacts + D10b-footer.
+Mobile 390×844: M01-hero, M02-transition, M03-night, M04-terrace, M05-menu, M06-gallery-open.
+Widths: W360/768/1024/1366/1920 hero + night. Reduced motion: RM-night.
 
-## Acceptance list
-| requirement | result |
+## Hard failures — checked
+| failure | result |
 |---|---|
-| F0 sakura + real terrace, not flower-only or cobalt sky | PASS |
-| `SORRY MAMA` huge, partly behind real blossoms, legible | PASS (last `A` weaves behind the crown) |
-| No stretched 960 px hero | PASS at 1440 (1:1); **NOT retina-grade**, 1.33× at 1920 |
-| Mid-scroll cover, no grey wash, no trunk morph, no opacity-only title removal | PASS (title covered first, fades at p .37+) |
-| Night frame shows architecture and warm light, no plum void | PASS |
-| Night continues into Atmosphere | PASS (same photograph continues below the stage) |
-| Distinct terrace chapter, real menu path | PASS |
-| `Забронировать` real action | PASS → `tel:+78432033303` everywhere |
-| Contacts checked, no fake flows, no gambling link | PASS (no sorrymama-lounge.ru) |
-| Mobile 390×844: venue + brand + CTA in first view | PASS |
-| No fake quotes / prices / dishes / affiliation | PASS (footer states unofficial, rights not cleared) |
-| Screenshots, mobile, both-direction recording, this report | PASS |
+| wordmark like a pasted corporate header | fixed: photo-locked composition ≥1180 px, one real sprig crossing |
+| detached cutout / halos / white dots | none: full-tree cutout and petal curtain deleted; branch matte checked at 100% |
+| hard day/night jump, scrim dropping early | none: single scrim held through the cut; recording shows ≤11/255 steps inside the passage |
+| empty beige/plum voids, tiny paragraphs | terrace/atmosphere/menu/contacts recomposed; remaining dark space is the photo tail |
+| inert CTAs | all links: tel, Yandex, 2GIS, 2GIS menu, anchors |
+| blurry / hallucinated images | neural 2× only where it won at 100% (097, 216); 085 kept original |
+| duplicate photos across sections | removed (each photo has one role) |
+| mobile crop loses brand or tree | no |
 
 ## Measured
-- Horizontal overflow: 0 px at 360, 390, 768, 1024, 1366, 1440, 1920.
-- Broken images: 0 (desktop, mobile). Console errors: 0.
-- Scrub frame time 1440×900: median 16.5 ms, p95 17.8 ms.
-- Recording: max frame-to-frame brightness step 3.5/255, round trip returns to the identical first frame.
-- Header tone: day at p0 → night at p1 → night over Atmosphere/contacts, day over terrace/menu.
-- Mobile menu: opens with scroll lock, Escape closes, focus returns to toggle, anchor click closes and lands on section.
-- Lightbox: opens, Escape closes, focus returns to the thumbnail.
-- Reduced motion: stage unpinned, day and night shown as two stills.
-- Links: `#atmosphere #terrace #menu #contacts #top #main`, `tel:+78432033303`, Yandex Maps org 169351776272, 2GIS firm 70000001034900657 (+ /tab/menu).
+- Overflow 0 px at 360, 390, 768, 1024, 1366, 1440, 1920. Broken images 0. Console errors 0.
+- Scrub frame time: median 16.7 ms, p95 18.5 ms.
+- Cursor: active on mouse, «Смотреть» over photos, ↗ on external links, off with reduced motion and on Tab.
+- Lightbox: arrows step 01→02, scroll locked, Escape closes, focus returns to the thumbnail.
+- Header: active chapter underlined (Атмосфера / Терраса / Меню / Контакты).
+- Terrace reveal: fires on entry at every height (fixed: tall mobile section never revealed before).
+- Reduced motion: stage unpinned, cursor off, day and night as two stills.
 
-## Open issues
-1. Retina sharpness of both masters (source limit, see Gate A).
-2. p .18–.38: the lounge's lit petals over daylight read slightly collaged; a daylit blossom close-up from the terrace would make the curtain seamless.
-3. Opening hours not shown (sources disagree). Phone repeated across cards; re-check before any public launch.
-4. Not tested on real Safari/iOS (Chromium only).
+## Open
+- Retina sharpness of the night master (source 1440 px, neural rejected for faces).
+- Photo rights not cleared; nothing published.
+- Real touch devices and Safari not tested (Chromium emulation only).
