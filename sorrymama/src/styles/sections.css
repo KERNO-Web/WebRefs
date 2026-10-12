@@ -1,0 +1,80 @@
+/* ── 01 atmosphere: the night photograph continues, then the lanterns ── */
+.atmo { position: relative; background: var(--night-black); color: var(--night-ink); padding-bottom: clamp(80px, 12vh, 150px); }
+.atmo-tail { position: relative; height: min(var(--night-tail, 0px), 46vh); background-repeat: no-repeat; background-size: var(--night-size); background-position: var(--night-x) var(--night-y); margin-top: -1px; }
+.atmo-tail::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(25, 19, 23, 0) 0%, rgba(25, 19, 23, .6) 40%, var(--night-black) 92%); }
+.atmo-grid {
+  position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px;
+  margin-top: min(calc(var(--night-tail, 0px) * -.3), -14vh); padding: 0 var(--page-gutter);
+}
+.atmo-text { grid-column: 1 / span 4; grid-row: 1; align-self: start; padding-top: 22vh; display: grid; gap: 22px; justify-items: start; position: relative; z-index: 2; }
+.atmo-text .body { color: var(--night-muted); }
+.atmo-photo { grid-column: 6 / -1; grid-row: 1; margin-right: calc(-1 * var(--page-gutter)); margin-top: 30vh; } /* starts after the tail has faded; the heading makes the contact */
+.atmo-photo img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 72%; }
+.atmo-detail { grid-column: 4 / span 3; grid-row: 1; align-self: end; margin-bottom: -64px; position: relative; z-index: 3; }
+.atmo-detail img { width: min(100%, 250px); aspect-ratio: 3 / 4; object-fit: cover; object-position: 38% 30%; box-shadow: 0 30px 60px -24px rgba(0, 0, 0, .7); }
+
+/* ── 02 terrace: a chapter turn back to daylight ── */
+.terrace {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 40px;
+  padding: clamp(96px, 14vh, 140px) var(--page-gutter); background: var(--day-paper); color: var(--day-ink);
+}
+.terrace-tall { grid-column: 1 / span 5; grid-row: 1 / span 2; }
+.terrace-tall img { width: 100%; aspect-ratio: 9 / 10; object-fit: cover; object-position: 50% 82%; }
+.terrace-text { grid-column: 7 / -1; grid-row: 1; display: grid; gap: 26px; justify-items: start; align-content: start; }
+.display-xl { font-size: clamp(64px, 9.4vw, 156px); line-height: .9; letter-spacing: -.06em; }
+.terrace-text .body { color: var(--day-muted); }
+.terrace-small { grid-column: 8 / span 4; grid-row: 2; align-self: end; }
+.terrace-small img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; }
+
+/* ── 03 menu ── */
+.menu {
+  position: relative; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px;
+  padding: clamp(80px, 12vh, 130px) var(--page-gutter); background: #efe8e3; color: var(--day-ink); overflow: hidden;
+}
+.menu-title { grid-column: 1 / -1; grid-row: 1; position: relative; z-index: 2; align-self: start;
+  font: 700 clamp(96px, 15vw, 250px)/.8 var(--font-display); letter-spacing: -.07em; margin-top: 20px; }
+.menu-photo { grid-column: 7 / -1; grid-row: 1 / span 2; margin-right: calc(-1 * var(--page-gutter)); }
+.menu-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 45%; }
+.menu-body { grid-column: 1 / span 5; grid-row: 2; align-self: end; display: grid; gap: 26px; justify-items: start; padding-bottom: 8px; }
+.menu-body .body { color: var(--day-muted); }
+.menu-cats { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font: 600 22px/1.2 var(--font-display); }
+
+/* ── 04 gallery ── */
+.gallery { padding: clamp(80px, 12vh, 130px) var(--page-gutter); background: var(--day-paper); color: var(--day-ink); }
+.gallery .display { margin-bottom: 40px; }
+.g-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px; row-gap: 24px; }
+.g-wide { grid-column: 1 / span 8; grid-row: 1 / span 2; }
+.g-wide img { aspect-ratio: 5 / 4; object-position: 50% 62%; }
+.g-a { grid-column: 9 / -1; grid-row: 1; }
+.g-b { grid-column: 9 / -1; grid-row: 2; }
+.g-a img, .g-b img { aspect-ratio: 4 / 3; }
+.g-b img { object-position: 50% 30%; }
+.g-grid img { width: 100%; height: auto; object-fit: cover; }
+.g-grid figcaption { margin-top: 10px; font-size: 14px; color: var(--day-muted); }
+.g-open { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; }
+.lightbox { border: 0; padding: 0; background: transparent; max-width: 94vw; max-height: 94vh; }
+.lightbox::backdrop { background: rgba(18, 12, 15, .88); }
+.lightbox img { max-width: 94vw; max-height: 86vh; object-fit: contain; }
+.lightbox form { display: flex; justify-content: flex-end; }
+.lb-close { margin-top: 8px; min-height: 44px; padding: 0 16px; border: 0; background: none; color: var(--night-ink); font: 500 15px var(--font-ui); cursor: pointer; }
+
+/* ── 05 visit ── */
+.visit {
+  display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 24px;
+  padding: clamp(80px, 12vh, 130px) 0 0 var(--page-gutter); background: var(--night-black); color: var(--night-ink);
+}
+.visit-text { grid-column: 1 / span 5; display: grid; gap: 22px; justify-items: start; align-content: center; padding-bottom: 80px; }
+.visit-addr { font-style: normal; display: grid; gap: 4px; font-size: clamp(17px, 1.35vw, 20px); color: var(--night-muted); }
+.visit-name { font: 600 22px/1.2 var(--font-display); color: var(--night-ink); letter-spacing: -.03em; }
+.visit-phone { font: 600 clamp(26px, 2.6vw, 40px)/1 var(--font-display); letter-spacing: -.04em; text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+.visit-phone:hover { color: var(--lantern-gold); }
+.visit-note { font-size: 14px; color: var(--night-muted); }
+.visit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 26px; margin-top: 6px; }
+.visit-photo { grid-column: 7 / -1; }
+.visit-photo img { width: 100%; height: 100%; min-height: 560px; aspect-ratio: 4 / 5; object-fit: cover; object-position: 72% 58%; }
+
+/* ── footer ── */
+.foot { background: #120d10; color: var(--night-muted); padding: 0 var(--page-gutter) 34px; overflow: hidden; }
+.foot-mark { font: 700 clamp(64px, 17vw, 300px)/.78 var(--font-display); letter-spacing: -.07em; color: rgba(246, 234, 228, .07); white-space: nowrap; margin: 0 0 28px calc(-.02em); padding-top: 40px; }
+.foot-row { display: flex; flex-wrap: wrap; gap: 10px 32px; align-items: center; font-size: 14px; }
+.foot-note { flex-basis: 100%; max-width: 70ch; opacity: .75; }

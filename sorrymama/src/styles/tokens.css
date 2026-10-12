@@ -1,0 +1,24 @@
+:root {
+  /* tuned against the terrace and lounge photographs */
+  --day-paper: #f5f0ec;
+  --day-ink: #31252b;
+  --day-muted: #665963;
+  --powder-blue: #b7ced8;
+  --petal-pink: #e4afb9;
+  --night-black: #191317;
+  --night-plum: #2a1c24;
+  --night-ink: #f6eae4;
+  --night-muted: #cbb9b7;
+  --lantern-gold: #d09b67;
+  --line-day: rgba(49, 37, 43, .18);
+  --line-night: rgba(246, 234, 228, .19);
+  --page-gutter: clamp(22px, 3.3vw, 64px);
+  --ui-radius: 2px;
+
+  --font-display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --font-ui: 'Onest', system-ui, sans-serif;
+  --hero-display-size: clamp(82px, 10.4vw, 186px);
+  --section-display-size: clamp(44px, 5.6vw, 92px);
+  --body-size: clamp(15px, 1.13vw, 17px);
+  --hdr-h: 76px;
+}

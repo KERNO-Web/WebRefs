@@ -1,0 +1,55 @@
+/* ── small laptops ── */
+@media (max-width: 1199px) {
+  .wordmark { left: 7vw; }
+}
+
+/* ── tablets and phones: header collapses ── */
+@media (max-width: 899px) {
+  :root { --hdr-h: 60px; }
+  .hdr-nav { display: none; }
+  .btn-hdr .long { display: none; }
+  .btn-hdr .short { display: inline; }
+  .hdr-toggle {
+    display: grid; place-content: center; gap: 6px; width: 44px; height: 44px; margin-right: -10px;
+    padding: 0; border: 0; background: none; color: inherit; cursor: pointer;
+  }
+  .hdr-toggle i { display: block; width: 22px; height: 1.5px; background: currentColor; transition: transform .25s ease; }
+  .is-open .hdr-toggle i:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .is-open .hdr-toggle i:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+  .is-open { color: var(--night-ink) !important; }
+  .menu-panel {
+    position: fixed; inset: 0; z-index: -1; display: grid; align-content: space-between;
+    padding: calc(var(--hdr-h) + 28px) var(--page-gutter) max(32px, env(safe-area-inset-bottom));
+    background: var(--night-plum); color: var(--night-ink);
+  }
+  .menu-panel[hidden] { display: none; }
+  .menu-panel nav { display: grid; }
+  .menu-panel nav a { padding: 14px 0; font: 600 30px/1.1 var(--font-display); letter-spacing: -.04em; text-decoration: none; border-bottom: 1px solid var(--line-night); }
+  .menu-foot { display: grid; justify-items: start; gap: 8px; }
+
+  .terrace, .menu, .g-grid, .visit, .atmo-grid { grid-template-columns: 1fr; }
+  .atmo-text, .atmo-photo, .atmo-detail, .terrace-tall, .terrace-text, .terrace-small,
+  .menu-title, .menu-photo, .menu-body, .g-wide, .g-a, .g-b, .visit-text, .visit-photo { grid-column: 1; grid-row: auto; }
+  .atmo-grid { margin-top: calc(var(--night-tail, 0px) * -.3); row-gap: 28px; }
+  .atmo-photo { margin: 0 0 0 calc(-1 * var(--page-gutter)); }
+  .atmo-detail { justify-self: end; margin: -90px 0 0; }
+  .atmo-detail img { width: 46vw; }
+  .terrace-small { width: 72%; justify-self: end; }
+  .menu-title { margin: 0 0 24px; }
+  .menu-photo { margin-left: calc(-1 * var(--page-gutter)); }
+  .menu-body { margin-top: 32px; }
+  .g-grid { row-gap: 28px; }
+  .visit { padding-right: var(--page-gutter); }
+  .visit-photo { margin: 0 calc(-1 * var(--page-gutter)); }
+  .visit-photo img { min-height: 0; aspect-ratio: 4 / 5; }
+}
+
+/* ── phones ── */
+@media (max-width: 767px) {
+  .journey { height: 175svh; }
+  .wordmark { left: 20px; top: 15.5%; font-size: clamp(58px, 19vw, 84px); }
+  .wm-b { margin-left: .55em; }
+  .hero-info { flex-direction: column; align-items: flex-start; gap: 16px; padding-top: 110px; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
+  .hero-actions { gap: 20px; }
+  .btn { min-height: 48px; padding: 0 20px; }
+}

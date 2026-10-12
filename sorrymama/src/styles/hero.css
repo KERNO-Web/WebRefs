@@ -1,0 +1,52 @@
+/* ── hero journey: one sticky stage over a 230svh track ── */
+.journey { position: relative; height: 230svh; }
+.stage {
+  position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden;
+  background: var(--night-black); isolation: isolate;
+}
+.ph { position: absolute; left: 0; top: 0; max-width: none; object-fit: fill; pointer-events: none; will-change: transform, opacity; }
+.wash { position: absolute; inset: 0; pointer-events: none; }
+
+.day { z-index: 1; }
+/* daylight warmth rising toward dusty rose as the blossoms close in */
+.dusk { z-index: 2; opacity: 0; visibility: hidden; mix-blend-mode: multiply;
+  background: linear-gradient(170deg, rgba(236, 196, 186, .5) 0%, rgba(196, 118, 124, .55) 52%, rgba(118, 52, 72, .7) 100%); }
+.night { z-index: 3; opacity: 0; visibility: hidden; }
+.wordmark {
+  position: absolute; z-index: 4; left: 10.4vw; top: 15.5%;
+  font: 700 var(--hero-display-size)/.84 var(--font-display); letter-spacing: -.065em;
+  color: var(--day-ink); pointer-events: none; will-change: transform, opacity;
+}
+.wordmark span { display: block; }
+.wm-b { margin-left: 1em; } /* only the last letters weave into the crown */
+.crown { z-index: 5; }
+.veil { z-index: 6; opacity: 0; visibility: hidden; }
+.curtain { position: absolute; left: 0; top: 0; z-index: 7; max-width: none; pointer-events: none; transform: translate3d(110vw, 0, 0); will-change: transform, opacity; }
+
+.hero-info {
+  position: absolute; z-index: 9; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+  padding: 84px var(--page-gutter) clamp(26px, 4vh, 38px);
+  background: linear-gradient(0deg, rgba(245, 240, 236, .82) 0%, rgba(245, 240, 236, .5) 52%, rgba(245, 240, 236, 0) 100%);
+}
+.hero-fact { display: grid; gap: 6px; }
+.hero-line { font-size: clamp(17px, 1.35vw, 20px); font-weight: 500; }
+.hero-actions { display: flex; align-items: center; gap: 26px; }
+
+.night-caption {
+  position: absolute; z-index: 9; left: 0; right: 0; bottom: 0; opacity: 0; visibility: hidden;
+  display: grid; justify-items: start; gap: 6px; color: var(--night-ink);
+  padding: 160px var(--page-gutter) clamp(26px, 4vh, 40px);
+  background: linear-gradient(0deg, rgba(25, 19, 23, .78) 0%, rgba(25, 19, 23, .4) 50%, rgba(25, 19, 23, 0) 100%);
+}
+.night-caption .label { color: var(--lantern-gold); }
+.night-line { font: 600 clamp(28px, 2.9vw, 44px)/1.05 var(--font-display); letter-spacing: -.04em; }
+
+.night-still { display: none; }
+
+/* reduced motion: day and night as two still scenes, no pin, no camera */
+.rm .journey { height: auto; }
+.rm .stage { position: relative; height: 100svh; }
+.rm .curtain { display: none; }
+.rm .night-still { display: block; position: relative; height: 100svh; overflow: hidden; }
+.rm .night-still img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 47%; }

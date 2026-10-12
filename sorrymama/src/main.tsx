@@ -1,9 +1,11 @@
 import { createRoot } from 'react-dom/client';
-import App from './App';
-import './styles.css';
+import App from './app/App';
+import './styles/tokens.css';
+import './styles/global.css';
+import './styles/hero.css';
+import './styles/sections.css';
+import './styles/responsive.css';
 
-// the cut is authored from the first frame; don't restore mid-transition
-if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-window.scrollTo(0, 0);
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('rm');
 
 createRoot(document.getElementById('root')!).render(<App />);
