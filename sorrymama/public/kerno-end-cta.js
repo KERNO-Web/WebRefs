@@ -14,7 +14,7 @@
   if (window.__kernoEndCta) return;
   window.__kernoEndCta = true;
 
-  const TG = 'https://t.me/kerno_web';
+  const TG = 'https://t.me/Kernodev';
   const SESSION_KEY = 'kerno-end-cta-shown';
   const script = document.currentScript;
   const scope = script && script.dataset.kernoScope;
@@ -132,7 +132,7 @@ html body .kerno-cta.kerno-cta .kc-o{pointer-events:none}
           '<p class="kc-p">Напишите мне в&nbsp;Telegram&nbsp;— обсудим задачу.</p>' +
           '<div class="kc-row">' +
             '<a class="kc-btn" href="' + TG + '" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>' +
-            '<a class="kc-handle" href="' + TG + '" target="_blank" rel="noopener">@kerno_web</a>' +
+            '<a class="kc-handle" href="' + TG + '" target="_blank" rel="noopener">@Kernodev</a>' +
           '</div>' +
         '</div>' +
         '<div class="kc-foot"><span>© KERNØ</span><span>Прокрутите вверх, чтобы вернуться</span></div>' +
