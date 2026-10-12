@@ -1,9 +1,6 @@
 import { useEffect, type RefObject } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { heroLayout, type Box, type HeroLayout } from './layout';
-
-gsap.registerPlugin(ScrollTrigger);
+import { heroLayout, type Box } from './layout';
 
 export type HeroRefs = {
   track: RefObject<HTMLElement>;
@@ -24,18 +21,21 @@ const put = (el: HTMLElement, b: Box) => {
   el.style.width = `${b.w}px`; el.style.height = `${b.h}px`;
 };
 
+// how far into the track the reader scrolls before the passage takes over (share of the track = of a screen)
+const ARM = 0.12;
+const FORWARD = 1.5, BACK = 1.05; // seconds
+
 /**
- * Canopy occlusion match cut — one master timeline, p = 0…1, intact photographs only:
- *   0.00–0.14 the day cover holds
- *   0.14–0.35 slow approach to the tree (≤1.13×, what the 2× master supports)
- *   0.35–0.50 the canopy fills the frame and goes out of focus as it nears the lens;
- *             the near foliage passes over the wordmark
- *   0.50–0.64 concealed cut: soft day blossom → soft night blossom, warmer exposure
- *   0.64–0.84 focus returns and the camera eases back into the lounge
- *   0.84–1.00 the night frame holds; the chapter heading arrives
- * One scrim carries exposure across the whole run and never lets go before the room is lit.
+ * Canopy occlusion match cut, played rather than scrubbed: the reader starts it with a short scroll
+ * and it runs to the end on its own, so nobody is left holding a half-blurred frame.
+ *   0.00–0.62 the camera travels into the crown; the wordmark lifts and goes
+ *   0.32–0.57 the near foliage goes out of focus
+ *   0.50–0.72 soft day blossom → soft night blossom (the hidden cut)
+ *   0.60–1.45 the camera eases back into the lounge; focus returns at 0.78
+ *   1.15–1.55 the chapter heading arrives
+ * Scrolling back up past the armed point rewinds it the same way.
  */
-export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => void, onTone: (night: boolean) => void) {
+export function useBlossomTimeline(r: HeroRefs, onTone: (night: boolean) => void) {
   useEffect(() => {
     const stage = r.stage.current!, track = r.track.current!;
     const el = {
@@ -55,7 +55,6 @@ export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => voi
       const f = L.dayFocus;
       for (const e of [el.day, el.front, el.daySoft]) gsap.set(e, { transformOrigin: `${f.x - L.day.x}px ${f.y - L.day.y}px` });
       gsap.set([el.night, el.nightSoft], { transformOrigin: '0 0' });
-      onLayout(L);
     };
     apply();
 
@@ -67,51 +66,106 @@ export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => voi
 
     // night "near" state expressed as a transform of its rest box
     const near = () => ({ x: L.nightNear.x - L.night.x, y: L.nightNear.y - L.night.y, scale: L.nightNear.w / L.night.w });
+    const dn = () => L.dayNear;
+    const day = [el.day, el.front, el.daySoft];
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({
-        defaults: { ease: 'none' },
-        scrollTrigger: {
-          trigger: track, start: 'top top', end: 'bottom bottom',
-          scrub: 0.6, invalidateOnRefresh: true,
-          onRefreshInit: apply,
-          onUpdate: (st) => onTone(st.progress > 0.55),
-        },
-      });
-      const day = [el.day, el.front, el.daySoft];
+    const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' }, onUpdate: () => onTone(tl.progress() > 0.45) });
+    tl.to(el.masthead, { autoAlpha: 0, y: 10, duration: 0.25 }, 0);
+    tl.fromTo(day, { scale: 1, x: 0, y: 0 }, { scale: () => dn().scale, x: () => dn().x, y: () => dn().y, duration: 0.62, ease: 'power2.in' }, 0);
+    tl.fromTo(el.title, { y: 0, scale: 1 }, { y: -12, scale: 1.04, duration: 0.4, ease: 'sine.in' }, 0);
+    tl.to(el.title, { autoAlpha: 0, duration: 0.18 }, 0.22);
+    tl.fromTo(el.daySoft, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, ease: 'sine.in' }, 0.32);
+    // the hidden cut, soft blossom into soft blossom
+    tl.fromTo(el.nightSoft, { autoAlpha: 0, ...near() }, { autoAlpha: 1, duration: 0.22, ease: 'sine.inOut' }, 0.5);
+    tl.fromTo(el.night, { autoAlpha: 0, ...near() }, { autoAlpha: 0, duration: 0.001 }, 0.5);
+    tl.set(day, { autoAlpha: 0 }, 0.72);
+    tl.to([el.night, el.nightSoft], { x: 0, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' }, 0.6);
+    tl.to(el.night, { autoAlpha: 1, duration: 0.35, ease: 'sine.inOut' }, 0.78);
+    // one exposure scalar for the passage: dusk, held through the cut, eased once the room is lit
+    tl.fromTo(el.scrim, { opacity: 0 }, { opacity: 0.32, duration: 0.3, ease: 'sine.in' }, 0.2);
+    tl.to(el.scrim, { opacity: 0.38, duration: 0.2 }, 0.5);
+    tl.to(el.scrim, { opacity: 0.18, duration: 0.45, ease: 'sine.out' }, 1.0);
+    tl.fromTo(el.chapter, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power2.out' }, 1.15);
 
-      // 0.14–0.35 approach, 0.35–0.52 into the canopy
-      // the camera drifts toward the crown, then travels into it until blossom fills the frame
-      const dn = () => L.dayNear;
-      tl.fromTo(day, { scale: 1, x: 0, y: 0 }, { scale: 1.13, x: () => dn().x * 0.15, y: () => dn().y * 0.15, duration: 0.21, ease: 'sine.inOut' }, 0.14);
-      tl.to(day, { scale: () => dn().scale, x: () => dn().x, y: () => dn().y, duration: 0.14, ease: 'power1.in' }, 0.35);
-      // the crown grows over the wordmark (it sits behind the front layer); focus then pulls to the near foliage
-      tl.fromTo(el.daySoft, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1, ease: 'sine.in' }, 0.39);
-      tl.to(el.title, { y: -10, scale: 1.02, duration: 0.3, ease: 'sine.in' }, 0.14);
-      tl.to(el.title, { autoAlpha: 0, duration: 0.07 }, 0.41);
-      tl.to(el.masthead, { autoAlpha: 0, y: 10, duration: 0.08 }, 0.12);
+    // ── scroll control ──
+    const root = document.documentElement;
+    const coarse = matchMedia('(pointer: coarse)').matches;
+    const travel = () => track.offsetHeight - stage.offsetHeight;
+    const local = () => window.scrollY - track.offsetTop;
+    let night = false, busy = false, jumping = false;
+    const playing: gsap.core.Tween[] = [];
 
-      // 0.50–0.62 the concealed cut, soft blossom into soft blossom
-      tl.fromTo(el.nightSoft, { autoAlpha: 0, ...near() }, { autoAlpha: 1, duration: 0.12, ease: 'sine.inOut' }, 0.5);
-      tl.set(day, { autoAlpha: 0 }, 0.625);
-      // 0.56–0.84 ease back into the room; focus returns once the frame has room to be sharp
-      tl.fromTo(el.night, { autoAlpha: 0, ...near() }, { autoAlpha: 0, duration: 0.001 }, 0.5);
-      tl.to([el.night, el.nightSoft], { x: 0, y: 0, scale: 1, duration: 0.28, ease: 'power2.out' }, 0.56);
-      tl.to(el.night, { autoAlpha: 1, duration: 0.12, ease: 'sine.inOut' }, 0.64);
+    const block = (e: Event) => { if (busy) e.preventDefault(); };
+    const KEYS = new Set([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End']);
+    const blockKeys = (e: KeyboardEvent) => { if (busy && KEYS.has(e.key)) e.preventDefault(); };
+    const instant = (y: number) => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
 
-      // one exposure scalar for the whole passage: dusk, held through the cut, eased only once lit
-      tl.fromTo(el.scrim, { opacity: 0 }, { opacity: 0.3, duration: 0.2, ease: 'sine.in' }, 0.3);
-      tl.to(el.scrim, { opacity: 0.38, duration: 0.1 }, 0.48);
-      tl.to(el.scrim, { opacity: 0.38, duration: 0.14 }, 0.58);
-      tl.to(el.scrim, { opacity: 0.2, duration: 0.14, ease: 'sine.out' }, 0.72);
+    const go = (toNight: boolean) => {
+      busy = true; night = toNight;
+      if (coarse) root.classList.add('hero-busy'); // stops touch momentum fighting the glide
+      const dur = toNight ? FORWARD : BACK;
+      const glide = { y: window.scrollY };
+      const target = track.offsetTop + (toNight ? travel() : 0);
+      playing.push(
+        gsap.to(tl, { progress: toNight ? 1 : 0, duration: dur, ease: 'none' }),
+        gsap.to(glide, {
+          y: target, duration: dur * 0.85, ease: 'power2.inOut', onUpdate: () => instant(glide.y),
+          onComplete: () => { busy = false; playing.length = 0; root.classList.remove('hero-busy'); },
+        }),
+      );
+    };
+    // snap without animation: anchors, reloads mid-page, resizes
+    const settle = () => {
+      const y = local(), t = travel();
+      night = y >= t * 0.5;
+      tl.progress(night ? 1 : 0);
+    };
+    const onScroll = () => {
+      if (busy || jumping) return;
+      const y = local(), t = travel();
+      if (!night && y >= t) { settle(); return; }          // arrived from far below or by a jump
+      if (!night && y > t * ARM) go(true);
+      else if (night && y >= 0 && y < t * (1 - ARM)) go(false);
+    };
+    // in-page links pass straight through the hero in the state they are heading for
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element).closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+      if (!a) return;
+      const dest = document.querySelector(a.getAttribute('href')!) as HTMLElement | null;
+      if (!dest) return;
+      playing.forEach((p) => p.kill()); playing.length = 0; busy = false; root.classList.remove('hero-busy');
+      jumping = true;
+      night = dest.offsetTop >= track.offsetTop + travel();
+      tl.progress(night ? 1 : 0);
+      const done = () => { jumping = false; window.removeEventListener('scrollend', done); };
+      window.addEventListener('scrollend', done);
+      setTimeout(done, 1400);
+    };
 
-      tl.fromTo(el.chapter, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.1, ease: 'power2.out' }, 0.85);
-      tl.set({}, {}, 1);
-    }, stage);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('wheel', block, { passive: false });
+    window.addEventListener('touchmove', block, { passive: false });
+    window.addEventListener('keydown', blockKeys);
+    document.addEventListener('click', onClick);
+
+    const ro = new ResizeObserver(() => {
+      const p = tl.progress();
+      tl.progress(0); apply(); tl.invalidate(); tl.progress(p);
+    });
+    ro.observe(stage);
+    settle();
 
     let alive = true;
-    Promise.all([el.day.decode(), el.night.decode(), document.fonts.ready]).catch(() => {}).then(() => alive && ScrollTrigger.refresh());
-    return () => { alive = false; ctx.revert(); };
+    Promise.all([el.day.decode(), document.fonts.ready]).catch(() => {}).then(() => { if (alive && !busy) { apply(); tl.invalidate(); settle(); } });
+    return () => {
+      alive = false; ro.disconnect();
+      playing.forEach((p) => p.kill()); tl.kill(); root.classList.remove('hero-busy');
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('wheel', block);
+      window.removeEventListener('touchmove', block);
+      window.removeEventListener('keydown', blockKeys);
+      document.removeEventListener('click', onClick);
+    };
     // refs are stable for the component's lifetime
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

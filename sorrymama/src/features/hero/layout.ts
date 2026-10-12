@@ -8,7 +8,6 @@ export type HeroLayout = {
   wordmark: { x: number; y: number; size: number } | null; // locked to the photo where the crossing is exact
   night: Box;             // night photo at rest
   nightNear: Box;         // the same photo deep in its canopy, where the cut happens
-  tail: number;
 };
 
 const clamp = (v: number, a: number, b: number) => Math.min(Math.max(v, a), b);
@@ -44,6 +43,5 @@ export function heroLayout(W: number, H: number): HeroLayout {
 
   return {
     W, H, mobile, day, wordmark, night, nightNear, dayFocus, dayNear,
-    tail: Math.max(0, night.y + night.h - H),
   };
 }

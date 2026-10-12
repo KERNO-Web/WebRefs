@@ -7,16 +7,19 @@ import { Atmosphere } from '../features/atmosphere/Atmosphere';
 import { Terrace } from '../features/terrace/Terrace';
 import { Menu } from '../features/menu/Menu';
 import { Gallery } from '../features/gallery/Gallery';
+import { Booking } from '../features/booking/Booking';
 import { Visit } from '../features/contacts/Visit';
 
 export default function App() {
   // header contrast follows whatever is under it: the hero reports day/night from its timeline,
-  // every later section declares its own tone
+  // every later section declares its own tone; outside the hero the header gets a frosted surface
   const heroNight = useRef(false);
   const underHeader = useRef<string | null>('hero');
   const setTone = () => {
-    const t = underHeader.current === 'hero' || !underHeader.current ? (heroNight.current ? 'night' : 'day') : underHeader.current;
-    document.documentElement.dataset.tone = t;
+    const inHero = underHeader.current === 'hero' || !underHeader.current;
+    const root = document.documentElement;
+    root.dataset.tone = inHero ? (heroNight.current ? 'night' : 'day') : underHeader.current!;
+    root.dataset.surface = inHero ? 'hero' : 'page';
   };
   const onTone = (night: boolean) => { if (heroNight.current !== night) { heroNight.current = night; setTone(); } };
 
@@ -40,9 +43,10 @@ export default function App() {
       <main id="main">
         <HeroJourney onTone={onTone} />
         <Atmosphere />
-        <Terrace />
         <Menu />
+        <Terrace />
         <Gallery />
+        <Booking />
         <Visit />
       </main>
       <Footer />

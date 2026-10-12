@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { venue } from '../data/venue';
 
-const NAV: [string, string][] = [['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Меню', '#menu'], ['Контакты', '#contacts']];
+// Menu and booking are buttons of their own, so they never get lost among the chapters
+const NAV: [string, string][] = [['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Детали', '#gallery'], ['Контакты', '#contacts']];
+const PANEL: [string, string][] = [['Меню', '#menu'], ['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Детали', '#gallery'], ['Бронь', '#booking'], ['Контакты', '#contacts']];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('');
   // which chapter is under the reader: the nav item carries it
   useEffect(() => {
-    const ids = NAV.map(([, h]) => h.slice(1));
+    const ids = PANEL.map(([, h]) => h.slice(1));
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver((es) => {
       for (const e of es) if (e.isIntersecting) setActive(e.target.id);
@@ -44,11 +46,14 @@ export function Header() {
       <nav className="hdr-nav" aria-label="Разделы">
         {NAV.map(([t, h]) => <a key={h} href={h} className={active === h.slice(1) ? 'is-active' : undefined} aria-current={active === h.slice(1) ? 'true' : undefined}>{t}</a>)}
       </nav>
-      <a className="btn btn-hdr" href={venue.phone.href}><span className="long">Забронировать</span><span className="short">Бронь</span></a>
-      <button ref={toggle} className="hdr-toggle" aria-expanded={open} aria-controls="menu-panel" aria-label={open ? 'Закрыть меню' : 'Открыть меню'} onClick={() => setOpen(!open)}><i /><i /></button>
+      <div className="hdr-cta">
+        <a className={'btn btn-hdr btn-ghost' + (active === 'menu' ? ' is-active' : '')} href="#menu">Меню</a>
+        <a className="btn btn-hdr" href="#booking"><span className="long">Забронировать</span><span className="short">Бронь</span></a>
+      </div>
+      <button ref={toggle} className="hdr-toggle" aria-expanded={open} aria-controls="menu-panel" aria-label={open ? 'Закрыть навигацию' : 'Открыть навигацию'} onClick={() => setOpen(!open)}><i /><i /></button>
       <div id="menu-panel" ref={panel} className="menu-panel" hidden={!open}>
         <nav aria-label="Разделы">
-          {NAV.map(([t, h]) => <a key={h} href={h} onClick={() => setOpen(false)}>{t}</a>)}
+          {PANEL.map(([t, h]) => <a key={h} href={h} onClick={() => setOpen(false)}>{t}</a>)}
         </nav>
         <div className="menu-foot">
           <a className="btn btn-gold" href={venue.phone.href}>Забронировать стол</a>

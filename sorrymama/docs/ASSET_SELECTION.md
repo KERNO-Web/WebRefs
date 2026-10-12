@@ -62,3 +62,13 @@ The owner supplied two 1086×1448 RGBA layers made from 097: `tree` (crown + AI-
 - merged into `terrace-front(-2x).webp` (alpha).
 The sky behind the wordmark is `terrace-sky(-2x).webp`: the original photo where the front layer is transparent, with wires, bulbs and remnants of the old building/tree detected and filled by normalized blur (two radii), so nothing doubles with the owner's sharper wires. The branch matte from V3 is retired.
 Layer order: sky → SORRY MAMA → front (terrace, wires, tree). The wordmark sits behind the wires and the crown; on scroll the crown grows over it.
+
+## Polish pass (13.10.2026)
+| file | source | treatment | role |
+|---|---|---|---|
+| lounge-master-2x.webp | 085 | Real-ESRGAN x4plus → 2880×4880; bartender (1x box x1120–1340, y1260–1460) blended back from the original with a 60 px cosine feather | hero night, wide/retina screens |
+| terrace-day(-2x).webp | 015 | neural 4× → 2356×1480 / 1178×740; black band on top and the Avito mark at bottom right cropped off | terrace chapter, main |
+| menu-kitchen(-2x).webp | 186 | neural 4× → 2160×2700 / 1080×1350, 4:5 from the top (2GIS mark below the crop) | menu gateway «Кухня»; no dish name claimed |
+| lounge-canopy.webp | 200 | **removed**: too soft as a full-bleed contacts background | — |
+| terrace-evening.webp | 081 | unchanged; moved to the contacts frame (square crop, ≈580 px wide → sharp) | contacts |
+| night-soft.webp | 085 | unchanged; reused as intentionally defocused backdrop of the booking block | booking |

@@ -1,24 +1,26 @@
 import { useRef } from 'react';
 import { assets } from '../../data/assets';
-import { venue } from '../../data/venue';
 import { nb } from '../../app/nb';
 import { useReveal } from '../../app/useReveal';
 
-/** One asymmetric artboard: photograph → title → action, a diagonal read. */
+/** Daylight chapter: the title on its own line, the open roof below it, copy and a detail beside. */
 export function Terrace() {
   const ref = useRef<HTMLElement>(null);
   useReveal(ref);
   return (
     <section className="terrace" id="terrace" data-tone="day" aria-labelledby="terrace-h" ref={ref}>
-      <figure className="tr-main reveal-img">
-        <img src={assets.terraceEvening.src} alt="Терраса Sorry Mama на закате: гирлянды над белыми диванами и розовое дерево" loading="lazy" width={1440} height={1800} />
-      </figure>
-      <p className="tr-index reveal-type" aria-hidden="true"><b>03</b> / День</p>
-      <h2 id="terrace-h" className="tr-title reveal-type">Терраса</h2>
-      <div className="tr-copy reveal-type">
-        <p className="body">{nb('Летняя терраса: белые деревянные диваны с голубыми подушками, гирлянды над столами и цветущие деревья среди них.')}</p>
-        <a className="btn btn-arrow" href={venue.phone.href}>Забронировать стол <span aria-hidden="true">→</span></a>
+      <div className="tr-head reveal-type">
+        <p className="kicker"><b>04</b> / День</p>
+        <h2 id="terrace-h" className="title-xl tr-title">Терраса</h2>
       </div>
+      <div className="tr-copy reveal-type reveal-late">
+        <p className="body">{nb('Летняя терраса: белые деревянные диваны с голубыми подушками, гирлянды над столами и цветущие деревья среди них.')}</p>
+        <a className="btn btn-arrow" href="#booking">Забронировать стол <span aria-hidden="true">→</span></a>
+      </div>
+      <figure className="tr-main reveal-img">
+        <img src={assets.terraceDay.src} srcSet={`${assets.terraceDay.src} 1178w, ${assets.terraceDay.src2x} 2356w`} sizes="(max-width: 899px) 100vw, 62vw"
+          alt="Терраса Sorry Mama днём: белые диваны с голубыми подушками, цветущее дерево и ретроавтомобиль на крыше" loading="lazy" width={1178} height={740} />
+      </figure>
       <figure className="tr-detail reveal-img reveal-late">
         <img src={assets.table.src} alt="Фрукты и чай на деревянном столе террасы" loading="lazy" width={1080} height={1400} />
         <figcaption>Стол на террасе</figcaption>

@@ -18,5 +18,6 @@ Single-page restaurant site for Sorry Mama rest-lounge, Kazan. Russian copy. Not
 - No link to `sorrymama-lounge.ru` (reported gambling redirect).
 - Booking = verified phone `tel:+78432033303`; no fake confirmations, no data collection.
 - Russian short words (в, с, к, у, о, и, а, на, по, за, из) never end a line in headings: use `nb()`.
-- Hero: day terrace → blossoms occlude the huge `SORRY MAMA` → hidden cut → night lounge. GSAP ScrollTrigger, transforms/opacity only, fully reversible.
-- Fonts: Unbounded (display), Onest (UI).
+- Hero: day terrace → blossoms occlude the huge `SORRY MAMA` → hidden cut → night lounge. A played GSAP timeline (not scrubbed): ~12% of a screen of scroll arms it, it runs ~1.5 s and glides the page to the end of the track; scrolling back rewinds it. Transforms/opacity only.
+- Page order: Hero → Atmosphere → Menu → Terrace → Details → Booking → Contacts. Menu and Booking are header buttons of their own; never bury them.
+- Fonts: Commissioner 800 with `--display-axes` (display: `.title-xl`, `.subhead`), Onest (UI). Every chapter: `.kicker` (NN / name) above a `.title-xl`.

@@ -1,5 +1,6 @@
 /* ── hero: one sticky stage over the track; ~2 extra viewports of scroll for the passage ── */
-.journey { position: relative; height: 300svh; }
+/* one extra screen of track: the passage plays itself once ~12% of it is scrolled (useBlossomTimeline) */
+.journey { position: relative; height: 200svh; }
 .stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--night-black); isolation: isolate; }
 .ph { position: absolute; left: 0; top: 0; max-width: none; object-fit: fill; pointer-events: none; will-change: transform, opacity; }
 .wash { position: absolute; inset: 0; pointer-events: none; }
@@ -31,7 +32,7 @@
 }
 .mh-index { font-variant-numeric: tabular-nums; } .mh-index b { font-weight: 600; }
 .mh-place { font-weight: 500; letter-spacing: .02em; text-transform: uppercase; }
-.mh-actions { display: flex; align-items: center; gap: 24px; font-size: 15px; }
+.mh-actions { display: flex; align-items: center; gap: 12px; font-size: 15px; }
 .mh-cue { position: relative; padding-top: 36px; writing-mode: vertical-rl; letter-spacing: .04em; opacity: .7; }
 .mh-cue::before { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 28px; background: currentColor; transform-origin: top; animation: cue 2.4s cubic-bezier(.6, 0, .2, 1) infinite; }
 @keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
@@ -41,11 +42,12 @@
   position: absolute; z-index: 8; left: 0; right: 0; bottom: 0; opacity: 0; visibility: hidden;
   display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: clamp(18px, 2.4vw, 40px); align-items: end;
   padding: 220px var(--page-gutter) clamp(30px, 6vh, 64px); color: var(--night-ink);
-  background: linear-gradient(0deg, rgba(25, 14, 20, .86) 0%, rgba(25, 14, 20, .55) 42%, rgba(25, 14, 20, 0) 100%);
+  /* ends on the page colour, so the next chapter starts without a seam */
+  background: linear-gradient(0deg, var(--night-black) 0%, rgba(25, 19, 23, .8) 22%, rgba(25, 14, 20, .45) 55%, rgba(25, 14, 20, 0) 100%);
 }
 .ch-index { grid-row: 1 / span 3; align-self: stretch; writing-mode: vertical-rl; transform: rotate(180deg); font-size: var(--label-size); letter-spacing: .06em; text-transform: uppercase; color: var(--lantern-gold); border-left: 1px solid var(--line-night); padding-left: 12px; }
 .ch-index b { font-weight: 600; }
-.ch-title { font: 700 clamp(72px, 7.8vw, 124px)/.9 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.04em; }
+.ch-title { font: 800 clamp(72px, 7.8vw, 124px)/.9 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.04em; }
 .ch-title span { display: block; }
 .ch-title span + span { margin-left: .6em; }
 .ch-line { margin-top: 22px; max-width: 42ch; font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--night-muted); }

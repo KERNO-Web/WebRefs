@@ -33,7 +33,10 @@ export function Gallery() {
   const shot = SHOTS[cur];
   return (
     <section className="gallery" id="gallery" data-tone="day" aria-labelledby="gallery-h">
-      <h2 id="gallery-h" className="display">Детали</h2>
+      <div className="g-head">
+        <p className="kicker"><b>05</b> / Фото гостей</p>
+        <h2 id="gallery-h" className="title-xl g-title">Детали</h2>
+      </div>
       <div className="g-grid">
         {SHOTS.map((s, i) => (
           <figure key={s.src} className={s.cls}>
