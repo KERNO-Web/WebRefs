@@ -15,13 +15,17 @@ export function Menu() {
       <figure className="menu-photo">
         <img src={assets.cocktail.src} alt="Коктейль на столе в зале Sorry Mama, за ним цветущее дерево" loading="lazy" width={1240} height={1500} />
       </figure>
+      {/* a guest's hand with a drink on the terrace; no face in frame */}
+      <figure className="menu-guest">
+        <img src={assets.drink.src} alt="Голубой коктейль в руке гостя на террасе" loading="lazy" width={580} height={860} />
+      </figure>
       <div className="menu-body">
         {ready ? (
           <ul className="menu-cats">{menu.map((c) => <li key={c.id}>{c.category}</li>)}</ul>
         ) : (
           <p className="body">{nb('Актуальное меню с ценами — в карточке заведения в 2ГИС.')}</p>
         )}
-        <a className="btn" href={venue.menuSource} target="_blank" rel="noopener noreferrer">Смотреть меню в 2ГИС</a>
+        <a className="btn btn-arrow" href={venue.menuSource} target="_blank" rel="noopener noreferrer">Смотреть меню в 2ГИС <span aria-hidden="true">↗</span></a>
       </div>
     </section>
   );

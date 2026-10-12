@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { assets } from '../../data/assets';
 
 const SHOTS = [
-  { ...assets.terraceTree, alt: 'Розовое дерево и голубые диваны на террасе', caption: 'Терраса днём', cls: 'g-wide' },
+  { ...assets.terraceEvening, alt: 'Терраса на закате: гирлянды, белые диваны и цветущее дерево', caption: 'Терраса на закате', cls: 'g-wide' },
   { ...assets.carClose, alt: 'Красный ретроавтомобиль на крыше террасы', caption: 'Автомобиль на террасе', cls: 'g-a' },
   { ...assets.bloom, alt: 'Дерево с гирляндами в зале вечером', caption: 'Дерево в зале', cls: 'g-b' },
 ];

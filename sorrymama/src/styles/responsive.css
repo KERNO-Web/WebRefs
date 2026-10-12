@@ -27,7 +27,10 @@
   .menu-panel nav a { padding: 14px 0; font: 600 30px/1.1 var(--font-display); letter-spacing: -.04em; text-decoration: none; border-bottom: 1px solid var(--line-night); }
   .menu-foot { display: grid; justify-items: start; gap: 8px; }
 
-  .terrace, .menu, .g-grid, .visit, .atmo-grid { grid-template-columns: 1fr; }
+  .terrace, .menu, .g-grid, .visit, .atmo-art { grid-template-columns: 1fr; }
+  .atmo-photo, .atmo-text, .tr-main, .tr-index, .tr-title, .tr-copy, .tr-detail, .menu-guest { grid-column: 1; grid-row: auto; }
+  .atmo-text { padding: 24px 0 0; background: none; }
+  .tr-title { margin-top: 20px; } .tr-detail { width: 64%; justify-self: end; } .menu-guest { width: 60%; justify-self: end; margin: 24px 0 0; }
   .atmo-text, .atmo-photo, .atmo-detail, .terrace-tall, .terrace-text, .terrace-small,
   .menu-title, .menu-photo, .menu-body, .g-wide, .g-a, .g-b, .visit-text, .visit-photo { grid-column: 1; grid-row: auto; }
   .atmo-grid { margin-top: calc(var(--night-tail, 0px) * -.3); row-gap: 28px; }

@@ -1,21 +1,27 @@
+import { useRef } from 'react';
 import { assets } from '../../data/assets';
 import { venue } from '../../data/venue';
 import { nb } from '../../app/nb';
+import { useReveal } from '../../app/useReveal';
 
-/** A chapter turn back to daylight: the terrace on its own terms, not another transition. */
+/** One asymmetric artboard: photograph → title → action, a diagonal read. */
 export function Terrace() {
+  const ref = useRef<HTMLElement>(null);
+  useReveal(ref);
   return (
-    <section className="terrace" id="terrace" data-tone="day" aria-labelledby="terrace-h">
-      <figure className="terrace-tall">
-        <img src={assets.terraceEvening.src} alt="Терраса Sorry Mama на закате: гирлянды, белые диваны и цветущее дерево" loading="lazy" width={1440} height={1800} />
+    <section className="terrace" id="terrace" data-tone="day" aria-labelledby="terrace-h" ref={ref}>
+      <figure className="tr-main reveal-img">
+        <img src={assets.terraceTree.src} alt="Летняя терраса Sorry Mama: голубые диваны, белые деревянные рамы и розовое дерево" loading="lazy" width={1440} height={1800} />
       </figure>
-      <div className="terrace-text">
-        <h2 id="terrace-h" className="display display-xl">Терраса</h2>
-        <p className="body">{nb('Летняя терраса: белые деревянные диваны с голубыми подушками, гирлянды над столами и цветущие деревья.')}</p>
-        <a className="btn" href={venue.phone.href}>Забронировать стол</a>
+      <p className="tr-index reveal-type" aria-hidden="true"><b>03</b> / День</p>
+      <h2 id="terrace-h" className="tr-title reveal-type">Терраса</h2>
+      <div className="tr-copy reveal-type">
+        <p className="body">{nb('Летняя терраса: белые деревянные диваны с голубыми подушками, гирлянды над столами и цветущие деревья среди них.')}</p>
+        <a className="btn btn-arrow" href={venue.phone.href}>Забронировать стол <span aria-hidden="true">→</span></a>
       </div>
-      <figure className="terrace-small">
-        <img src={assets.terraceCar.src} alt="Белое дерево и ретроавтомобиль на террасе" loading="lazy" width={1178} height={800} />
+      <figure className="tr-detail reveal-img reveal-late">
+        <img src={assets.table.src} alt="Фрукты и чай на деревянном столе террасы" loading="lazy" width={1080} height={1400} />
+        <figcaption>Стол на террасе</figcaption>
       </figure>
     </section>
   );
