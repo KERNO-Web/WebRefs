@@ -10,10 +10,10 @@ const hi = { fetchpriority: 'high' } as Record<string, string>; // React 18 has 
 export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
   const r = {
     track: useRef<HTMLElement>(null), stage: useRef<HTMLDivElement>(null),
-    day: useRef<HTMLImageElement>(null), crown: useRef<HTMLImageElement>(null), dusk: useRef<HTMLDivElement>(null),
-    title: useRef<HTMLHeadingElement>(null), info: useRef<HTMLDivElement>(null),
-    veil: useRef<HTMLImageElement>(null), curtain: useRef<HTMLImageElement>(null),
-    night: useRef<HTMLImageElement>(null), caption: useRef<HTMLDivElement>(null),
+    day: useRef<HTMLImageElement>(null), daySoft: useRef<HTMLImageElement>(null), branch: useRef<HTMLImageElement>(null),
+    title: useRef<HTMLHeadingElement>(null), masthead: useRef<HTMLDivElement>(null),
+    nightSoft: useRef<HTMLImageElement>(null), night: useRef<HTMLImageElement>(null),
+    scrim: useRef<HTMLDivElement>(null), chapter: useRef<HTMLDivElement>(null),
   };
 
   // the section after the hero continues the night photograph pixel for pixel
@@ -21,9 +21,8 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
     const s = document.documentElement.style;
     s.setProperty('--night-size', `${L.night.w}px ${L.night.h}px`);
     s.setProperty('--night-x', `${L.night.x}px`);
-    s.setProperty('--night-y', `${L.night.y - L.H}px`); // offset to where the stage ends
+    s.setProperty('--night-y', `${L.night.y - L.H}px`);
     s.setProperty('--night-tail', `${Math.ceil(L.tail)}px`);
-    // set inline so the URL resolves against the document, not the built stylesheet
     const tail = document.querySelector<HTMLElement>('.atmo-tail');
     if (tail) tail.style.backgroundImage = `url("${r.night.current?.currentSrc || assets.lounge.src}")`;
   };
@@ -33,40 +32,43 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
     <>
       <section className="journey" ref={r.track} id="top" aria-label="Sorry Mama">
         <div className="stage" ref={r.stage}>
-          <img ref={r.day} className="ph day" src={assets.terrace.src} alt="Летняя терраса Sorry Mama: цветущее дерево, голубые диваны и гирлянды" {...hi} />
-          <div ref={r.dusk} className="wash dusk" aria-hidden="true" />
-          <img ref={r.night} className="ph night" src={assets.lounge.src} alt="Зал Sorry Mama вечером: цветущее дерево с фонарями, бархатные диваны и бар" />
-
+          <img ref={r.day} className="ph day" src={assets.terrace.src}
+            srcSet={`${assets.terrace.src} 1440w, ${assets.terrace.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
+            alt="Летняя терраса Sorry Mama: цветущее дерево, голубые диваны и гирлянды" {...hi} />
           <h1 ref={r.title} className="wordmark" aria-label="Sorry Mama">
             <span className="wm-a" aria-hidden="true">SORRY</span>
             <span className="wm-b" aria-hidden="true">MAMA</span>
           </h1>
+          {/* one real branch of the same photograph crossing the last letter */}
+          <img ref={r.branch} className="ph branch" src={assets.branch.src} alt="" aria-hidden="true" />
+          <img ref={r.daySoft} className="ph soft" src={assets.daySoft.src} alt="" aria-hidden="true" />
+          <img ref={r.nightSoft} className="ph soft night-soft" src={assets.nightSoft.src} alt="" aria-hidden="true" />
+          <img ref={r.night} className="ph night" src={assets.lounge.src} alt="Зал Sorry Mama вечером: цветущее дерево с фонарями, бархатные диваны и бар" />
+          <div ref={r.scrim} className="wash scrim" aria-hidden="true" />
 
-          {/* the crown of the same terrace tree, in front of the letters */}
-          <img ref={r.crown} className="ph crown" src={assets.crown.src} alt="" aria-hidden="true" />
-          <img ref={r.veil} className="ph veil" src={assets.bloom.src} alt="" aria-hidden="true" />
-          <img ref={r.curtain} className="curtain" src={assets.curtain.src} alt="" aria-hidden="true" />
-
-          <div ref={r.info} className="hero-info">
-            <div className="hero-fact">
-              <p className="label">{venue.kind} · {venue.city}</p>
-              <p className="hero-line">{nb('Днём — терраса. Вечером — лаунж.')}</p>
+          <div ref={r.masthead} className="masthead">
+            <p className="mh-index"><b>01</b> / 02</p>
+            <p className="mh-place">Казань — рест-лаунж</p>
+            <div className="mh-actions">
+              <a className="link" href="#menu">Меню</a>
+              <a className="btn" href={venue.phone.href}>Забронировать</a>
             </div>
-            <div className="hero-actions">
-              <a className="btn" href={venue.phone.href}>Забронировать стол</a>
-              <a className="link" href="#menu">Смотреть меню</a>
-            </div>
+            <span className="mh-cue" aria-hidden="true">Листайте</span>
           </div>
 
-          <div ref={r.caption} className="night-caption">
-            <p className="label">Вечером</p>
-            <p className="night-line">{nb('Лаунж под цветущим деревом')}</p>
-            <a className="link" href={venue.phone.href}>Забронировать стол</a>
+          <div ref={r.chapter} className="chapter">
+            <p className="ch-index" aria-hidden="true"><b>02</b> / Вечер</p>
+            <h2 className="ch-title"><span>Свет</span><span>{nb('в ветвях')}</span></h2>
+            <p className="ch-line">{nb('Днём — летняя терраса, вечером — зал под цветущим деревом с фонарями.')}</p>
+            <div className="ch-actions">
+              <a className="btn btn-gold" href={venue.phone.href}>Забронировать стол</a>
+              <a className="link link-night" href="#menu">Смотреть меню</a>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* reduced motion: the night scene as its own still instead of the scrubbed cut */}
+      {/* reduced motion: the night scene as its own still instead of the scrubbed passage */}
       <section className="night-still" aria-hidden="true">
         <img src={assets.lounge.src} alt="" loading="lazy" />
       </section>

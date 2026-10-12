@@ -1,6 +1,6 @@
 /* ── small laptops ── */
 @media (max-width: 1199px) {
-  .wordmark { left: 7vw; }
+  .mh-place { display: none; }
 }
 
 /* ── tablets and phones: header collapses ── */
@@ -46,10 +46,16 @@
 
 /* ── phones ── */
 @media (max-width: 767px) {
-  .journey { height: 175svh; }
-  .wordmark { left: 20px; top: 15.5%; font-size: clamp(58px, 19vw, 84px); }
-  .wm-b { margin-left: .55em; }
-  .hero-info { flex-direction: column; align-items: flex-start; gap: 16px; padding-top: 110px; padding-bottom: max(22px, env(safe-area-inset-bottom)); }
-  .hero-actions { gap: 20px; }
+  .journey { height: 240svh; }
+  .wordmark { left: 18px; top: 14.5%; font-size: clamp(58px, 18.5vw, 86px); }
+  .wm-b { margin-left: .5em; }
+  .masthead { grid-template-columns: 1fr auto; row-gap: 14px; padding-top: 70px; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+  .mh-index { grid-column: 1; } .mh-place { display: block; grid-column: 1; grid-row: 2; }
+  .mh-actions { grid-column: 1 / -1; grid-row: 3; justify-content: space-between; }
+  .mh-cue { display: none; }
+  .chapter { grid-template-columns: 1fr; padding-top: 160px; padding-bottom: max(28px, env(safe-area-inset-bottom)); }
+  .ch-index { grid-row: auto; writing-mode: horizontal-tb; transform: none; border-left: 0; padding-left: 0; margin-bottom: 12px; }
+  .ch-title { font-size: clamp(56px, 16vw, 76px); }
+  .ch-actions { gap: 20px; flex-wrap: wrap; }
   .btn { min-height: 48px; padding: 0 20px; }
 }

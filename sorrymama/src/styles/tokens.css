@@ -15,10 +15,12 @@
   --page-gutter: clamp(22px, 3.3vw, 64px);
   --ui-radius: 2px;
 
-  --font-display: 'Unbounded', 'Arial Black', system-ui, sans-serif;
+  --font-display: 'Commissioner', 'Onest', system-ui, sans-serif;
+  --display-axes: 'FLAR' 60, 'VOLM' 80;
   --font-ui: 'Onest', system-ui, sans-serif;
-  --hero-display-size: clamp(82px, 10.4vw, 186px);
-  --section-display-size: clamp(44px, 5.6vw, 92px);
+  --hero-display-size: clamp(76px, 12.1vw, 232px);
+  --section-display-size: clamp(54px, 7.4vw, 118px);
+  --label-size: clamp(12px, .92vw, 14px);
   --body-size: clamp(15px, 1.13vw, 17px);
   --hdr-h: 76px;
 }
