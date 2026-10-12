@@ -24,6 +24,8 @@ export const assets = {
   // 015: blue sofas, white tree, the car on the roof; neural 2×, black band and watermark cropped
   terraceDay: { src: v('terrace-day.webp'), src2x: v('terrace-day-2x.webp'), w: 1178, h: 740 },
   // 186: guest photo of a salad, used as «кухня» only; no dish name is claimed
+  // the Arabic plov from the venue's own menu card (2GIS «Меню», 2025), neural 4×, portrait cut
+  mainsDoor: { src: v('menu-door-mains.webp'), w: 639, h: 888 },
   kitchen: { src: v('menu-kitchen.webp'), src2x: v('menu-kitchen-2x.webp'), w: 1080, h: 1350 },
   terraceTree: { src: v('terrace-tree.webp'), w: 1440, h: 1800 },
   carClose: { src: v('terrace-car-close.webp'), w: 961, h: 1280 },

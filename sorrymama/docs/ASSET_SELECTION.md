@@ -72,3 +72,7 @@ Layer order: sky → SORRY MAMA → front (terrace, wires, tree). The wordmark s
 | lounge-canopy.webp | 200 | **removed**: too soft as a full-bleed contacts background | — |
 | terrace-evening.webp | 081 | unchanged; moved to the contacts frame (square crop, ≈580 px wide → sharp) | contacts |
 | night-soft.webp | 085 | unchanged; reused as intentionally defocused backdrop of the booking block | booking |
+
+## Menu (13.10.2026)
+2GIS album `price_list_image` (13 photos, API `api.photo.2gis.com/3.0/objects/70000001034900657/albums/price_list_image/media`), originals in `research/2gis/menu/m01–m13` with URLs in `urls.txt`. m02, m04–m11: owner uploads 19.02.2025; m01, m03: social posts 22.01.2026; m12 (drinks board) and m13 (text menu) are from 2024 and were not used.
+30 dish photos cut from the cards, Real-ESRGAN x4plus, 800×600 webp in `public/assets/venue/menu/`. Group shots (soups m07, platters m10, two-plate shots m02/m05) were split only where each plate is identifiable by its contents. No photo: vitello tonnato (covered by a «NEW» label), Magadan shrimp (cut off). `menu-door-mains.webp` = the plov crop in portrait for the landing's menu door.

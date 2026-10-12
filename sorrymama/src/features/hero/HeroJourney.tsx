@@ -44,7 +44,7 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
           <div ref={r.masthead} className="masthead">
             <p className="mh-place">Казань — рест-лаунж</p>
             <div className="mh-actions">
-              <a className="btn btn-arrow" href="#menu">Смотреть меню <span aria-hidden="true">↓</span></a>
+              <a className="btn btn-arrow" href="./menu.html">Смотреть меню <span aria-hidden="true">→</span></a>
               <button className="btn btn-ghost" type="button" data-book>Забронировать</button>
             </div>
             <span className="mh-cue" aria-hidden="true">Листайте</span>
@@ -54,7 +54,7 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
             <h2 className="ch-title"><span>Свет</span><span>{nb('в ветвях')}</span></h2>
             <p className="ch-line">{nb('Днём — летняя терраса, вечером — зал под цветущим деревом с фонарями.')}</p>
             <div className="ch-actions">
-              <a className="btn btn-gold btn-arrow" href="#menu">Смотреть меню <span aria-hidden="true">↓</span></a>
+              <a className="btn btn-gold btn-arrow" href="./menu.html">Смотреть меню <span aria-hidden="true">→</span></a>
               <button className="link link-night" type="button" data-book>Забронировать стол</button>
             </div>
           </div>

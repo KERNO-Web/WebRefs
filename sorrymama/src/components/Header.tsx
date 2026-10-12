@@ -3,14 +3,14 @@ import { venue } from '../data/venue';
 
 // Menu and booking are buttons of their own, so they never get lost among the chapters
 const NAV: [string, string][] = [['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Детали', '#gallery'], ['Контакты', '#contacts']];
-const PANEL: [string, string][] = [['Меню', '#menu'], ['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Детали', '#gallery'], ['Бронь', '#booking'], ['Контакты', '#contacts']];
+const PANEL: [string, string][] = [['Меню', './menu.html'], ['Атмосфера', '#atmosphere'], ['Терраса', '#terrace'], ['Детали', '#gallery'], ['Бронь', '#booking'], ['Контакты', '#contacts']];
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState('');
   // which chapter is under the reader: the nav item carries it
   useEffect(() => {
-    const ids = PANEL.map(([, h]) => h.slice(1));
+    const ids = PANEL.filter(([, h]) => h.startsWith('#')).map(([, h]) => h.slice(1));
     const els = ids.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
     const io = new IntersectionObserver((es) => {
       for (const e of es) if (e.isIntersecting) setActive(e.target.id);
@@ -47,7 +47,7 @@ export function Header() {
         {NAV.map(([t, h]) => <a key={h} href={h} className={active === h.slice(1) ? 'is-active' : undefined} aria-current={active === h.slice(1) ? 'true' : undefined}>{t}</a>)}
       </nav>
       <div className="hdr-cta">
-        <a className={'btn btn-hdr btn-ghost' + (active === 'menu' ? ' is-active' : '')} href="#menu">Меню</a>
+        <a className="btn btn-hdr btn-ghost" href="./menu.html">Меню</a>
         <button className="btn btn-hdr" type="button" data-book><span className="long">Забронировать</span><span className="short">Бронь</span></button>
       </div>
       <button ref={toggle} className="hdr-toggle" aria-expanded={open} aria-controls="menu-panel" aria-label={open ? 'Закрыть навигацию' : 'Открыть навигацию'} onClick={() => setOpen(!open)}><i /><i /></button>
