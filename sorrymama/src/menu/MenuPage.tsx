@@ -67,6 +67,16 @@ function Bar() {
 /** The full menu: categories as chapters, square photo cards, the bar as type, booking at hand. */
 export function MenuPage() {
   const [active, setActive] = useState(menu[0].id);
+  // a link like menu.html#bar: the browser looks for the anchor before React has rendered the sections,
+  // so land on it here, and once more after the fonts settle the layout
+  useEffect(() => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const el = id ? document.getElementById(id) : null;
+    if (!el) return;
+    const go = () => el.scrollIntoView({ behavior: 'instant' as ScrollBehavior, block: 'start' });
+    go(); setActive(id);
+    document.fonts.ready.then(go);
+  }, []);
   useEffect(() => {
     const io = new IntersectionObserver((es) => { for (const e of es) if (e.isIntersecting) setActive(e.target.id); }, { rootMargin: '-30% 0px -60% 0px' });
     [...menu.map((c) => c.id), bar.id].forEach((id) => { const el = document.getElementById(id); if (el) io.observe(el); });
