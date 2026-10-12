@@ -5,7 +5,6 @@ export type HeroLayout = {
   W: number; H: number; mobile: boolean;
   day: Box; dayFocus: { x: number; y: number };
   dayNear: { x: number; y: number; scale: number }; // camera inside the crown: crown centred, frame filled
-  branch: Box;            // the one real branch allowed in front of a letter
   wordmark: { x: number; y: number; size: number } | null; // locked to the photo where the crossing is exact
   night: Box;             // night photo at rest
   nightNear: Box;         // the same photo deep in its canopy, where the cut happens
@@ -21,13 +20,12 @@ function place(src: { w: number; h: number; focus: { x: number; y: number } }, s
 
 export function heroLayout(W: number, H: number): HeroLayout {
   const mobile = W < 768 || (W < 1024 && H > W * 1.15);
-  const T = assets.terrace, N = assets.lounge, B = assets.branch;
+  const T = assets.terrace, N = assets.lounge;
 
   // Day: the 2× master lets the desktop crop run 12% larger than native, so the tree can sit right
   // of the wordmark with sky above the roofline. Phones show the whole portrait, downscaled.
   const ds = mobile ? Math.max(W / T.w, (H * 1.08) / T.h) : Math.max(W / T.w, H / 900) * 1.12;
   const day = mobile ? place(T, ds, W, H, 0.6, 0.36) : place(T, ds, W, H, 0.66, 0.5);
-  const branch = { x: day.x + B.x * ds, y: day.y + B.y * ds, w: B.w * ds, h: B.h * ds };
 
   const ns = mobile ? Math.max(W / N.w, (H * 1.04) / N.h) : Math.max(W / N.w, H / 900);
   const night = mobile ? place(N, ns, W, H, 0.5, 0.42) : place(N, ns, W, H, 0.52, 0.5);
@@ -39,13 +37,13 @@ export function heroLayout(W: number, H: number): HeroLayout {
   const cw = T.crown.w * ds, ch = T.crown.h * ds;
   const dayNear = { x: W / 2 - dayFocus.x, y: H / 2 - dayFocus.y, scale: Math.max(W / cw, H / ch) * 1.12 };
 
-  // On wide screens the wordmark is placed in the photograph's own coordinates, so the last letter
-  // always meets the same sprig; narrower layouts fall back to CSS and drop the crossing.
+  // On wide screens the wordmark is placed in the photograph's own coordinates, so it meets the crown
+  // and the wires at the same points everywhere; narrower layouts fall back to CSS.
   const WM = T.wordmark;
   const wordmark = !mobile && W >= 1180 ? { x: day.x + WM.x * ds, y: day.y + WM.y * ds, size: WM.size * ds } : null;
 
   return {
-    W, H, mobile, day, branch, wordmark, night, nightNear, dayFocus, dayNear,
+    W, H, mobile, day, wordmark, night, nightNear, dayFocus, dayNear,
     tail: Math.max(0, night.y + night.h - H),
   };
 }

@@ -10,7 +10,7 @@ export type HeroRefs = {
   stage: RefObject<HTMLDivElement>;
   day: RefObject<HTMLImageElement>;
   daySoft: RefObject<HTMLImageElement>;
-  branch: RefObject<HTMLImageElement>;
+  front: RefObject<HTMLImageElement>;
   title: RefObject<HTMLHeadingElement>;
   masthead: RefObject<HTMLDivElement>;
   nightSoft: RefObject<HTMLImageElement>;
@@ -39,23 +39,21 @@ export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => voi
   useEffect(() => {
     const stage = r.stage.current!, track = r.track.current!;
     const el = {
-      day: r.day.current!, daySoft: r.daySoft.current!, branch: r.branch.current!, title: r.title.current!,
+      day: r.day.current!, daySoft: r.daySoft.current!, front: r.front.current!, title: r.title.current!,
       masthead: r.masthead.current!, nightSoft: r.nightSoft.current!, night: r.night.current!,
       scrim: r.scrim.current!, chapter: r.chapter.current!,
     };
     let L = heroLayout(stage.clientWidth, stage.clientHeight);
     const apply = () => {
       L = heroLayout(stage.clientWidth, stage.clientHeight);
-      for (const e of [el.day, el.daySoft]) put(e, L.day);
-      put(el.branch, L.branch);
+      for (const e of [el.day, el.front, el.daySoft]) put(e, L.day);
       const t = el.title.style;
-      if (L.wordmark) { t.left = `${L.wordmark.x}px`; t.top = `${L.wordmark.y}px`; t.fontSize = `${L.wordmark.size}px`; el.branch.style.display = ''; }
-      else { t.left = t.top = t.fontSize = ''; el.branch.style.display = 'none'; }
+      if (L.wordmark) { t.left = `${L.wordmark.x}px`; t.top = `${L.wordmark.y}px`; t.fontSize = `${L.wordmark.size}px`; }
+      else { t.left = t.top = t.fontSize = ''; }
       for (const e of [el.night, el.nightSoft]) put(e, L.night);
-      // day layers scale about the tree; the branch must keep registration with its photograph
+      // the sky, the cut-out front and the soft plate share one box and scale about the tree together
       const f = L.dayFocus;
-      for (const e of [el.day, el.daySoft]) gsap.set(e, { transformOrigin: `${f.x - L.day.x}px ${f.y - L.day.y}px` });
-      gsap.set(el.branch, { transformOrigin: `${f.x - L.branch.x}px ${f.y - L.branch.y}px` });
+      for (const e of [el.day, el.front, el.daySoft]) gsap.set(e, { transformOrigin: `${f.x - L.day.x}px ${f.y - L.day.y}px` });
       gsap.set([el.night, el.nightSoft], { transformOrigin: '0 0' });
       onLayout(L);
     };
@@ -80,14 +78,14 @@ export function useBlossomTimeline(r: HeroRefs, onLayout: (L: HeroLayout) => voi
           onUpdate: (st) => onTone(st.progress > 0.55),
         },
       });
-      const day = [el.day, el.daySoft, el.branch];
+      const day = [el.day, el.front, el.daySoft];
 
       // 0.14–0.35 approach, 0.35–0.52 into the canopy
       // the camera drifts toward the crown, then travels into it until blossom fills the frame
       const dn = () => L.dayNear;
       tl.fromTo(day, { scale: 1, x: 0, y: 0 }, { scale: 1.13, x: () => dn().x * 0.15, y: () => dn().y * 0.15, duration: 0.21, ease: 'sine.inOut' }, 0.14);
       tl.to(day, { scale: () => dn().scale, x: () => dn().x, y: () => dn().y, duration: 0.14, ease: 'power1.in' }, 0.35);
-      // focus pulls to the near foliage; it covers the wordmark, which only then lets go
+      // the crown grows over the wordmark (it sits behind the front layer); focus then pulls to the near foliage
       tl.fromTo(el.daySoft, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1, ease: 'sine.in' }, 0.39);
       tl.to(el.title, { y: -10, scale: 1.02, duration: 0.3, ease: 'sine.in' }, 0.14);
       tl.to(el.title, { autoAlpha: 0, duration: 0.07 }, 0.41);

@@ -14,7 +14,7 @@
 }
 .wordmark span { display: block; }
 .wm-b { margin-left: .8em; }
-.branch { z-index: 3; }
+.front { z-index: 3; }
 .soft { z-index: 4; opacity: 0; visibility: hidden; }
 .night-soft { z-index: 5; }
 .night { z-index: 6; opacity: 0; visibility: hidden; }

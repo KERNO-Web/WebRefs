@@ -10,7 +10,7 @@ const hi = { fetchpriority: 'high' } as Record<string, string>; // React 18 has 
 export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
   const r = {
     track: useRef<HTMLElement>(null), stage: useRef<HTMLDivElement>(null),
-    day: useRef<HTMLImageElement>(null), daySoft: useRef<HTMLImageElement>(null), branch: useRef<HTMLImageElement>(null),
+    day: useRef<HTMLImageElement>(null), daySoft: useRef<HTMLImageElement>(null), front: useRef<HTMLImageElement>(null),
     title: useRef<HTMLHeadingElement>(null), masthead: useRef<HTMLDivElement>(null),
     nightSoft: useRef<HTMLImageElement>(null), night: useRef<HTMLImageElement>(null),
     scrim: useRef<HTMLDivElement>(null), chapter: useRef<HTMLDivElement>(null),
@@ -34,13 +34,15 @@ export function HeroJourney({ onTone }: { onTone: (night: boolean) => void }) {
         <div className="stage" ref={r.stage}>
           <img ref={r.day} className="ph day" src={assets.terrace.src}
             srcSet={`${assets.terrace.src} 1440w, ${assets.terrace.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
-            alt="Летняя терраса Sorry Mama: цветущее дерево, голубые диваны и гирлянды" {...hi} />
+            alt="" aria-hidden="true" {...hi} />
           <h1 ref={r.title} className="wordmark" aria-label="Sorry Mama">
             <span className="wm-a" aria-hidden="true">SORRY</span>
             <span className="wm-b" aria-hidden="true">MAMA</span>
           </h1>
-          {/* one real branch of the same photograph crossing the last letter */}
-          <img ref={r.branch} className="ph branch" src={assets.branch.src} alt="" aria-hidden="true" />
+          {/* terrace, wires and tree in front of the wordmark */}
+          <img ref={r.front} className="ph front" src={assets.front.src}
+            srcSet={`${assets.front.src} 1440w, ${assets.front.src2x} 2880w`} sizes="(max-width: 767px) 185vw, 112vw"
+            alt="Летняя терраса Sorry Mama: цветущее дерево, голубые диваны и гирлянды" {...hi} />
           <img ref={r.daySoft} className="ph soft" src={assets.daySoft.src} alt="" aria-hidden="true" />
           <img ref={r.nightSoft} className="ph soft night-soft" src={assets.nightSoft.src} alt="" aria-hidden="true" />
           <img ref={r.night} className="ph night" src={assets.lounge.src} alt="Зал Sorry Mama вечером: цветущее дерево с фонарями, бархатные диваны и бар" />

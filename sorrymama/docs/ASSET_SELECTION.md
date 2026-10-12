@@ -54,3 +54,11 @@ Rights: none cleared (2GIS guest uploads + owner's research pack). Local only.
 
 ## V3 typography
 Auditioned Commissioner, Geologica and Manrope on the identical hero crop (scratch board, labels outside). Chosen: **Commissioner 800** with FLAR 60 / VOLM 80. Reason: its humanist construction and flared terminals sit with the blossoms instead of stamping over them; Geologica read colder and more geometric, Manrope rounder and corporate. Composition first: both lines over the sky, `MAMA` ending where one real sprig crosses its last letter. Onest stays for UI/body.
+
+## V3.1 — owner's cut-out layers (13.10.2026)
+The owner supplied two 1086×1448 RGBA layers made from 097: `tree` (crown + AI-extended trunk) and `terrace` (terrace, wires, building; sky and tree removed). Both were Real-ESRGAN 4× upscaled and placed on the 2880×3640 grid of the day master:
+- terrace layer scaled to 2880×3840, shifted −16 px (measured against the original), cropped to 3640 rows;
+- tree layer scaled to 1108×1477 at (1402, 1014), trunk clipped at the sofa line (y 2330) so it stays behind the furniture;
+- merged into `terrace-front(-2x).webp` (alpha).
+The sky behind the wordmark is `terrace-sky(-2x).webp`: the original photo where the front layer is transparent, with wires, bulbs and remnants of the old building/tree detected and filled by normalized blur (two radii), so nothing doubles with the owner's sharper wires. The branch matte from V3 is retired.
+Layer order: sky → SORRY MAMA → front (terrace, wires, tree). The wordmark sits behind the wires and the crown; on scroll the crown grows over it.
