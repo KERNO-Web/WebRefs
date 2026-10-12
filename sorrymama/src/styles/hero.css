@@ -1,0 +1,55 @@
+/* ── hero: one sticky stage over a short track; ~12% of a screen arms the passage, which then plays itself
+   (useBlossomTimeline). The track only needs to be long enough to hold the stage while it plays. ── */
+.journey { position: relative; height: 170svh; }
+.stage { position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; background: var(--night-black); isolation: isolate; }
+.cv { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.cv-back { z-index: 1; }
+.cv-front { z-index: 3; }
+.pool { display: none; }
+.wash { position: absolute; inset: 0; pointer-events: none; }
+
+.wordmark {
+  position: absolute; z-index: 2; left: 4.2vw; top: 16.5%;
+  font: 800 var(--hero-display-size)/.84 var(--font-display); font-variation-settings: var(--display-axes);
+  letter-spacing: -.035em; color: var(--day-ink); pointer-events: none; will-change: transform, opacity;
+  /* a thin optical lift off the clouds, not a haze */
+  text-shadow: 0 0 1px rgba(49, 37, 43, .2), 0 18px 60px rgba(245, 240, 236, .35);
+}
+.wordmark span { display: block; }
+.wm-b { margin-left: .8em; }
+/* the single exposure layer: warm plum, never grey */
+.scrim { z-index: 7; opacity: 0; background: radial-gradient(120% 90% at 50% 45%, rgba(58, 22, 38, .75), rgba(26, 12, 20, 1)); }
+
+/* crafted masthead along the bottom edge */
+.masthead {
+  position: absolute; z-index: 8; left: 0; right: 0; bottom: 0;
+  display: grid; grid-template-columns: 1fr auto auto; align-items: end; column-gap: clamp(20px, 3vw, 48px);
+  padding: 90px var(--page-gutter) clamp(22px, 3.4vh, 34px); color: var(--day-ink);
+  background: linear-gradient(0deg, rgba(245, 240, 236, .78) 0%, rgba(245, 240, 236, .42) 55%, rgba(245, 240, 236, 0) 100%);
+  font-size: var(--label-size);
+}
+.mh-place { font-weight: 500; letter-spacing: .02em; text-transform: uppercase; }
+.mh-actions { display: flex; align-items: center; gap: 12px; font-size: 15px; }
+.mh-cue { position: relative; padding-top: 36px; writing-mode: vertical-rl; letter-spacing: .04em; opacity: .7; }
+.mh-cue::before { content: ''; position: absolute; top: 0; left: 50%; width: 1px; height: 28px; background: currentColor; transform-origin: top; animation: cue 2.4s cubic-bezier(.6, 0, .2, 1) infinite; }
+@keyframes cue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+
+/* the night frame's chapter, set into the photograph */
+.chapter {
+  position: absolute; z-index: 8; left: 0; right: 0; bottom: 0; opacity: 0; visibility: hidden;
+  display: grid; grid-template-columns: minmax(0, 1fr); align-items: end;
+  padding: 220px var(--page-gutter) clamp(30px, 6vh, 64px); color: var(--night-ink);
+  /* ends on the page colour, so the next chapter starts without a seam */
+  background: linear-gradient(0deg, var(--night-black) 0%, rgba(25, 19, 23, .8) 22%, rgba(25, 14, 20, .45) 55%, rgba(25, 14, 20, 0) 100%);
+}
+.ch-title { font: 800 clamp(72px, 7.8vw, 124px)/.9 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.04em; }
+.ch-title span { display: block; }
+.ch-line { margin-top: 22px; max-width: 42ch; font-size: clamp(16px, 1.2vw, 18px); line-height: 1.5; color: var(--night-muted); }
+.ch-actions { display: flex; align-items: center; gap: 26px; margin-top: 26px; }
+
+.night-still { display: none; }
+.rm .journey { height: auto; }
+.rm .stage { position: relative; height: 100svh; }
+.rm .night-still { display: block; position: relative; height: 100svh; overflow: hidden; }
+.rm .night-still img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 47%; }
+.rm .mh-cue::before { animation: none; }
