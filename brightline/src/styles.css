@@ -1511,6 +1511,11 @@ button {
     aspect-ratio: 4 / 5;
     max-height: none;
   }
+  /* the stage has no bottom margin here, so the line would poke into the next section */
+  .cmp-line {
+    bottom: 0;
+    background: linear-gradient(to bottom, var(--ink) 0 28px, #fff 28px);
+  }
   .cmp-facts {
     margin-top: 28px;
   }

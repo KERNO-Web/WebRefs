@@ -250,7 +250,8 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     },
     colors: (p) => {
       const idx = COLOR_ORDER[Math.min(5, Math.floor(p * 6))];
-      const kbPose = wide ? P(0, -0.06, 0.55, 0.55, -0.62 + p * 1.0, 0.05) : P(0, -0.04, 1.12, 0.66, -0.4 + p * 0.6, 0.22);
+      // phones: smaller and steadier, kept in the band between the heading and the colour's name
+      const kbPose = wide ? P(0, -0.06, 0.55, 0.55, -0.62 + p * 1.0, 0.05) : P(0, 0.04, 0.84, 0.62, -0.32 + p * 0.22, 0.16);
       return base({ kb: kbPose, colorway: idx, bg: COLORWAYS[idx].bg });
     },
     details: (p) => {
@@ -276,7 +277,7 @@ export function createStage(canvas: HTMLCanvasElement): StageHandles | null {
     },
     final: () =>
       base({
-        kb: wide ? P(0.13, -0.2, 0.56, 0.98, -0.1, -0.16) : P(0, -0.2, 1.22, 1.02, 0, -0.42),
+        kb: wide ? P(0.13, -0.2, 0.56, 0.98, -0.1, -0.16) : P(0, -0.13, 0.96, 1.02, 0, -0.42),
         bg: '#ff6a1a',
         shadow: 0.9,
       }),

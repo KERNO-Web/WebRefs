@@ -44,12 +44,15 @@
   .tr-main { margin: 0 calc(-1 * var(--page-gutter)); }
   .tr-head { margin-bottom: 24px; }
   .tr-copy { margin-bottom: 36px; }
-  .tr-detail { width: 68%; justify-self: end; min-height: 0; margin-top: 28px; }
-  .tr-detail > img[width][height] { flex: none; height: auto; aspect-ratio: 4 / 5; }
+  /* stacked, the second terrace photo only hung off to one side: one photograph, then the details */
+  .tr-detail { display: none; }
   .g-grid { row-gap: 28px; }
   .bk-side { margin-top: 44px; }
   .visit-rows { grid-template-columns: 1fr; }
-  .visit-photo { width: 78%; justify-self: end; margin-top: 56px; }
+  .visit-photo { margin-top: 48px; }
+  /* phones: chapters breathe less than on a wide screen */
+  .atmo, .menu, .terrace, .gallery, .visit { padding-top: 72px; padding-bottom: 72px; }
+  .booking { padding-top: 88px; padding-bottom: 88px; }
 }
 
 /* ── phones ── */

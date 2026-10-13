@@ -111,7 +111,7 @@ export function MenuPage() {
         </nav>
         {menu.map((c) => (
           <section key={c.id} id={c.id} className="mp-sec" aria-labelledby={`${c.id}-h`}>
-            <h2 id={`${c.id}-h`} className="mp-h">{c.category}<sup>{c.items.length}</sup></h2>
+            <h2 id={`${c.id}-h`} className="mp-h">{c.category}</h2>
             <ul className="mp-grid">{c.items.map((i) => <Card key={i.id} i={i} />)}</ul>
           </section>
         ))}

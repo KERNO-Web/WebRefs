@@ -100,7 +100,8 @@ function FilmStrip() {
           {PHOTOS.frames.map((ph, i) => (
             <figure key={ph.src} className={`frame f${i + 1} ${i === KEPT ? 'kept' : ''}`} data-reveal>
               <div className="frame-img flashable">
-                <Img photo={ph} />
+                {/* the roll moves sideways, so lazy loading started too late on phones and left blank frames */}
+                <Img photo={ph} eager />
                 {i === KEPT && (
                   <svg className="mark" viewBox="0 0 200 200" aria-hidden="true">
                     <path d="M100 14c52 2 86 34 84 84-2 54-42 90-90 88-48-2-80-40-78-88 2-46 38-80 92-82 14 0 26 4 34 8" />

@@ -31,13 +31,13 @@ const CAFE: [Text, number][] = [
 ];
 
 const BEANS: [Text, number][] = [
-  [L('Эфиопия Иргачеффе, 250 г', 'Ethiopia Yirgacheffe, 250 g'), 1190],
-  [L('Колумбия Уила, 1 кг', 'Colombia Huila, 1 kg'), 3490],
-  [L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), 1890],
-  [L('Кения АА, 250 г', 'Kenya AA, 250 g'), 1390],
-  [L('Дегустационный набор, 4 × 100 г', 'Tasting set, 4 × 100 g'), 1650],
-  [L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), 2490],
-  [L('Гватемала Антигуа, 500 г', 'Guatemala Antigua, 500 g'), 1790],
+  [L('Эфиопия Иргачеффе, 250 г', 'Ethiopia Yirgacheffe, 250 g'), 1190],
+  [L('Колумбия Уила, 1 кг', 'Colombia Huila, 1 kg'), 3490],
+  [L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), 1890],
+  [L('Кения АА, 250 г', 'Kenya AA, 250 g'), 1390],
+  [L('Дегустационный набор, 4 × 100 г', 'Tasting set, 4 × 100 g'), 1650],
+  [L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), 2490],
+  [L('Гватемала Антигуа, 500 г', 'Guatemala Antigua, 500 g'), 1790],
 ];
 
 const GEAR: [Text, number][] = [
@@ -133,7 +133,7 @@ export function createSeed(now = Date.now()): DemoState {
   const links: PaymentLink[] = [
     {
       id: 'lnk_MORNING1KG',
-      title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'),
+      title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'),
       description: L('Обжарка под эспрессо, отправка в день заказа.', 'Espresso roast, shipped the day you order.'),
       amount: 1890,
       reusable: true,
@@ -170,7 +170,7 @@ export function createSeed(now = Date.now()): DemoState {
     {
       id: 'lnk_V60KIT',
       title: L('Набор для воронки V60', 'V60 brewing kit'),
-      description: L('Воронка, 100 фильтров и 250 г зерна на выбор.', 'Dripper, 100 filters and 250 g of beans.'),
+      description: L('Воронка, 100 фильтров и 250 г зерна на выбор.', 'Dripper, 100 filters and 250 g of beans.'),
       amount: 2790,
       reusable: true,
       active: false,
@@ -212,7 +212,7 @@ export function createSeed(now = Date.now()): DemoState {
         p = make(link.amount, link.title, 'link', t, { sourceId: link.id, customer: pick(PEOPLE) });
       } else {
         const t = dayStart + between(9, 21) * 60 * MIN;
-        p = make(2490, L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), 'pos', t);
+        p = make(2490, L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), 'pos', t);
       }
 
       if (p.createdAt > lastMoment) continue;
@@ -286,30 +286,30 @@ export function createSeed(now = Date.now()): DemoState {
 
   const invoices: Invoice[] = [
     inv(141, L('Кофейня «Сезон»', 'Sezon Coffee'), 'orders@sezon.cafe', [
-      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 12, price: 1590 },
-      { title: L('Колумбия Уила, 1 кг', 'Colombia Huila, 1 kg'), qty: 5, price: 2990 },
+      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 12, price: 1590 },
+      { title: L('Колумбия Уила, 1 кг', 'Colombia Huila, 1 kg'), qty: 5, price: 2990 },
     ], today - 12 * DAY + 11 * 60 * MIN, 7, 'paid'),
     inv(142, L('Отель «Волна»', 'Volna Hotel'), 'fb@volna-hotel.ru', [
       { title: L('Кофе-брейк на 40 гостей', 'Coffee break for 40 guests'), qty: 1, price: 38000 },
     ], today - 10 * DAY + 15 * 60 * MIN, 5, 'paid', L('Конференц-зал, 2 этаж. Подача в 11:00.', 'Conference hall, 2nd floor. Serve at 11:00.')),
     inv(143, L('Пекарня «Хлебный двор»', 'Khlebny Dvor Bakery'), 'zakaz@hlebdvor.ru', [
-      { title: L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), qty: 8, price: 2190 },
+      { title: L('Бразилия Серрадо, 1 кг', 'Brazil Cerrado, 1 kg'), qty: 8, price: 2190 },
     ], today - 8 * DAY + 10 * 60 * MIN, 3, 'expired'),
     inv(144, L('Коворкинг «Точка»', 'Tochka Coworking'), 'office@tochka.space', [
       { title: L('Аренда кофемашины, октябрь', 'Espresso machine rental, October'), qty: 1, price: 18000 },
       { title: L('Обслуживание кофемашины', 'Machine servicing'), qty: 1, price: 6500 },
     ], today - 6 * DAY + 12 * 60 * MIN, 7, 'paid'),
     inv(145, L('Ресторан «Охра»', 'Okhra Restaurant'), 'bar@okhra.rest', [
-      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 6, price: 1590 },
-      { title: L('Кения АА, 1 кг', 'Kenya AA, 1 kg'), qty: 2, price: 4890 },
+      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 6, price: 1590 },
+      { title: L('Кения АА, 1 кг', 'Kenya AA, 1 kg'), qty: 2, price: 4890 },
     ], today - 4 * DAY + 16 * 60 * MIN, 5, 'cancelled', L('Заменён счётом KC-0147', 'Replaced by invoice KC-0147')),
     inv(146, L('Кофейня «Сезон»', 'Sezon Coffee'), 'orders@sezon.cafe', [
-      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 10, price: 1590 },
-      { title: L('Гватемала Антигуа, 1 кг', 'Guatemala Antigua, 1 kg'), qty: 4, price: 3290 },
+      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 10, price: 1590 },
+      { title: L('Гватемала Антигуа, 1 кг', 'Guatemala Antigua, 1 kg'), qty: 4, price: 3290 },
     ], today - 2 * DAY + 10 * 60 * MIN, 7, 'pending'),
     inv(147, L('Ресторан «Охра»', 'Okhra Restaurant'), 'bar@okhra.rest', [
-      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 6, price: 1590 },
-      { title: L('Кения АА, 1 кг', 'Kenya AA, 1 kg'), qty: 3, price: 4890 },
+      { title: L('Эспрессо-смесь «Утро», 1 кг', 'Morning espresso blend, 1 kg'), qty: 6, price: 1590 },
+      { title: L('Кения АА, 1 кг', 'Kenya AA, 1 kg'), qty: 3, price: 4890 },
     ], today - 3 * DAY + 13 * 60 * MIN, 4, 'pending'),
     inv(148, L('Бюро «Север»', 'Sever Studio'), 'hello@sever.studio', [
       { title: L('Кофе-брейк на 15 гостей', 'Coffee break for 15 guests'), qty: 1, price: 14500 },

@@ -35,7 +35,6 @@ html { scroll-padding-top: calc(var(--hdr-h) + 64px); }
 
 .mp-sec { padding-top: clamp(64px, 9vh, 120px); }
 .mp-h { margin-bottom: clamp(24px, 3vw, 44px); font: 800 clamp(44px, 5.6vw, 104px)/.9 var(--font-display); font-variation-settings: var(--display-axes); letter-spacing: -.045em; }
-.mp-h sup { margin-left: .2em; font: 500 clamp(14px, 1.1vw, 18px)/1 var(--font-ui); letter-spacing: 0; vertical-align: top; color: var(--day-muted); }
 
 .mp-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(36px, 3.4vw, 56px) 24px; }
 .mp-card { display: flex; flex-direction: column; }

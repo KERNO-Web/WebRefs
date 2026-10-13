@@ -553,7 +553,13 @@ blockquote { font-family: var(--display); font-style: italic; font-size: clamp(3
 
 @media (max-aspect-ratio: 1/1) {
   .mast-c { display: none; }
-  .mast { grid-template-columns: 1fr auto; }
+  /* on a narrow screen the blended masthead ran over the copy: give it its own paper bar */
+  .mast {
+    grid-template-columns: 1fr auto; padding: 16px var(--gutter);
+    mix-blend-mode: normal; color: var(--ink);
+    background: rgba(243, 242, 239, 0.86); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(17, 17, 19, 0.08);
+  }
   .cover { --fa: 28vw; --fi: 26vw; }
   .cover-kicker { top: 8svh; right: var(--gutter); font-size: 8.5px; letter-spacing: 0.12em; white-space: nowrap; }
   .cover-num { display: none; }
@@ -597,7 +603,8 @@ blockquote { font-family: var(--display); font-style: italic; font-size: clamp(3
 
   .fashion { grid-template-columns: 1fr; padding: 10vh 0; gap: 7vh; }
   .fashion-photo { grid-column: 1; grid-row: 1; height: 70svh; }
-  .fashion-inset { left: auto; right: var(--gutter); bottom: auto; top: calc(10vh + 52svh); width: 38vw; }
+  /* overlaps the photo's lower edge, never the caption below it */
+  .fashion-inset { left: auto; right: var(--gutter); bottom: auto; top: calc(10vh + 40svh); width: 38vw; transform: translateY(calc((0.5 - var(--p)) * 8vh)) rotate(-2deg); }
   .fashion-copy { grid-column: 1; grid-row: 2; padding: 0 var(--gutter); }
   .fashion-word { font-size: 40vw; top: 34%; }
 

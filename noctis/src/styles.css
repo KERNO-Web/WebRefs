@@ -256,7 +256,8 @@ html.has-cursor .cur-dot, html.has-cursor .cur-ring { display: block; }
 
 /* ---------- mobile: recomposed, not compressed ---------- */
 @media (max-width: 760px) {
-  .hdr { padding: 20px; }
+  /* the blended header ran over headlines and captions on a phone: a dark glass bar instead */
+  .hdr { padding: 16px 20px; mix-blend-mode: normal; background: rgba(8, 8, 10, 0.78); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
   .nav { display: none; }
   .burger { display: block; }
   .logo { font-size: 15px; }
