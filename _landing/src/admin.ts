@@ -48,7 +48,7 @@ async function gh(token: string, init?: RequestInit) {
   });
   if (res.status === 401) throw new Error('Токен не подходит или истёк.');
   if (res.status === 403 || res.status === 404)
-    throw new Error('У токена нет доступа к репозиторию WebRefs (нужно Contents: Read and write).');
+    throw new Error('У токена нет доступа к KERNO-Web/WebRefs: нужен токен с Resource owner = KERNO-Web и правом Contents: Read and write.');
   if (res.status === 409) throw new Error('Файл только что изменился. Обновите страницу и повторите.');
   if (!res.ok) throw new Error(`GitHub ответил ${res.status}.`);
   return res.json();
@@ -118,6 +118,7 @@ export function mountAdmin(root: HTMLElement) {
       <p class="adm-p">Нужен токен GitHub, который может менять только репозиторий WebRefs. Создаётся один раз:</p>
       <ol class="adm-steps">
         <li>Откройте <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained token</a>.</li>
+        <li>Resource owner → <b>KERNO-Web</b> (репозиторий принадлежит организации; токен на личный аккаунт его не видит).</li>
         <li>Repository access → <b>Only select repositories</b> → <b>WebRefs</b>.</li>
         <li>Permissions → <b>Contents: Read and write</b>. Больше ничего не нужно.</li>
         <li>Generate token — и вставьте его сюда.</li>

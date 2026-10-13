@@ -15,7 +15,7 @@ npm run dev
 
 ## Админка
 
-`…/WebRefs/#/kerno-admin` или **Cmd/Ctrl + Shift + K**. Ссылки на неё на сайте нет.
+`https://kerno-web.github.io/WebRefs/#/kerno-admin` или **Cmd/Ctrl + Shift + K**. Ссылки на неё на сайте нет.
 
 Там можно закрепить одну или две работы, менять порядок (перетаскиванием или
 стрелками), убирать работы с главной и возвращать. Изменения копятся в черновике
@@ -25,6 +25,7 @@ npm run dev
 
 Вход — fine-grained токен GitHub (создаётся один раз):
 Settings → Developer settings → Fine-grained tokens → Generate new token →
+Resource owner: **KERNO-Web** (репозиторий в организации) →
 Repository access: Only select repositories → **WebRefs** →
 Permissions: **Contents: Read and write**.
 Токен вставляется в админке и хранится только в localStorage этого браузера;
