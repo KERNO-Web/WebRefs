@@ -39,7 +39,15 @@ export function heroLayout(W: number, H: number): HeroLayout {
   // On wide screens the wordmark is placed in the photograph's own coordinates, so it meets the crown
   // and the wires at the same points everywhere; narrower layouts fall back to CSS.
   const WM = T.wordmark;
-  const wordmark = !mobile && W >= 1180 ? { x: day.x + WM.x * ds, y: day.y + WM.y * ds, size: WM.size * ds } : null;
+  let wordmark = !mobile && W >= 1180 ? { x: day.x + WM.x * ds, y: day.y + WM.y * ds, size: WM.size * ds } : null;
+  // The crop pushes the photo left, so on every desktop width the word started off-screen («ORRY MAMA»).
+  // Keep its right edge where it meets the crown and shrink it to start at the page gutter instead.
+  const WM_RATIO = 4.07; // rendered width of «MAMA» line ≈ 4.07 × font-size (Commissioner 800)
+  const gutter = Math.max(40, W * 0.04);
+  if (wordmark && wordmark.x < gutter) {
+    const right = wordmark.x + wordmark.size * WM_RATIO;
+    wordmark = { ...wordmark, x: gutter, size: (right - gutter) / WM_RATIO };
+  }
 
   return {
     W, H, mobile, day, wordmark, night, nightNear, dayFocus, dayNear,
