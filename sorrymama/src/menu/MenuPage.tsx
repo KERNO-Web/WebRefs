@@ -126,7 +126,7 @@ export function MenuPage() {
       </main>
       <footer className="mp-foot">
         <p>{venue.name} · {venue.city}, {venue.street}, {venue.floor}</p>
-        <p className="mp-foot-note">KERNØ · неофициальный концепт сайта. Меню и фото — из карточки заведения в 2ГИС, права не согласованы.</p>
+        <p className="mp-foot-note">Сайт — KERNØ. Меню и фото — из карточки заведения в 2ГИС, права не согласованы.</p>
       </footer>
       <BookingDialog />
       <Cursor />

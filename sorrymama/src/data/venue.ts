@@ -17,5 +17,4 @@ export const venue = {
     twoGis: 'https://2gis.ru/kazan/firm/70000001034900657',
   },
   menuSource: 'https://2gis.ru/kazan/firm/70000001034900657/tab/menu',
-  concept: 'Неофициальный концепт сайта от KERNØ. Не связан с заведением.',
 } as const;

@@ -90,7 +90,7 @@ export function BookingDialog() {
           <div className="bkd-done" role="status">
             <h2 id="bkd-h" className="bkd-title">Осталось позвонить</h2>
             <p className="bkd-sub">
-              {state === 'error' ? 'Заявка не ушла — связь подвела. ' : 'Это концепт сайта, заявки отсюда пока никуда не уходят. '}
+              {state === 'error' ? 'Заявка не ушла — связь подвела. ' : 'Онлайн-бронь пока не подключена, заявки отсюда никуда не уходят. '}
               {name.trim()}, позвоните — стол на {guestsWord(guests)} подтвердят по телефону.
             </p>
             <a className="btn btn-gold btn-xl btn-arrow" href={venue.phone.href}>Позвонить {venue.phone.display} <span aria-hidden="true">→</span></a>

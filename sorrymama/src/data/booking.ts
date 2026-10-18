@@ -1,5 +1,5 @@
 /*
- * Where a booking request goes. This build is an unofficial concept: no endpoint is configured, so
+ * Where a booking request goes. No endpoint is configured yet, so
  * nothing leaves the browser and the guest is told to confirm by phone. When the venue gives an
  * endpoint (CRM, bot, mail relay), set it here; the form already sends JSON { guests, name, phone }.
  * Never show «бронь подтверждена» for a request nobody received.

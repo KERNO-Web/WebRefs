@@ -1,4 +1,4 @@
-# Sorry Mama — unofficial KERNØ concept (reborn build)
+# Sorry Mama — commercial KERNØ site for the venue (reborn build)
 
 Single-page restaurant site for Sorry Mama rest-lounge, Kazan. Russian copy. Not affiliated with the venue.
 
