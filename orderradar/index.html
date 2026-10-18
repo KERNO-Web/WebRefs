@@ -7,119 +7,131 @@
   <meta name="description" content="Telegram-бот KERNØ: каждые 5 минут обходит биржи и чаты, отсеивает мусор и присылает карточку заказа с готовым откликом." />
   <meta property="og:title" content="Order Radar · бот, который сам находит заказы" />
   <meta property="og:image" content="og.jpg" />
-  <meta name="theme-color" content="#0e0f12" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400..800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#17212b" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="top">
-    <a class="brand" href="../">KERNØ</a>
-    <a class="back" href="../">Все работы</a>
+  <header class="bar">
+    <a class="back" href="../" aria-label="Все работы KERNØ"><span aria-hidden="true">←</span></a>
+    <span class="ava" aria-hidden="true">R</span>
+    <div class="who"><b>Order Radar</b><small id="status">бот</small></div>
+    <a class="kerno" href="../">KERNØ</a>
   </header>
 
-  <main>
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">Telegram-бот</p>
-        <h1>Бот, который сам находит заказы</h1>
-        <p class="lead">Каждые 5 минут обходит биржи и чаты, выкидывает мусор и присылает карточку с готовым откликом.</p>
-        <a class="btn" href="#filter">Как он отбирает</a>
-      </div>
+  <main class="chat">
+    <p class="day">17 октября</p>
 
-      <div class="phone" aria-label="Чат с ботом: приходят карточки заказов">
-        <div class="phone-head">
-          <span class="ava" aria-hidden="true">R</span>
-          <div><b>Order Radar</b><small id="status">бот</small></div>
+    <div class="m out"><div class="b">/start<span class="tm">09:24 <i>✓✓</i></span></div></div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="b intro">
+        <h1>Привет! Я сам нахожу заказы.</h1>
+        <p>Каждые 5 минут обхожу FL.ru, Kwork, Freelance.ru, Workspace и Telegram-чаты с заказами. Мусор выкидываю, подходящее присылаю карточкой с готовым откликом.</p>
+        <span class="tm">09:24</span>
+      </div>
+    </div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="col">
+        <div class="b card">
+          <p>🔥 крупный · 🇷🇺 RU · <b>Kwork</b></p>
+          <p><b>Парсинг данных для биржи и новостной ленты</b></p>
+          <p>Необходимо автоматизировать сбор информации для двух разделов экологической платформы. 1. Биржа отходов: покупка, продажа, вывоз и утилизация, класс опасности, объём, цена, регион…</p>
+          <p>💰 до 100 000 ₽ (допустимо до 200 000 ₽) · ⏱ срок 10 дн.</p>
+          <p>🕒 17.10 21:02 (1 мин назад) · ⭐ 90 · parser</p>
+          <p>✍️ <b>Черновик отклика</b> (нажми, чтобы скопировать):</p>
+          <pre>Здравствуйте! По задаче «Парсинг данных для биржи и новостной ленты»: сделаю парсер, который сам забирает данные и складывает их в удобный вид (таблица, бот или API); сначала пришлю пример выгрузки.
+Чтобы не гадать: какие сайты и как часто нужно обновлять данные?</pre>
+          <span class="tm">21:02</span>
         </div>
-        <div class="feed" id="feed"></div>
+        <a class="kb" href="https://kwork.ru/projects/3267631/view" target="_blank" rel="noopener">Открыть заказ ↗</a>
       </div>
-    </section>
+    </div>
 
-    <section class="numbers" aria-label="Цифры за первые 36 часов работы">
-      <div><b>49</b><span>источников: FL.ru, Kwork, Freelancer.com, Telegram-чаты</span></div>
-      <div><b>5 мин</b><span>между проверками, круглые сутки</span></div>
-      <div><b>2 559</b><span>заказов увидел за первые 36 часов</span></div>
-      <div class="hl"><b>79</b><span>из них дошли до меня карточкой</span></div>
-    </section>
+    <p class="day">18 октября</p>
 
-    <section class="filter" id="filter">
-      <div class="filter-copy">
-        <h2>97% заказов бот выкидывает сам</h2>
-        <p>Вакансии в штат, накрутка отзывов, «сайт с CRM за 8 тысяч», чужие темы. До меня доходит только то, за что стоит браться.</p>
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="col">
+        <div class="b card">
+          <p>🔥 крупный · 🌍 EN · <b>Чат «Freelancer | Find Jobs &amp; Projects»</b></p>
+          <p><b>Разработка веб-сайта по поиску недвижимости</b></p>
+          <p><i>Property Inquiry Website Development</i></p>
+          <p>Нужен сайт по недвижимости для малого и среднего бизнеса: посетитель открывает объект и отправляет запрос на покупку или аренду, обязательны только контактные данные…</p>
+          <p>💰 $750 · ⏱ срок не указан</p>
+          <p>🕒 18.10 05:55 (32 мин назад) · ⭐ 100 · site</p>
+          <p>✍️ <b>Черновик отклика</b> (нажми, чтобы скопировать):</p>
+          <pre>Hi! Re “Property Inquiry Website Development”: I'll build a fast site that drives leads, and show you a live link for the first version, not static mockups.
+Quick question so I don't guess: Do you have copy and a reference site you like?</pre>
+          <span class="tm">05:55</span>
+        </div>
+        <a class="kb" href="https://t.me/Freelanceroff/7324229" target="_blank" rel="noopener">Открыть заказ ↗</a>
       </div>
-      <ol class="sieve" id="sieve">
-        <li class="no"><span class="t">WE’RE HIRING: SOFTWARE ENGINEER</span><span class="why">вакансия в штат</span></li>
-        <li class="no"><span class="t">Требуется размещение отзывов на WB, Ozon и Яндекс Маркете</span><span class="why">накрутка отзывов</span></li>
-        <li class="yes"><span class="t">Парсинг данных для биржи и новостной ленты</span><span class="why">до 100 000 ₽</span></li>
-        <li class="no"><span class="t">Daily French Bulldog Funny TikToks</span><span class="why">не моя тема</span></li>
-        <li class="no"><span class="t">Обработать с помощью ИИ несколько предметных фото</span><span class="why">бюджет ниже 25 000 ₽</span></li>
-        <li class="no"><span class="t">Teлeгpaм Paccылкa пo чaтaм</span><span class="why">спам, латиница в словах</span></li>
-        <li class="yes"><span class="t">Telegram-бот консультант на Python (OpenAI API)</span><span class="why">бот + нейросеть</span></li>
-        <li class="no"><span class="t">Content Creator / UGC Creator, короткие видео</span><span class="why">оплата в месяц = штат</span></li>
-        <li class="no"><span class="t">Creative 3D Trailer Production</span><span class="why">только дизайн</span></li>
-        <li class="yes"><span class="t">Property Inquiry Website Development</span><span class="why">$750, переведён</span></li>
-      </ol>
-    </section>
+    </div>
 
-    <section class="how">
-      <h2>Что происходит за 5 минут</h2>
-      <div class="steps">
-        <article>
-          <h3>Собирает</h3>
-          <p>RSS бирж, открытые API, публичные каналы и группы через Telethon.</p>
-          <ul class="chips"><li>FL.ru</li><li>Kwork</li><li>Freelancer.com</li><li>Freelance.ru</li><li>PeoplePerHour</li><li>RemoteOK</li><li>Reddit</li><li>Telegram</li></ul>
-        </article>
-        <article>
-          <h3>Отсеивает</h3>
-          <p>Баллы за тему и бюджет, жёсткие стоп-слова, проверка «объём против денег». Правила лежат в одном YAML.</p>
-        </article>
-        <article>
-          <h3>Склеивает и переводит</h3>
-          <p>Один заказ из трёх мест приходит одной карточкой. Иностранные переводятся на русский.</p>
-        </article>
-        <article>
-          <h3>Пишет отклик</h3>
-          <p>Черновик под тип задачи с одним уточняющим вопросом. Нажал, скопировал, отправил.</p>
-        </article>
+    <div class="m out"><div class="b">/stats<span class="tm">21:40 <i>✓✓</i></span></div></div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="b">
+        <p>За первые полтора дня работы:</p>
+        <pre class="stats">увидел заказов   2 559
+выкинул          2 450
+склеил дублей       30
+прислал тебе        79</pre>
+        <p>Источников: 49. До тебя дошли 3%, остальное отсеял сам.</p>
+        <span class="tm">21:40</span>
       </div>
-    </section>
+    </div>
 
-    <section class="outro">
-      <h2>Такой же бот под ваш бизнес</h2>
-      <p>Тот же принцип работает для цен конкурентов, новых тендеров, упоминаний бренда и заявок с нескольких сайтов: собрать, отсеять, прислать в Telegram то, что важно.</p>
-      <p class="stack">Python 3.12, SQLite, Telegram Bot API, Telethon, launchd. Без платных API.</p>
-      <a class="btn btn-ghost" href="../">Все работы KERNØ</a>
-    </section>
+    <div class="m out"><div class="b">А что выкинул?<span class="tm">21:41 <i>✓✓</i></span></div></div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="b">
+        <p>Например, вот это:</p>
+        <ul class="sieve" id="sieve">
+          <li><s>WE’RE HIRING: SOFTWARE ENGINEER</s><em>вакансия в штат</em></li>
+          <li><s>Требуется размещение отзывов на WB, Ozon и Яндекс Маркете</s><em>накрутка отзывов</em></li>
+          <li><s>Daily French Bulldog Funny TikToks</s><em>не моя тема</em></li>
+          <li><s>Обработать с помощью ИИ несколько предметных фото</s><em>бюджет ниже 25 000 ₽</em></li>
+          <li><s>Teлeгpaм Paccылкa пo чaтaм</s><em>спам: латиница внутри слов</em></li>
+          <li><s>Content Creator / UGC Creator, короткие видео</s><em>оплата в месяц, это штат</em></li>
+          <li><s>Сделать чит на игру Rust</s><em>читы не берём</em></li>
+        </ul>
+        <span class="tm">21:41</span>
+      </div>
+    </div>
+
+    <div class="m out"><div class="b">Как ты это делаешь?<span class="tm">21:42 <i>✓✓</i></span></div></div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="b how">
+        <p><b>Собираю.</b> RSS бирж, открытые API, публичные каналы и группы через Telethon.</p>
+        <p><b>Отсеиваю.</b> Баллы за тему и бюджет, стоп-слова, проверка «объём против денег». Все правила лежат в одном YAML.</p>
+        <p><b>Склеиваю и перевожу.</b> Один заказ из трёх мест приходит одной карточкой, иностранные перевожу на русский.</p>
+        <p><b>Пишу отклик.</b> Черновик под тип задачи с одним уточняющим вопросом. Нажал, скопировал, отправил.</p>
+        <p class="stack">Python 3.12, SQLite, Telegram Bot API, Telethon, launchd. Без платных API.</p>
+        <span class="tm">21:42</span>
+      </div>
+    </div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">R</span>
+      <div class="col">
+        <div class="b">
+          <p>Такой же бот можно собрать под ваш бизнес: цены конкурентов, новые тендеры, упоминания бренда, заявки с нескольких сайтов. Собрать, отсеять, прислать в Telegram только важное.</p>
+          <span class="tm">21:42</span>
+        </div>
+        <a class="kb" href="../">Все работы KERNØ</a>
+      </div>
+    </div>
+
   </main>
-
-  <template id="cards">
-    <article class="card" data-src="Kwork" data-flag="RU">
-      <p class="src"><b>Kwork</b> · RU</p>
-      <h4>Парсинг данных для биржи и новостной ленты</h4>
-      <p class="txt">Автоматизировать сбор объявлений и отраслевых новостей для экологической платформы: тип, объём, цена, регион, ссылка на источник…</p>
-      <p class="meta">💰 до 100 000 ₽ · ⏱ 10 дн. · ⭐ 90</p>
-      <pre>Здравствуйте! Сделаю парсер, который сам забирает данные и складывает их в таблицу или API; сначала пришлю пример выгрузки.
-Чтобы не гадать: какие сайты и как часто обновлять?</pre>
-    </article>
-    <article class="card">
-      <p class="src"><b>FL.ru</b> · RU</p>
-      <h4>Telegram-бот консультант на Python (OpenAI API)</h4>
-      <p class="txt">Бот отвечает клиентам по базе знаний компании, сложные вопросы передаёт менеджеру…</p>
-      <p class="meta">💰 15 000 ₽ · ⏱ срок не указан · ⭐ 86</p>
-      <pre>Здравствуйте! Сделаю ИИ-ассистента и дам протестировать на ваших примерах до сдачи.
-Чтобы не гадать: на каких данных он должен отвечать?</pre>
-    </article>
-    <article class="card">
-      <p class="src"><b>Freelancer.com</b> · EN → RU</p>
-      <h4>Сайт для заявок на недвижимость</h4>
-      <p class="txt">Сайт агентства: посетитель открывает объект и оставляет заявку на покупку или аренду, обязательны только контакты…</p>
-      <p class="meta">💰 $750 · ⏱ срок не указан · ⭐ 100</p>
-      <pre>Hi! I'll build a fast site that drives leads, and show you a live link for the first version, not static mockups.
-Quick question: do you have copy and a reference site you like?</pre>
-    </article>
-  </template>
 
   <script src="app.js"></script>
 </body>

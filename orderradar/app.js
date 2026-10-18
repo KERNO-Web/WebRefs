@@ -1,44 +1,53 @@
-// Живая лента: карточки заказов приходят по одной, как в настоящем чате с ботом.
-const feed = document.getElementById('feed');
-const statusEl = document.getElementById('status');
-const cards = [...document.getElementById('cards').content.children];
+// Чат оживает при прокрутке: перед ответом бота «печатает…», потом сообщение появляется.
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const statusEl = document.getElementById('status');
+const sieve = document.getElementById('sieve');
+const msgs = [...document.querySelectorAll('.chat .m')];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function loop() {
-  if (reduce) {
-    cards.forEach((c) => feed.append(c.cloneNode(true)));
-    return;
-  }
-  for (;;) {
-    for (const c of cards) {
-      statusEl.textContent = 'проверяет биржи…';
-      const typing = document.createElement('div');
-      typing.className = 'typing';
-      typing.innerHTML = '<i></i><i></i><i></i>';
-      feed.append(typing);
-      await wait(1400);
-      typing.remove();
-      feed.querySelectorAll('.card').forEach((el) => el.classList.add('old'));
-      feed.append(c.cloneNode(true));
-      statusEl.textContent = 'бот';
-      // старые карточки уезжают вверх, в ленте остаются две последние
-      while (feed.querySelectorAll('.card').length > 2) feed.querySelector('.card').remove();
-      await wait(4200);
-    }
-  }
+function cutSieve() {
+  [...sieve.children].forEach((li, i) => setTimeout(() => li.classList.add('cut'), reduce ? 0 : 350 + i * 260));
 }
-loop();
 
-// Сито: строки появляются по очереди, мусор зачёркивается
-const rows = [...document.querySelectorAll('#sieve li')];
 if (reduce || !('IntersectionObserver' in window)) {
-  rows.forEach((li) => li.classList.add('in'));
+  sieve.classList.add('static');
 } else {
+  document.documentElement.classList.add('js');
+  // первый экран показываем сразу, остальное по мере прокрутки
+  const fold = innerHeight * 0.9;
+  const queue = [];
+  let busy = false;
+  msgs.forEach((m) => { if (m.getBoundingClientRect().top > fold) m.classList.add('wait'); });
+
+  async function drain() {
+    if (busy) return;
+    busy = true;
+    while (queue.length) {
+      const m = queue.shift();
+      if (m.classList.contains('in')) {
+        statusEl.textContent = 'печатает…';
+        statusEl.classList.add('live');
+        await wait(650);
+      }
+      m.classList.remove('wait');
+      statusEl.textContent = 'бот';
+      statusEl.classList.remove('live');
+      if (m.contains(sieve)) cutSieve();
+      await wait(m.classList.contains('out') ? 260 : 180);
+    }
+    busy = false;
+  }
+
   const io = new IntersectionObserver((entries) => {
-    if (!entries.some((e) => e.isIntersecting)) return;
-    rows.forEach((li, i) => setTimeout(() => li.classList.add('in'), i * 260));
-    io.disconnect();
-  }, { threshold: 0.25 });
-  io.observe(document.getElementById('sieve'));
+    entries
+      .filter((e) => e.isIntersecting)
+      .sort((a, b) => msgs.indexOf(a.target) - msgs.indexOf(b.target))
+      .forEach((e) => { io.unobserve(e.target); queue.push(e.target); });
+    drain();
+  }, { rootMargin: '0px 0px -12% 0px' });
+
+  msgs.forEach((m) => {
+    if (m.classList.contains('wait')) io.observe(m);
+    else if (m.contains(sieve)) cutSieve();
+  });
 }
