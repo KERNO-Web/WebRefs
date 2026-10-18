@@ -37,6 +37,8 @@ jobs:
           done
           # Esports Pro: Next.js + Postgres app, committed as a prebuilt static snapshot.
           cp -R esports "_site/esports"
+          # Order Radar: plain HTML/CSS/JS showcase, no build step.
+          cp -R orderradar "_site/orderradar"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

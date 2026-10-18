@@ -10,6 +10,8 @@ export interface Project {
   description: string;
   /** shipped for a real person or business; everything else is a self-initiated concept */
   real?: boolean;
+  /** overrides the «Коммерческий проект / Авторский концепт» line, e.g. for an own working tool */
+  label?: string;
   /** preview image, 1200×630-ish */
   thumbnail: string;
   href: string;
@@ -230,6 +232,19 @@ export const PROJECTS: Project[] = [
     year: 2026,
     accent: '#ff2a2a',
     external: true,
+  },
+  {
+    id: 16,
+    slug: 'orderradar',
+    label: 'Рабочий Telegram-бот',
+    title: 'Order Radar',
+    description:
+      'Telegram-бот, который каждые 5 минут обходит биржи и чаты, отсеивает мусор и присылает карточку заказа с готовым откликом.',
+    thumbnail: 'orderradar/og.jpg',
+    href: 'orderradar/',
+    tags: ['Telegram-бот', 'Парсинг', 'Python'],
+    year: 2026,
+    accent: '#3aa9e6',
   },
 ];
 
