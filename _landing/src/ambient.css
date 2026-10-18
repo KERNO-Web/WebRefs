@@ -335,6 +335,23 @@
   50% { opacity: 1; }
 }
 
+/* EPC: the hero's red eyes smoulder behind the visor */
+[data-idle='eyes'] .fx {
+  background:
+    radial-gradient(3.2% 5.5% at 71.8% 43.4%, rgba(255, 40, 30, 0.9), rgba(255, 40, 30, 0.25) 55%, transparent 100%),
+    radial-gradient(3.2% 5.5% at 77.4% 42%, rgba(255, 40, 30, 0.9), rgba(255, 40, 30, 0.25) 55%, transparent 100%);
+  mix-blend-mode: screen;
+}
+.live[data-idle='eyes'] .fx {
+  animation: eyes 5.3s ease-in-out infinite;
+}
+@keyframes eyes {
+  0%, 100% { opacity: 0.15; }
+  38% { opacity: 1; }
+  44% { opacity: 0.55; }
+  52% { opacity: 0.95; }
+}
+
 /* the reflections travel inside a box the width of 2.2 frames with the band in
    its middle, so the band sits at 50% + 2.2 × translate: these keep it on target */
 @keyframes ev-card {

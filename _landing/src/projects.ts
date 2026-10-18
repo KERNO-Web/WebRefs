@@ -37,7 +37,8 @@ export type Idle =
   | 'ember' // firelight flickers at the bottom of the frame
   | 'scan' // a scan line runs down the QR code
   | 'mailbox' // blue light glows under the mailbox
-  | 'gloss'; // a glint slides along the rim of the drop
+  | 'gloss' // a glint slides along the rim of the drop
+  | 'eyes'; // the hero's red eyes smoulder
 
 export const PROJECTS: Project[] = [
   {
@@ -213,6 +214,21 @@ export const PROJECTS: Project[] = [
     tags: ['Ресторан', 'Локальный бизнес', 'Интерфейс'],
     year: 2026,
     accent: '#e4afb9',
+  },
+  {
+    id: 15,
+    slug: 'epc',
+    idle: 'eyes',
+    real: true,
+    title: 'Esports Pro Circuit',
+    description:
+      'Турнирная платформа по Dota 2: сезоны, сетки, матч-центр, ростеры, заявки команд и админка. Работает на epc-tournament.com.',
+    thumbnail: 'previews/epc.jpg',
+    href: 'https://epc-tournament.com',
+    tags: ['Киберспорт', 'Платформа', 'Next.js'],
+    year: 2026,
+    accent: '#ff2a2a',
+    external: true,
   },
 ];
 
