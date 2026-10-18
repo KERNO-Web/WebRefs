@@ -246,6 +246,20 @@ export const PROJECTS: Project[] = [
     year: 2026,
     accent: '#3aa9e6',
   },
+  {
+    id: 17,
+    slug: 'miniapp',
+    label: 'Telegram Mini App',
+    title: 'Оранжерея',
+    description:
+      'Магазин цветов внутри Telegram: каталог, размеры и открытка с живой ценой, корзина, оформление и заказ менеджеру в бота.',
+    thumbnail: 'previews/miniapp.jpg',
+    href: 'https://kerno-web.github.io/tg-miniapp-shop/',
+    tags: ['Mini App', 'E-commerce', 'React'],
+    year: 2026,
+    accent: '#d6482c',
+    external: true,
+  },
 ];
 
 /** Pinned when Supabase is not configured or cannot be reached. */
