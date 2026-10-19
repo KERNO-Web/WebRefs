@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Справочная · AI-ассистент по документам</title>
+  <meta name="description" content="Демо KERNØ: ассистент отвечает сотрудникам и клиентам по документам компании и показывает, из какого пункта взят ответ. Можно загрузить свой файл." />
+  <meta property="og:title" content="Справочная · AI-ассистент по документам компании" />
+  <meta property="og:image" content="og.jpg" />
+  <meta name="theme-color" content="#f2f4f2" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0f1312" media="(prefers-color-scheme: dark)" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="../" aria-label="Все работы KERNØ"><i class="ph ph-arrow-left"></i></a>
+    <div class="brand">
+      <span class="logo" aria-hidden="true">Т</span>
+      <div><b>Тайга Логистик</b><small>Справочная по документам</small></div>
+    </div>
+    <nav class="modes" role="tablist" aria-label="Режим">
+      <button role="tab" aria-selected="true" data-mode="staff"><i class="ph ph-users-three"></i><span>Для сотрудников</span></button>
+      <button role="tab" aria-selected="false" data-mode="site"><i class="ph ph-browser"></i><span>Виджет на сайте</span></button>
+    </nav>
+    <a class="talk" href="https://t.me/Kernodev" target="_blank" rel="noopener">Обсудить проект</a>
+  </header>
+
+  <!-- STAFF MODE -->
+  <main class="staff" id="staff">
+    <aside class="lib" id="lib" aria-label="Документы">
+      <div class="lib-head">
+        <h2>Документы</h2>
+        <button class="icon-btn lib-close" id="libClose" aria-label="Закрыть"><i class="ph ph-x"></i></button>
+      </div>
+      <p class="lib-sub">Ассистент ищет только в отмеченных файлах.</p>
+      <ul class="docs" id="docs"></ul>
+      <label class="drop" id="drop">
+        <input type="file" id="file" accept=".pdf,.docx,.txt,.md" hidden />
+        <i class="ph ph-upload-simple"></i>
+        <span><b>Загрузите свой документ</b>PDF, DOCX или TXT. Файл читается прямо в браузере и никуда не отправляется.</span>
+      </label>
+      <p class="note">
+        В демо ответ собирается из найденных фрагментов. В рабочей версии эти фрагменты получает языковая модель и отвечает своими словами, ссылки на пункт документа остаются.
+      </p>
+    </aside>
+
+    <section class="chat" aria-label="Чат">
+      <div class="chat-bar">
+        <button class="lib-open" id="libOpen"><i class="ph ph-files"></i><span id="libCount">3 документа</span></button>
+        <span class="who"><i class="ph-fill ph-circle"></i>Отвечает по регламентам, без выдумок</span>
+      </div>
+      <div class="feed" id="feed" aria-live="polite">
+        <div class="hello" id="hello">
+          <h1>Спросите, как в компании принято</h1>
+          <p>Отпуск, приёмка груза, возвраты клиентам. Ответ приходит со ссылкой на пункт документа.</p>
+          <div class="hints" id="hints"></div>
+        </div>
+      </div>
+      <form class="ask" id="ask" autocomplete="off">
+        <label class="sr" for="q">Ваш вопрос</label>
+        <input id="q" name="q" placeholder="Например: сколько дней отпуска у ночной смены" maxlength="240" />
+        <button type="submit" aria-label="Спросить"><i class="ph ph-arrow-up"></i></button>
+      </form>
+    </section>
+
+    <aside class="viewer" id="viewer" aria-label="Источник">
+      <div class="viewer-empty" id="viewerEmpty">
+        <i class="ph ph-quotes"></i>
+        <p>Нажмите на номер источника в ответе, и здесь откроется документ на нужном пункте.</p>
+      </div>
+      <div class="viewer-doc" id="viewerDoc" hidden>
+        <div class="viewer-head">
+          <div>
+            <small id="vMeta"></small>
+            <h2 id="vTitle"></h2>
+          </div>
+          <button class="icon-btn" id="vClose" aria-label="Закрыть документ"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="viewer-body" id="vBody"></div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- SITE WIDGET MODE -->
+  <main class="site" id="site" hidden>
+    <div class="site-page">
+      <div class="site-nav">
+        <span class="logo" aria-hidden="true">Т</span><b>Тайга Логистик</b>
+        <span class="site-links"><span>Тарифы</span><span>Отследить</span><span>Контакты</span></span>
+      </div>
+      <div class="site-hero">
+        <div>
+          <h1>Грузы из Красноярска по всей России</h1>
+          <p>Сборные отправки от одного места. Забор от двери в день заявки.</p>
+          <div class="site-calc">
+            <span><small>Откуда</small>Красноярск</span>
+            <span><small>Куда</small>Новосибирск</span>
+            <span><small>Вес</small>40 кг</span>
+            <b>от 1 140 ₽</b>
+          </div>
+        </div>
+        <div class="track" aria-label="Пример отслеживания">
+          <div class="track-head"><small>Накладная</small><b>ТЛ-48 2716</b></div>
+          <ol>
+            <li class="done"><b>Принят на склад</b><small>Красноярск, 18 окт, 10:42</small></li>
+            <li class="done"><b>Отправлен</b><small>Красноярск, 18 окт, 21:15</small></li>
+            <li class="now"><b>В пути</b><small>Кемерово, 19 окт, 08:03</small></li>
+            <li><b>Прибудет</b><small>Новосибирск, 20 окт</small></li>
+          </ol>
+        </div>
+      </div>
+      <p class="site-tip"><i class="ph ph-hand-pointing"></i>Это сайт компании. Справа внизу консультант: он отвечает клиентам по странице тарифов и правилам возврата, а если ответа нет, берёт телефон для менеджера.</p>
+    </div>
+
+    <div class="widget" id="widget" data-open="true">
+      <div class="w-panel" id="wPanel">
+        <div class="w-head">
+          <span class="logo sm" aria-hidden="true">Т</span>
+          <div><b>Консультант</b><small>отвечает сразу, днём и ночью</small></div>
+          <button class="icon-btn" id="wMin" aria-label="Свернуть"><i class="ph ph-minus"></i></button>
+        </div>
+        <div class="w-feed" id="wFeed" aria-live="polite"></div>
+        <div class="w-hints" id="wHints"></div>
+        <form class="w-ask" id="wAsk" autocomplete="off">
+          <label class="sr" for="wq">Вопрос консультанту</label>
+          <input id="wq" placeholder="Сколько ехать до Москвы?" maxlength="200" />
+          <button type="submit" aria-label="Отправить"><i class="ph ph-paper-plane-right"></i></button>
+        </form>
+      </div>
+      <button class="w-fab" id="wFab" aria-label="Открыть консультанта"><i class="ph-fill ph-chat-circle-dots"></i></button>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -72,9 +72,11 @@
       </section>
 
       <section id="works" class="works wrap" aria-label="Работы">
+        <nav class="cats" id="cats" aria-label="Категории работ"></nav>
         <article class="feat is-loading" id="featured" aria-live="polite"></article>
         <div class="grid-head">
-          <h2>Другие работы</h2>
+          <h2 id="grid-title">Другие работы</h2>
+          <span class="grid-range" id="grid-count"></span>
         </div>
         <div class="grid" id="grid"></div>
       </section>
@@ -88,21 +90,25 @@
             <span class="build-n">01</span>
             <h3>Сайты</h3>
             <p>Лендинги, корпоративные сайты, портфолио, промо-сайты.</p>
+            <a class="build-go" href="?cat=sites#works" data-cat="sites">Смотреть работы</a>
           </li>
           <li class="rv">
             <span class="build-n">02</span>
             <h3>Продукты</h3>
             <p>Приложения, веб-сервисы, личные кабинеты, SaaS, финтех и&nbsp;внутренние инструменты.</p>
+            <a class="build-go" href="?cat=apps#works" data-cat="apps">Смотреть работы</a>
           </li>
           <li class="rv">
             <span class="build-n">03</span>
             <h3>Telegram</h3>
             <p>Боты, Mini Apps, каталоги, запись, платёжные сценарии и&nbsp;сервисы внутри Telegram.</p>
+            <a class="build-go" href="?cat=bots#works" data-cat="bots">Смотреть работы</a>
           </li>
           <li class="rv">
             <span class="build-n">04</span>
             <h3>Автоматизация</h3>
             <p>API-интеграции, обработка заявок, уведомления, связки между сервисами и&nbsp;внутренняя автоматизация.</p>
+            <a class="build-go" href="?cat=auto#works" data-cat="auto">Смотреть работы</a>
           </li>
         </ol>
         <div class="pause rv">

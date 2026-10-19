@@ -1,7 +1,7 @@
 import './styles.css';
 import './ambient.css';
 import { startAmbient } from './ambient';
-import type { Project } from './projects';
+import { CATS, type Cat, type Project } from './projects';
 import { visibleProjects } from './settings';
 
 const ADMIN_ROUTE = '#/kerno-admin';
@@ -22,9 +22,68 @@ const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|
 
 /* ---------- pinned project and the rest of the grid ---------- */
 
-function render() {
+/* ---------- category filter ---------- */
+
+const isCat = (v: string | null): v is Cat => CATS.some((c) => c.id === v);
+const fromUrl = new URLSearchParams(location.search).get('cat');
+let cat: Cat | null = isCat(fromUrl) ? fromUrl : null;
+const plural = (n: number) => {
+  const m10 = n % 10;
+  const m100 = n % 100;
+  return m10 === 1 && m100 !== 11 ? 'работа' : m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20) ? 'работы' : 'работ';
+};
+
+function renderCats() {
   const { featured, rest } = visibleProjects();
+  const all = [...featured, ...rest];
+  const chip = (id: Cat | null, name: string, n: number) =>
+    `<button type="button" class="cat" data-cat="${id ?? ''}" aria-pressed="${cat === id}">${esc(name)}<span>${n}</span></button>`;
+  document.getElementById('cats')!.innerHTML =
+    chip(null, 'Все работы', all.length) +
+    CATS.map((c) => chip(c.id, c.name, all.filter((p) => p.cats.includes(c.id)).length)).join('');
+  // on phones the row scrolls sideways: keep the picked chip in sight
+  const bar = document.getElementById('cats')!;
+  const on = bar.querySelector<HTMLElement>('[aria-pressed="true"]');
+  if (on && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = on.offsetLeft - bar.offsetLeft - 16;
+}
+
+function setCat(next: Cat | null, scroll = false) {
+  cat = next;
+  const url = new URL(location.href);
+  if (cat) url.searchParams.set('cat', cat);
+  else url.searchParams.delete('cat');
+  history.replaceState(null, '', url.pathname + url.search + url.hash);
+  renderCats();
+  render();
+  if (scroll) document.getElementById('works')!.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+}
+
+document.getElementById('cats')!.addEventListener('click', (e) => {
+  const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-cat]');
+  if (b) setCat(isCat(b.dataset.cat ?? null) ? (b.dataset.cat as Cat) : null);
+});
+document.querySelectorAll<HTMLAnchorElement>('.build-go').forEach((a) =>
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    setCat(a.dataset.cat as Cat, true);
+  }),
+);
+
+function render() {
+  const all = visibleProjects();
   const feat = document.getElementById('featured')!;
+  const title = document.getElementById('grid-title')!;
+  const count = document.getElementById('grid-count')!;
+  // with a category picked the pinned block steps aside and every match goes into the grid
+  const featured = cat ? [] : all.featured;
+  const rest = cat ? [...all.featured, ...all.rest].filter((p) => p.cats.includes(cat!)) : all.rest;
+  feat.hidden = Boolean(cat);
+  title.textContent = cat ? CATS.find((c) => c.id === cat)!.name : 'Другие работы';
+  count.textContent = cat ? `${rest.length} ${plural(rest.length)}` : '';
+  if (!featured.length) {
+    renderGrid(rest);
+    return;
+  }
   const head = `
     <header class="feat-head">
       <span class="pin"><i aria-hidden="true"></i>Закреплено</span>
@@ -63,6 +122,10 @@ function render() {
     </a>`;
   }
 
+  renderGrid(rest);
+}
+
+function renderGrid(rest: Project[]) {
   document.getElementById('grid')!.innerHTML = rest
     .map(
       (r, i) => `
@@ -153,5 +216,6 @@ const spy = new IntersectionObserver(
 // two frames so the entrance transitions start from their initial state
 requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
 route();
+renderCats();
 render();
 startAmbient();

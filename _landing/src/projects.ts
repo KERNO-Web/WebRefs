@@ -16,6 +16,8 @@ export interface Project {
   thumbnail: string;
   href: string;
   tags: string[];
+  /** homepage filter groups; one work can sit in several */
+  cats: Cat[];
   year: number;
   /** the project's own colour, used for small hover details on its card */
   accent?: string;
@@ -27,6 +29,16 @@ export interface Project {
    */
   idle?: Idle;
 }
+
+export type Cat = 'sites' | 'apps' | 'bots' | 'auto';
+
+/** Filter chips on the homepage, in display order. */
+export const CATS: { id: Cat; name: string }[] = [
+  { id: 'sites', name: 'Сайты' },
+  { id: 'apps', name: 'Продукты' },
+  { id: 'bots', name: 'Боты' },
+  { id: 'auto', name: 'Автоматизация' },
+];
 
 export type Idle =
   | 'folder' // the red folder throws a soft red light on the wall
@@ -46,6 +58,7 @@ export const PROJECTS: Project[] = [
   {
     id: 18,
     slug: 'zelevarnya',
+    cats: ['sites'],
     title: 'Зельеварня',
     description:
       'Коктейльный бар-гримуар. Весь сайт нарисован кодом в технике гравюры: котёл, руны и щупальца, которые шевелятся покадрово, как в рисованном мультике.',
@@ -58,6 +71,7 @@ export const PROJECTS: Project[] = [
   {
     id: 1,
     slug: 'roman',
+    cats: ['sites'],
     idle: 'folder',
     real: true,
     title: 'Роман Переверзев',
@@ -72,6 +86,7 @@ export const PROJECTS: Project[] = [
   {
     id: 2,
     slug: 'key01',
+    cats: ['sites'],
     idle: 'led',
     title: 'KEY/01',
     description: 'Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.',
@@ -84,6 +99,7 @@ export const PROJECTS: Project[] = [
   {
     id: 3,
     slug: 'afterimage',
+    cats: ['sites'],
     idle: 'flash',
     title: 'Afterimage',
     description: 'Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.',
@@ -96,6 +112,7 @@ export const PROJECTS: Project[] = [
   {
     id: 4,
     slug: 'noctis',
+    cats: ['sites'],
     idle: 'backlight',
     title: 'NOCTIS',
     description: 'Визуальная кампания вымышленного парфюмерного бренда.',
@@ -108,6 +125,7 @@ export const PROJECTS: Project[] = [
   {
     id: 5,
     slug: 'null',
+    cats: ['sites'],
     idle: 'tonal',
     title: 'NULL',
     description: 'Абстрактный digital-объект и эксперимент с формой, движением и WebGL.',
@@ -120,6 +138,7 @@ export const PROJECTS: Project[] = [
   {
     id: 6,
     slug: 'witcher',
+    cats: ['sites'],
     idle: 'ember',
     title: 'Wild Hunt',
     description: 'Визуальный трибьют The Witcher 3.',
@@ -132,6 +151,7 @@ export const PROJECTS: Project[] = [
   {
     id: 7,
     slug: 'ranked',
+    cats: ['sites'],
     title: 'RANKED',
     description: 'Концепт игрового сервиса с акцентом на каталоге и визуальном стиле.',
     thumbnail: 'ranked/og.jpg',
@@ -143,6 +163,7 @@ export const PROJECTS: Project[] = [
   {
     id: 8,
     slug: 'nexus',
+    cats: ['apps'],
     idle: 'sweep',
     title: 'TapShift',
     description: 'Интерактивный продукт крипто-карты: онбординг, кабинет, платежи, обмен и управление картой.',
@@ -155,6 +176,7 @@ export const PROJECTS: Project[] = [
   {
     id: 9,
     slug: 'route',
+    cats: ['apps'],
     title: 'ROUTE',
     description: 'Спокойный трекер посылок: реальная карта, фото товаров, статусы.',
     thumbnail: 'route/og.jpg',
@@ -166,6 +188,7 @@ export const PROJECTS: Project[] = [
   {
     id: 10,
     slug: 'facemail',
+    cats: ['apps'],
     idle: 'mailbox',
     real: true,
     title: 'FACEMAIL',
@@ -181,6 +204,7 @@ export const PROJECTS: Project[] = [
   {
     id: 11,
     slug: 'brightline',
+    cats: ['sites'],
     idle: 'lamps',
     title: 'BRIGHTLINE',
     description: 'Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.',
@@ -193,6 +217,7 @@ export const PROJECTS: Project[] = [
   {
     id: 12,
     slug: 'kvit',
+    cats: ['apps'],
     idle: 'scan',
     title: 'KVIT',
     description:
@@ -206,6 +231,7 @@ export const PROJECTS: Project[] = [
   {
     id: 13,
     slug: 'lumi',
+    cats: ['sites', 'apps'],
     idle: 'gloss',
     title: 'LUMI',
     description:
@@ -220,6 +246,7 @@ export const PROJECTS: Project[] = [
   {
     id: 14,
     slug: 'sorrymama',
+    cats: ['sites'],
     real: true,
     title: 'SORRY MAMA',
     description:
@@ -233,6 +260,7 @@ export const PROJECTS: Project[] = [
   {
     id: 15,
     slug: 'epc',
+    cats: ['apps', 'sites'],
     idle: 'eyes',
     real: true,
     title: 'Esports Pro Circuit',
@@ -248,6 +276,7 @@ export const PROJECTS: Project[] = [
   {
     id: 16,
     slug: 'orderradar',
+    cats: ['bots', 'auto'],
     label: 'Рабочий Telegram-бот',
     title: 'Order Radar',
     description:
@@ -261,6 +290,7 @@ export const PROJECTS: Project[] = [
   {
     id: 17,
     slug: 'miniapp',
+    cats: ['bots'],
     label: 'Telegram Mini App',
     title: 'Оранжерея',
     description:
@@ -271,6 +301,48 @@ export const PROJECTS: Project[] = [
     year: 2026,
     accent: '#d6482c',
     external: true,
+  },
+  {
+    id: 19,
+    slug: 'assistant',
+    cats: ['auto', 'apps'],
+    label: 'Рабочее демо',
+    title: 'Справочная',
+    description:
+      'AI-ассистент по документам компании: отвечает сотрудникам и клиентам сайта со ссылкой на пункт регламента. Можно загрузить свой PDF и спросить по нему.',
+    thumbnail: 'assistant/og.jpg',
+    href: 'assistant/',
+    tags: ['AI-ассистент', 'Поиск по документам', 'Виджет'],
+    year: 2026,
+    accent: '#4dbb8f',
+  },
+  {
+    id: 20,
+    slug: 'crm',
+    cats: ['auto', 'apps'],
+    label: 'Рабочее демо',
+    title: 'Ангара CRM',
+    description:
+      'Учёт заявок для мастерской кухонь: воронка с перетаскиванием, задачи, автоматизации на каждом этапе, отчёт по деньгам и права менеджера.',
+    thumbnail: 'crm/og.jpg',
+    href: 'crm/',
+    tags: ['CRM', 'Автоматизация', 'Отчёты'],
+    year: 2026,
+    accent: '#ff7547',
+  },
+  {
+    id: 21,
+    slug: 'servicebot',
+    cats: ['bots', 'auto'],
+    label: 'Рабочее демо',
+    title: 'Отвёртка',
+    description:
+      'Telegram-бот сервисного центра: клиент сдаёт технику в ремонт и получает статусы, мастер ведёт заявки в панели, оплата и рассылка там же.',
+    thumbnail: 'servicebot/og.jpg',
+    href: 'servicebot/',
+    tags: ['Telegram-бот', 'Статусы ремонта', 'Оплата'],
+    year: 2026,
+    accent: '#4b9bf5',
   },
 ];
 

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Ангара CRM · учёт заявок и сделок</title>
+  <meta name="description" content="Демо KERNØ: CRM для мастерской кухонь на заказ. Заявки с сайта и Telegram, воронка, задачи, автоматизации, отчёт и права доступа." />
+  <meta property="og:title" content="Ангара CRM · учёт заявок для малого бизнеса" />
+  <meta property="og:image" content="og.jpg" />
+  <meta name="theme-color" content="#eceef1" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#101216" media="(prefers-color-scheme: dark)" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <a class="back" href="../" aria-label="Все работы KERNØ"><i class="ph ph-arrow-left"></i></a>
+      <div class="brand"><span class="logo">А</span><div><b>Ангара</b><small>кухни на заказ</small></div></div>
+      <nav class="nav" aria-label="Разделы">
+        <button data-view="board" aria-current="page"><i class="ph ph-kanban"></i><span>Воронка</span></button>
+        <button data-view="tasks"><i class="ph ph-check-square-offset"></i><span>Задачи</span><em id="taskBadge"></em></button>
+        <button data-view="clients"><i class="ph ph-address-book"></i><span>Клиенты</span></button>
+        <button data-view="report"><i class="ph ph-chart-bar"></i><span>Отчёт</span></button>
+        <button data-view="auto"><i class="ph ph-lightning"></i><span>Автоматизации</span></button>
+      </nav>
+      <div class="me">
+        <p class="me-label">Смотреть как</p>
+        <div class="roles" role="radiogroup" aria-label="Роль">
+          <button role="radio" data-role="owner" aria-checked="true">Владелец</button>
+          <button role="radio" data-role="manager" aria-checked="false">Менеджер</button>
+        </div>
+        <div class="me-card"><span class="ava" id="meAva">ОТ</span><div><b id="meName">Ольга Тимошина</b><small id="meRole">Владелец</small></div></div>
+        <button class="reset" id="reset"><i class="ph ph-arrow-counter-clockwise"></i>Сбросить демо</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="bar">
+        <h1 id="title">Воронка</h1>
+        <div class="mob-roles" role="radiogroup" aria-label="Роль">
+          <button role="radio" data-role="owner" aria-checked="true">Владелец</button>
+          <button role="radio" data-role="manager" aria-checked="false">Менеджер</button>
+        </div>
+        <label class="search"><i class="ph ph-magnifying-glass"></i><span class="sr">Поиск</span><input id="search" placeholder="Клиент, телефон, кухня" /></label>
+        <button class="btn ghost" id="simulate"><i class="ph ph-globe-simple"></i><span>Тест: заявка с сайта</span></button>
+        <button class="btn" id="addDeal"><i class="ph ph-plus"></i><span>Сделка</span></button>
+        <a class="talk" href="https://t.me/Kernodev" target="_blank" rel="noopener">Обсудить проект</a>
+      </header>
+      <p class="scope" id="scope" hidden><i class="ph ph-lock-simple"></i>Менеджер видит только свои сделки. Суммы выручки и отчёт по деньгам доступны владельцу.</p>
+
+      <section class="view board" id="v-board" aria-label="Воронка"></section>
+      <section class="view" id="v-tasks" hidden></section>
+      <section class="view" id="v-clients" hidden></section>
+      <section class="view" id="v-report" hidden></section>
+      <section class="view" id="v-auto" hidden></section>
+    </div>
+  </div>
+
+  <div class="scrim" id="scrim" hidden></div>
+  <aside class="drawer" id="drawer" aria-label="Сделка" aria-hidden="true"></aside>
+
+  <dialog class="modal" id="newDeal">
+    <form method="dialog" id="newForm" novalidate>
+      <h2>Новая сделка</h2>
+      <label>Клиент<input name="name" required autocomplete="off" /></label>
+      <label>Что делаем<input name="product" placeholder="Угловая кухня 3 м" required autocomplete="off" /></label>
+      <div class="row2">
+        <label>Сумма, ₽<input name="sum" inputmode="numeric" placeholder="250 000" /></label>
+        <label>Источник
+          <select name="source">
+            <option value="call">Звонок</option><option value="site">Сайт</option><option value="tg">Telegram</option><option value="avito">Авито</option><option value="ref">Рекомендация</option>
+          </select>
+        </label>
+      </div>
+      <p class="err" id="newErr" aria-live="polite"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn ghost" id="newCancel">Отмена</button>
+        <button type="submit" class="btn" value="ok">Создать</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
