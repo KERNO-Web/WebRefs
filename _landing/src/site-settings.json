@@ -20,10 +20,12 @@
     "witcher",
     "ranked",
     "route",
-    "nexus"
+    "nexus",
+    "zelevarnya"
   ],
   "hidden": [
     "ranked",
-    "route"
+    "route",
+    "zelevarnya"
   ]
 }
