@@ -165,7 +165,15 @@ svg .roughen { filter: url(#ink-rough); }
 .folio-num { font-family: var(--display); font-weight: 700; font-size: 22px; min-width: 110px; text-align: center; }
 
 /* ---------- ritual ---------- */
-.ritual-art { width: 100%; max-width: 1240px; display: block; margin: 0 auto; height: auto; overflow: visible; }
+.ritual-plates { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 3vw, 48px); }
+.ritual-trail { position: absolute; left: 12%; width: 76%; top: 50%; height: 120px; transform: translateY(-50%); z-index: -1; overflow: visible; }
+.medal { position: relative; margin: 0; aspect-ratio: 1; }
+.medal video, .medal-shift { position: absolute; inset: 12.5%; width: 75%; height: 75%; border-radius: 50%; object-fit: cover; background: #1a140e; overflow: hidden; }
+.medal-shift img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.medal-shift .pink { opacity: 0; }
+.medal-shift.drawn { background: var(--parchment); display: grid; place-items: center; }
+.medal-shift.drawn svg { width: 62%; height: auto; overflow: visible; }
+.medal-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .ritual-steps { list-style: none; padding: 0; margin: 10px auto 0; max-width: 1240px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
 .ritual-steps li { display: grid; justify-items: center; text-align: center; gap: 8px; }
 .ritual-steps h3 { font-size: 40px; }
@@ -245,6 +253,14 @@ svg .roughen { filter: url(#ink-rough); }
   .page { padding: 32px 26px; }
   .pr-vessel-mobile { display: grid !important; }
   .ritual-steps { grid-template-columns: 1fr; gap: 30px; }
+  .ritual-sec { display: grid; justify-items: center; }
+  .ritual-plates, .ritual-steps { display: contents; }
+  .ritual-trail { display: none; }
+  .ritual-sec .sec-head { order: 0; }
+  .medal { width: min(100%, 320px); }
+  .medal:nth-of-type(1) { order: 1; } .ritual-steps li:nth-child(1) { order: 2; margin-bottom: 36px; }
+  .medal:nth-of-type(2) { order: 3; } .ritual-steps li:nth-child(2) { order: 4; margin-bottom: 36px; }
+  .medal:nth-of-type(3) { order: 5; } .ritual-steps li:nth-child(3) { order: 6; }
   .fields { grid-template-columns: 1fr 1fr; }
   .field-wide, .field:nth-child(5) { grid-column: span 2; }
   .table-card { position: static; margin-top: 16px; box-shadow: 4px 4px 0 var(--ink); }
@@ -283,7 +299,7 @@ svg .roughen { filter: url(#ink-rough); }
 .pr-vessel-mobile svg { width: 200px; height: auto; overflow: visible; }
 .drop { fill: var(--ink); }
 .edge-tentacle { inset: 0; width: 100%; height: 100%; z-index: 0; }
-.book, .ritual-art, .ritual-steps, .hall, .slip, .sec-head { position: relative; z-index: 1; }
+.book, .ritual-plates, .ritual-steps, .hall, .slip, .sec-head { position: relative; z-index: 1; }
 .hall .plan { pointer-events: auto; }
 .top { transition: transform 0.3s; }
 @media (max-height: 520px) and (orientation: landscape) {
@@ -293,3 +309,12 @@ svg .roughen { filter: url(#ink-rough); }
   .hero-sub { display: none; }
   .hero-margin { display: none; }
 }
+
+/* ---------- photo plates (menu) ---------- */
+.plate { position: relative; margin: 0; width: min(100%, 360px); aspect-ratio: 4 / 5; border-radius: 999px 999px 6px 6px / 46% 46% 6px 6px; overflow: hidden; background: var(--ink); box-shadow: 0 0 0 1.5px var(--ink), 0 0 0 7px var(--parchment), 0 0 0 8px var(--ink), 0 24px 40px -24px rgba(40, 25, 10, 0.6); }
+.plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; filter: sepia(0.18) contrast(1.04); }
+.plate .pink { opacity: 0; }
+.plate-frame { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 70px rgba(20, 14, 8, 0.55), inset 0 0 0 1px rgba(233, 220, 192, 0.25); pointer-events: none; }
+.pr-vessel-mobile .plate { width: min(100%, 300px); }
+.book-tabs { gap: 4px; top: 18px; }
+.book-tabs button { height: 40px; font-size: 14px; }

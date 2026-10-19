@@ -44,7 +44,7 @@
       <svg class="tentacles" aria-hidden="true"></svg>
       <div class="hero-copy">
         <p class="hero-lead">Коктейльный бар, где напитки варят, а&nbsp;не&nbsp;мешают.</p>
-        <p class="hero-sub">Восемь зелий по&nbsp;старой книге рецептов. Дым под колпаком, напиток, который меняет цвет, и&nbsp;стол у&nbsp;котла.</p>
+        <p class="hero-sub">Двенадцать зелий по&nbsp;старой книге рецептов. Дым под колпаком, напиток, который меняет цвет, и&nbsp;стол у&nbsp;котла.</p>
         <div class="hero-cta">
           <a class="btn btn-potion" href="#booking">Забронировать стол</a>
           <a class="btn btn-ink" href="#book">Открыть книгу рецептов</a>
@@ -61,7 +61,7 @@
       <header class="sec-head">
         <svg class="sec-runes" aria-hidden="true" data-runes="ansuz,berkanan,kenaz"></svg>
         <h2 id="book-title">Книга рецептов</h2>
-        <p>Восемь зелий. Листайте стрелками, свайпом или&nbsp;закладками сбоку.</p>
+        <p>Двенадцать зелий. Листайте стрелками, свайпом или&nbsp;закладками сбоку.</p>
       </header>
       <div class="book" data-book>
         <div class="book-tabs" role="tablist" aria-label="Зелья"></div>
@@ -74,7 +74,7 @@
           <button class="turn" data-turn="-1" aria-label="Предыдущее зелье">
             <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M38 10H4M12 2 3 10l9 8" /></svg>
           </button>
-          <span class="folio-num" data-folio>I / VIII</span>
+          <span class="folio-num" data-folio>I / XII</span>
           <button class="turn" data-turn="1" aria-label="Следующее зелье">
             <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10h34M28 2l9 8-9 8" /></svg>
           </button>
@@ -89,7 +89,21 @@
         <h2 id="ritual-title">Ритуал подачи</h2>
         <p>Зелье не&nbsp;приносят. Его&nbsp;доводят до&nbsp;готовности у&nbsp;вас на&nbsp;глазах.</p>
       </header>
-      <svg class="ritual-art" viewBox="0 0 1200 520" aria-hidden="true"></svg>
+      <div class="ritual-plates">
+        <svg class="ritual-trail" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <figure class="medal" data-step="brew">
+          <video src="video/brew.mp4" poster="video/brew.jpg" muted loop playsinline preload="none" aria-label="Бармен заливает сухой лёд в чашу с колбами"></video>
+          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+        </figure>
+        <figure class="medal" data-step="smoke">
+          <video src="video/smoke.mp4" poster="video/smoke.jpg" muted loop playsinline preload="none" aria-label="Дым переливается через край бокала, сверху ставят стеклянный колпак"></video>
+          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+        </figure>
+        <figure class="medal" data-step="serve">
+          <div class="medal-shift"></div>
+          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+        </figure>
+      </div>
       <ol class="ritual-steps">
         <li><span class="step-num" data-glyph="sun"></span><h3>Варим</h3><p>Настойки на&nbsp;травах и&nbsp;специях стоят в&nbsp;котле с&nbsp;вечера. Анчан, бузина, копчёный ананас.</p></li>
         <li><span class="step-num" data-glyph="air"></span><h3>Дымим</h3><p>Колпак с&nbsp;дымом розмарина, пузырь дыма поверх бокала, горящая корица.</p></li>
@@ -169,7 +183,7 @@
     <div class="foot-row">
       <span class="foot-mark">Зельеварня</span>
       <span>Варим ежедневно, 18:00–03:00</span>
-      <span>Концепт KERNØ. Бар вымышленный.</span>
+      <span>Концепт KERNØ. Бар вымышленный. Видео ритуала: Mixkit.</span>
       <a href="https://t.me/Kernodev" target="_blank" rel="noopener">Сделать такой сайт → t.me/Kernodev</a>
     </div>
   </footer>

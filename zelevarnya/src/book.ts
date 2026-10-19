@@ -25,10 +25,32 @@ function vesselSvg(p: Potion) {
   return svg;
 }
 
+// Menu photo in an engraved plate; falls back to the drawn vessel if the file is missing.
+function plate(p: Potion) {
+  const f = document.createElement('figure');
+  f.className = 'plate';
+  const img = new Image();
+  img.src = `potions/${p.id}.jpg`;
+  img.alt = `${p.name}: ${p.base.toLowerCase()}`;
+  img.decoding = 'async';
+  img.onerror = () => { f.replaceWith(vesselSvg(p)); };
+  f.append(img);
+  if (p.shifts) {
+    const pink = new Image();
+    pink.src = `potions/${p.id}-pink.jpg`;
+    pink.alt = '';
+    pink.className = 'pink';
+    pink.onerror = () => pink.remove();
+    f.append(pink);
+  }
+  f.insertAdjacentHTML('beforeend', '<span class="plate-frame" aria-hidden="true"></span>');
+  return f;
+}
+
 function leftPage(p: Potion) {
   const d = document.createElement('div');
   d.className = 'pl-vessel';
-  d.append(vesselSvg(p));
+  d.append(plate(p));
   d.insertAdjacentHTML('beforeend', `<span class="pl-num">${p.num}</span>${p.zero ? '<span class="pl-zero">Без алкоголя</span>' : ''}`);
   return d;
 }
@@ -49,7 +71,7 @@ function rightPage(p: Potion) {
     </div>`;
   d.querySelectorAll<HTMLElement>('figure').forEach((f) => glyph(f.querySelector('svg')!, f.dataset.g!, 0, 0, 44));
   const mob = d.querySelector('.pr-vessel-mobile')!;
-  mob.append(vesselSvg(p));
+  mob.append(plate(p));
   return d;
 }
 
@@ -61,6 +83,12 @@ export function nb(s: string) {
 // Blue → pink: the anchan reacts to lemon acid.
 function lemon(page: HTMLElement, btn: HTMLButtonElement) {
   btn.disabled = true;
+  const pinks = Array.from(page.closest('.book')!.querySelectorAll<HTMLImageElement>('.plate .pink'));
+  if (pinks.length) {
+    gsap.to(pinks, { opacity: 1, duration: reduced ? 0 : 1.6, ease: 'steps(14)' });
+    btn.textContent = 'Порозовело';
+    return;
+  }
   const svgs = Array.from(page.closest('.book')!.querySelectorAll<SVGSVGElement>('svg')).filter((s) => s.querySelector('linearGradient'));
   const stops = svgs.flatMap((s) => Array.from(s.querySelectorAll('linearGradient stop')));
   const drop = svgs.map((s) => {
@@ -106,7 +134,7 @@ export function buildBook() {
 
   const fill = (page: HTMLElement, node: HTMLElement) => page.replaceChildren(node);
   const sync = () => {
-    folio.textContent = `${POTIONS[i].num} / VIII`;
+    folio.textContent = `${POTIONS[i].num} / ${POTIONS[POTIONS.length - 1].num}`;
     tabs.querySelectorAll('button').forEach((b, k) => b.setAttribute('aria-selected', String(k === i)));
     R.querySelector<HTMLButtonElement>('.lemon')?.addEventListener('click', (e) => lemon(R, e.currentTarget as HTMLButtonElement));
   };

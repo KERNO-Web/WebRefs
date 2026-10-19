@@ -12,6 +12,8 @@ export interface Potion {
   glyphs: { g: string; label: string }[];
   zero?: boolean;
   shifts?: boolean;
+  /** generated menu photo, public/potions/<id>.jpg; pink variant <id>-pink.jpg for shifts */
+  photo?: boolean;
 }
 
 export const POTIONS: Potion[] = [
@@ -78,6 +80,38 @@ export const POTIONS: Potion[] = [
     effect: 'взгляд становится тяжёлым, но добрым',
     price: 390, zero: true,
     glyphs: [{ g: 'earth', label: 'яблоко' }, { g: 'water', label: 'огурец' }, { g: 'iron', label: 'розмарин' }, { g: 'air', label: 'содовая' }],
+  },
+  {
+    id: 'wyvern', num: 'IX', name: 'Яд виверны', vessel: 'goblet',
+    base: 'Текила, маракуйя, халапеньо, чёрная соль',
+    serve: 'На ободке чёрная вулканическая соль. Жжётся ровно настолько, насколько обещает название.',
+    effect: 'хочется отвечать с огоньком',
+    price: 690,
+    glyphs: [{ g: 'fire', label: 'текила' }, { g: 'sun', label: 'маракуйя' }, { g: 'iron', label: 'халапеньо' }, { g: 'salt', label: 'соль' }],
+  },
+  {
+    id: 'phoenix', num: 'X', name: 'Перо феникса', vessel: 'goblet',
+    base: 'Ром, апельсин, корица, бадьян',
+    serve: 'Подаём горящим. Пламя гаснет само, как только вы загадаете желание.',
+    effect: 'наутро чувствуете себя заново рождённым',
+    price: 740,
+    glyphs: [{ g: 'sulfur', label: 'ром' }, { g: 'sun', label: 'апельсин' }, { g: 'fire', label: 'корица' }, { g: 'antimony', label: 'бадьян' }],
+  },
+  {
+    id: 'barrow', num: 'XI', name: 'Туман над курганом', vessel: 'cloche',
+    base: 'Скотч, мёд, лимон, имбирь',
+    serve: 'В чаше на сухом льду. Туман стекает по столу и к вам в рукав.',
+    effect: 'тянет рассказывать страшилки',
+    price: 760,
+    glyphs: [{ g: 'antimony', label: 'скотч' }, { g: 'sun', label: 'мёд' }, { g: 'salt', label: 'лимон' }, { g: 'water', label: 'туман' }],
+  },
+  {
+    id: 'fairy', num: 'XII', name: 'Пыльца фей', vessel: 'vial',
+    base: 'Шиповник, бузина, игристый лимонад',
+    serve: 'Без алкоголя. В бокале кружатся блёстки, лепестки роз сверху.',
+    effect: 'всё вокруг кажется немного волшебнее',
+    price: 390, zero: true,
+    glyphs: [{ g: 'copper', label: 'шиповник' }, { g: 'moon', label: 'бузина' }, { g: 'air', label: 'пузырьки' }, { g: 'mercury', label: 'блёстки' }],
   },
 ];
 
