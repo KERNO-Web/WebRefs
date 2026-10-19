@@ -1,36 +1,23 @@
 import { onFrame, reduced } from './anim';
 import { arc, el, NS, P, rng, smooth, stroke, swell, taper } from './ink';
 
-// Mood layer: candlelight that follows the cursor, drifting dust, burnt
+// Mood layer: a still vignette, drifting dust and wand sparks, burnt
 // holes in the page with eyes watching from inside, candles by the titles,
 // handwritten notes and ink blots in the margins.
 
 let mx = innerWidth * 0.5, my = innerHeight * 0.4;
 addEventListener('pointermove', (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
 
+// Static vignette: the page edges sink into shadow. Nothing moves,
+// so it costs nothing while scrolling or moving the mouse.
 export function candlelight() {
-  const light = document.createElement('div');
-  light.className = 'candlelight';
-  light.setAttribute('aria-hidden', 'true');
-  document.body.append(light);
-  let x = mx, y = my;
-  const fine = matchMedia('(pointer: fine)').matches;
-  const r = rng(5);
-  // Position follows the cursor at screen rate; only transform changes, so
-  // the compositor moves it without repainting the page.
-  const move = (now: number) => {
-    const t = now / 1000;
-    const tx = fine ? mx : innerWidth * (0.5 + Math.sin(t * 0.3) * 0.18);
-    const ty = fine ? my : innerHeight * (0.42 + Math.sin(t * 0.23) * 0.12);
-    x += (tx - x) * 0.18; y += (ty - y) * 0.18;
-    light.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
-    if (!reduced) requestAnimationFrame(move);
-  };
-  move(0);
-  // Flame flicker stays hand-drawn: 12 fps opacity steps.
-  if (!reduced) onFrame((t) => { light.style.opacity = (0.9 + r() * 0.07 + Math.sin(t * 7) * 0.03).toFixed(3); });
+  const shade = document.createElement('div');
+  shade.className = 'candlelight';
+  shade.setAttribute('aria-hidden', 'true');
+  document.body.append(shade);
 }
 
+// Drifting dust and a few green sparks, moved smoothly at screen rate.
 export function dust() {
   if (reduced) return;
   const c = document.createElement('canvas');
@@ -42,20 +29,47 @@ export function dust() {
   size();
   addEventListener('resize', size);
   const r = rng(77);
-  const motes = Array.from({ length: 46 }, () => ({ x: r() * innerWidth, y: r() * innerHeight, s: 0.6 + r() * 1.8, v: 0.2 + r() * 0.6, ph: r() * 6, green: r() > 0.82 }));
-  onFrame((t) => {
+  const motes = Array.from({ length: 34 }, () => ({ x: r() * innerWidth, y: r() * innerHeight, s: 0.6 + r() * 1.6, v: 6 + r() * 16, ph: r() * 6, green: r() > 0.82 }));
+  // Sparks shed by the wand cursor while it moves (fine pointers only).
+  const sparks: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
+  if (matchMedia('(pointer: fine)').matches) {
+    let px = 0, py = 0;
+    addEventListener('pointermove', (e) => {
+      const d = Math.hypot(e.clientX - px, e.clientY - py);
+      px = e.clientX; py = e.clientY;
+      if (d < 6 || sparks.length > 26) return;
+      sparks.push({ x: e.clientX + 3, y: e.clientY + 3, vx: (r() - 0.5) * 30, vy: 10 + r() * 30, life: 1 });
+    }, { passive: true });
+  }
+  let last = performance.now();
+  const loop = (now: number) => {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    const t = now / 1000;
     ctx.clearRect(0, 0, c.width, c.height);
     for (const m of motes) {
-      m.y -= m.v * 3;
-      m.x += Math.sin(t * 0.8 + m.ph) * 0.9;
+      m.y -= m.v * dt;
+      m.x += Math.sin(t * 0.8 + m.ph) * 8 * dt;
       if (m.y < -10) { m.y = c.height + 10; m.x = r() * c.width; }
-      const a = 0.25 + 0.35 * Math.abs(Math.sin(t * 1.3 + m.ph));
+      const a = 0.25 + 0.3 * Math.abs(Math.sin(t * 0.9 + m.ph));
       ctx.fillStyle = m.green ? `rgba(160,240,90,${a})` : `rgba(255,214,150,${a * 0.8})`;
       ctx.beginPath();
       ctx.arc(m.x, m.y, m.s, 0, Math.PI * 2);
       ctx.fill();
     }
-  });
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const s = sparks[i];
+      s.life -= dt * 1.6;
+      if (s.life <= 0) { sparks.splice(i, 1); continue; }
+      s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 40 * dt;
+      ctx.fillStyle = `rgba(170,245,100,${(s.life * 0.9).toFixed(2)})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 0.6 + s.life * 1.6, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
 }
 
 // A charred hole in the parchment; two green eyes look out of it and
