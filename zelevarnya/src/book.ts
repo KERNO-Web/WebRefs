@@ -51,7 +51,7 @@ function leftPage(p: Potion) {
   const d = document.createElement('div');
   d.className = 'pl-vessel';
   d.append(plate(p));
-  d.insertAdjacentHTML('beforeend', `<span class="pl-num">${p.num}</span>${p.zero ? '<span class="pl-zero">Без алкоголя</span>' : ''}`);
+  d.insertAdjacentHTML('beforeend', `<span class="pl-num">${p.num}</span>${p.zero ? '<span class="pl-zero">Без алкоголя</span>' : ''}<a class="pl-credit" href="${p.credit.source}" target="_blank" rel="noopener">Фото: ${p.credit.author}, ${p.credit.license}</a>`);
   return d;
 }
 
@@ -72,6 +72,7 @@ function rightPage(p: Potion) {
   d.querySelectorAll<HTMLElement>('figure').forEach((f) => glyph(f.querySelector('svg')!, f.dataset.g!, 0, 0, 44));
   const mob = d.querySelector('.pr-vessel-mobile')!;
   mob.append(plate(p));
+  mob.insertAdjacentHTML('beforeend', `<a class="pl-credit-m" href="${p.credit.source}" target="_blank" rel="noopener">Фото: ${p.credit.author}, ${p.credit.license}</a>`);
   return d;
 }
 

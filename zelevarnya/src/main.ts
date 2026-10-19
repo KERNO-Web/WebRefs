@@ -8,6 +8,7 @@ import { buildHall } from './hall';
 import { buildHero, debounce } from './hero';
 import { NS } from './ink';
 import { buildRitual } from './ritual';
+import { POTIONS } from './data';
 
 buildHero();
 buildBook();
@@ -85,5 +86,10 @@ EDGES.forEach(({ sel, spec }) => {
   whenVisible(sec, () => { if (t) t.target = 1; }, () => { if (t) t.target = 0; }, '-20% 0px');
 });
 onFrame((t, f) => living.forEach((x) => x.step(t, f)));
+
+// Photo and video credits (CC BY / BY-SA need attribution).
+const credits = document.querySelector('[data-credits]')!;
+credits.innerHTML = POTIONS.map((p) => `<li>${p.name}: <a href="${p.credit.source}" target="_blank" rel="noopener">${p.credit.author}</a>, <a href="${p.credit.licenseUrl}" target="_blank" rel="noopener">${p.credit.license}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
+  + '<li>Видео ритуала: <a href="https://mixkit.co/free-stock-video/bartender-makes-an-experimental-cocktail-4172/" target="_blank" rel="noopener">Mixkit 4172</a> и <a href="https://mixkit.co/free-stock-video/experimental-cocktail-in-the-bar-4416/" target="_blank" rel="noopener">Mixkit 4416</a>, Mixkit Free License</li>';
 
 start();

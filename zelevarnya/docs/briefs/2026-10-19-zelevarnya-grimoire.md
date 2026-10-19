@@ -51,6 +51,7 @@ Each recipe page: name, engraved vessel, ingredients as alchemical glyphs + word
 Booking copy: «Выберите стол на карте зала», fields Дата, Время, Гостей, Имя, Телефон. Success: «Печать поставлена. Это концепт: бар вымышленный, бронь никуда не ушла».
 
 ## 4 — Assets
+- UPDATE 2026-10-19 (Sergey: «зелья должны быть не рисунками, а реальными коктейлями, больше»; fal не использовать никогда): menu = 12 real CC0/CC BY/CC BY-SA photos from Wikimedia Commons (public/potions, 800×1000, credits in data.ts + footer), pink variants recoloured locally (.work/pinkify.mjs); ritual = Mixkit free videos 4172 + 4416 (public/video). Drawn vessels stay only as fallback.
 - No photos. Everything is SVG/Canvas drawn in code, consistent engraving technique:
   - parchment: CSS + SVG feTurbulence noise, warm vignette, foxing spots;
   - ink roughness: shared SVG filter (feTurbulence + feDisplacementMap, scale ~1.2) on all line art;
