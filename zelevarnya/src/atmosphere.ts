@@ -1,7 +1,7 @@
 import { onFrame, reduced } from './anim';
 import { arc, el, NS, P, rng, smooth, stroke, swell, taper } from './ink';
 
-// Mood layer: a still vignette, drifting dust and wand sparks, burnt
+// Mood layer: a still vignette, drifting dust and cursor ash, burnt
 // holes in the page with eyes watching from inside, candles by the titles,
 // handwritten notes and ink blots in the margins.
 
@@ -30,7 +30,7 @@ export function dust() {
   addEventListener('resize', size);
   const r = rng(77);
   const motes = Array.from({ length: 34 }, () => ({ x: r() * innerWidth, y: r() * innerHeight, s: 0.6 + r() * 1.6, v: 6 + r() * 16, ph: r() * 6, green: r() > 0.82 }));
-  // Sparks shed by the wand cursor while it moves (fine pointers only).
+  // Smouldering green ash shed by the athame cursor while it moves.
   const sparks: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
   if (matchMedia('(pointer: fine)').matches) {
     let px = 0, py = 0;
@@ -38,7 +38,7 @@ export function dust() {
       const d = Math.hypot(e.clientX - px, e.clientY - py);
       px = e.clientX; py = e.clientY;
       if (d < 6 || sparks.length > 26) return;
-      sparks.push({ x: e.clientX + 3, y: e.clientY + 3, vx: (r() - 0.5) * 30, vy: 10 + r() * 30, life: 1 });
+      sparks.push({ x: e.clientX + 2, y: e.clientY + 2, vx: (r() - 0.5) * 14, vy: -6 - r() * 14, life: 1 });
     }, { passive: true });
   }
   let last = performance.now();
@@ -61,8 +61,8 @@ export function dust() {
       const s = sparks[i];
       s.life -= dt * 1.6;
       if (s.life <= 0) { sparks.splice(i, 1); continue; }
-      s.x += s.vx * dt; s.y += s.vy * dt; s.vy += 40 * dt;
-      ctx.fillStyle = `rgba(170,245,100,${(s.life * 0.9).toFixed(2)})`;
+      s.x += s.vx * dt + Math.sin(now / 200 + i) * 6 * dt; s.y += s.vy * dt;
+      ctx.fillStyle = s.life > 0.6 ? `rgba(190,250,120,${(s.life * 0.9).toFixed(2)})` : `rgba(70,110,40,${(s.life * 1.2).toFixed(2)})`;
       ctx.beginPath();
       ctx.arc(s.x, s.y, 0.6 + s.life * 1.6, 0, Math.PI * 2);
       ctx.fill();

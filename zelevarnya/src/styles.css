@@ -416,9 +416,9 @@ svg .roughen { filter: url(#ink-rough); }
 @keyframes angry { 0% { opacity: 0; } 10% { opacity: 1; } 75% { opacity: 1; } 100% { opacity: 0; } }
 @media (max-width: 640px) { .marginal.angry { left: 8%; top: 64%; font-size: 24px; } }
 
-/* ---------- wand cursor (native, so it never lags) ---------- */
+/* ---------- athame cursor (native, so it never lags) ---------- */
 @media (pointer: fine) {
-  html, body { cursor: url('./cursor-wand.svg') 4 4, auto; }
-  a, button, select, label, summary, [role='button'], [role='tab'], .btn, .tbl, .turn, .seal, .book-tabs button { cursor: url('./cursor-wand-lit.svg') 4 4, pointer; }
+  html, body { cursor: url('./cursor-athame.svg') 4 4, auto; }
+  a, button, select, label, summary, [role='button'], [role='tab'], .btn, .tbl, .turn, .seal, .book-tabs button { cursor: url('./cursor-athame-lit.svg') 4 4, pointer; }
   input[type='text'], input[type='tel'] { cursor: text; }
 }
