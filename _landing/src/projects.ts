@@ -44,6 +44,18 @@ export type Idle =
 
 export const PROJECTS: Project[] = [
   {
+    id: 18,
+    slug: 'zelevarnya',
+    title: 'Зельеварня',
+    description:
+      'Коктейльный бар-гримуар. Весь сайт нарисован кодом в технике гравюры: котёл, руны и щупальца, которые шевелятся покадрово, как в рисованном мультике.',
+    thumbnail: 'zelevarnya/og.jpg',
+    href: 'zelevarnya/',
+    tags: ['Арт-дирекшн', 'SVG-анимация', 'Бронь'],
+    year: 2026,
+    accent: '#7bd63a',
+  },
+  {
     id: 1,
     slug: 'roman',
     idle: 'folder',

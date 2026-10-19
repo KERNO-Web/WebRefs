@@ -1,0 +1,89 @@
+import './styles.css';
+import { onFrame, reduced, start, whenVisible } from './anim';
+import { glyph, rune, RUNE_NAMES } from './art/runes';
+import { Tentacle, TentacleOpts } from './art/tentacle';
+import { buildBook } from './book';
+import { buildBooking } from './booking';
+import { buildHall } from './hall';
+import { buildHero, debounce } from './hero';
+import { NS } from './ink';
+import { buildRitual } from './ritual';
+
+buildHero();
+buildBook();
+buildRitual();
+const booking = buildBooking();
+buildHall((t) => booking.pick(t));
+
+// Header mark
+const mark = document.querySelector('.mark-glyph')!;
+const ms = document.createElementNS(NS, 'svg');
+ms.setAttribute('viewBox', '-20 -20 40 40');
+ms.setAttribute('width', '26');
+ms.setAttribute('height', '26');
+glyph(ms, 'mercury', 0, 0, 34);
+mark.append(ms);
+
+// Section heads: three runes that flare green when the page turns into view.
+document.querySelectorAll<SVGSVGElement>('.sec-runes').forEach((s) => {
+  s.setAttribute('viewBox', '0 0 150 44');
+  const names = (s.dataset.runes ?? '').split(',');
+  const gs = names.map((n, i) => rune(s, n, 30 + i * 45, 22, 34));
+  whenVisible(s, () => {
+    if (reduced) return;
+    gs.forEach((g, i) => {
+      setTimeout(() => g.classList.add('lit'), 150 + i * 160);
+      setTimeout(() => g.classList.remove('lit'), 1300 + i * 160);
+    });
+  }, undefined, '-15% 0px');
+});
+
+// Footer rune strip
+const strip = document.querySelector<SVGSVGElement>('.rune-strip')!;
+const drawStrip = () => {
+  strip.replaceChildren();
+  const w = strip.clientWidth || 1200;
+  strip.setAttribute('viewBox', `0 0 ${w} 44`);
+  const n = Math.floor(w / 34);
+  for (let i = 0; i < n; i++) rune(strip, RUNE_NAMES[i % RUNE_NAMES.length], 17 + i * 34, 22, 26);
+};
+drawStrip();
+addEventListener('resize', debounce(drawStrip, 200));
+
+// Tentacles creeping from behind section edges.
+interface Edge { sel: string; spec: (W: number, H: number) => TentacleOpts }
+const EDGES: Edge[] = [
+  { sel: '.book-sec', spec: (W, H) => ({ x: -30, y: H * 0.8, angle: -0.55, length: Math.min(340, W * 0.3), width: 74, curl: -1, phase: 1 }) },
+  { sel: '.ritual-sec', spec: (W, H) => ({ x: W + 30, y: H * 0.14, angle: Math.PI - 0.1, length: Math.min(300, W * 0.3), width: 64, curl: -1, phase: 3 }) },
+  { sel: '.hall-sec', spec: (W, H) => ({ x: -30, y: H * 0.55, angle: 0.1, length: Math.min(260, W * 0.24), width: 66, curl: 1, phase: 5 }) },
+  { sel: '.booking-sec', spec: (W, H) => ({ x: W + 30, y: H * 0.78, angle: Math.PI + 0.35, length: Math.min(320, W * 0.28), width: 80, curl: 1, phase: 2 }) },
+];
+const living: Tentacle[] = [];
+EDGES.forEach(({ sel, spec }) => {
+  const sec = document.querySelector<HTMLElement>(sel);
+  if (!sec) return;
+  const svg = document.createElementNS(NS, 'svg');
+  svg.classList.add('edge-tentacle');
+  svg.setAttribute('aria-hidden', 'true');
+  sec.prepend(svg);
+  let t: Tentacle | null = null;
+  const layout = () => {
+    const W = sec.clientWidth, H = sec.clientHeight;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const o = spec(W, H);
+    if (W < 700) { o.length *= 0.7; o.width *= 0.6; }
+    const prev = t;
+    if (prev) { prev.g.remove(); living.splice(living.indexOf(prev), 1); }
+    t = new Tentacle(svg, o);
+    t.g.classList.add('boil');
+    t.extend = t.target = prev?.target ?? (reduced ? 1 : 0);
+    t.update(0);
+    living.push(t);
+  };
+  layout();
+  addEventListener('resize', debounce(layout, 200));
+  whenVisible(sec, () => { if (t) t.target = 1; }, () => { if (t) t.target = 0; }, '-20% 0px');
+});
+onFrame((t, f) => living.forEach((x) => x.step(t, f)));
+
+start();

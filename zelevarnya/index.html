@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Зельеварня · коктейльный бар-гримуар</title>
+  <meta name="description" content="Концепт KERNØ: коктейльный бар, где напитки варят, а не мешают. Сайт целиком нарисован кодом в технике гравюры." />
+  <meta property="og:title" content="Зельеварня" />
+  <meta property="og:description" content="Коктейльный бар-гримуар. Концепт KERNØ." />
+  <meta property="og:image" content="og.jpg" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Unicase:wght@500;600;700&display=swap&subset=cyrillic" rel="stylesheet" />
+  
+</head>
+<body>
+  <svg class="defs" width="0" height="0" aria-hidden="true">
+    <defs>
+      <filter id="paper-grain" x="0" y="0" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" seed="7" />
+        <feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.26  0 0 0 0 0.14  0 0 0 0.16 0" />
+      </filter>
+    </defs>
+  </svg>
+
+  <header class="top">
+    <a class="mark" href="#top" aria-label="Зельеварня, наверх">
+      <span class="mark-glyph" aria-hidden="true"></span>Зельеварня
+    </a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#book">Книга рецептов</a>
+      <a href="#ritual">Ритуал</a>
+      <a href="#hall">Зал</a>
+    </nav>
+    <a class="btn btn-potion btn-sm" href="#booking">Забронировать стол</a>
+  </header>
+
+  <main id="top">
+    <section class="hero folio" aria-labelledby="hero-title">
+      <div class="folio-frame" aria-hidden="true"></div>
+      <h1 id="hero-title" class="sr-only">Зельеварня</h1>
+      <svg class="hero-art" viewBox="0 -60 1000 1080" aria-hidden="true"></svg>
+      <svg class="tentacles" aria-hidden="true"></svg>
+      <div class="hero-copy">
+        <p class="hero-lead">Коктейльный бар, где напитки варят, а&nbsp;не&nbsp;мешают.</p>
+        <p class="hero-sub">Восемь зелий по&nbsp;старой книге рецептов. Дым под колпаком, напиток, который меняет цвет, и&nbsp;стол у&nbsp;котла.</p>
+        <div class="hero-cta">
+          <a class="btn btn-potion" href="#booking">Забронировать стол</a>
+          <a class="btn btn-ink" href="#book">Открыть книгу рецептов</a>
+        </div>
+      </div>
+      <aside class="hero-margin" aria-label="Часы работы">
+        <span class="hm-label">Варим</span>
+        <span class="hm-value">ежедневно<br />18:00–03:00</span>
+      </aside>
+    </section>
+
+    <section id="book" class="book-sec folio" aria-labelledby="book-title">
+      <div class="folio-frame" aria-hidden="true"></div>
+      <header class="sec-head">
+        <svg class="sec-runes" aria-hidden="true" data-runes="ansuz,berkanan,kenaz"></svg>
+        <h2 id="book-title">Книга рецептов</h2>
+        <p>Восемь зелий. Листайте стрелками, свайпом или&nbsp;закладками сбоку.</p>
+      </header>
+      <div class="book" data-book>
+        <div class="book-tabs" role="tablist" aria-label="Зелья"></div>
+        <div class="book-body">
+          <div class="page page-l" data-page="l"></div>
+          <div class="page page-r" data-page="r"></div>
+          <div class="spine" aria-hidden="true"></div>
+        </div>
+        <div class="book-nav">
+          <button class="turn" data-turn="-1" aria-label="Предыдущее зелье">
+            <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M38 10H4M12 2 3 10l9 8" /></svg>
+          </button>
+          <span class="folio-num" data-folio>I / VIII</span>
+          <button class="turn" data-turn="1" aria-label="Следующее зелье">
+            <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10h34M28 2l9 8-9 8" /></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="ritual" class="ritual-sec folio" aria-labelledby="ritual-title">
+      <div class="folio-frame" aria-hidden="true"></div>
+      <header class="sec-head">
+        <svg class="sec-runes" aria-hidden="true" data-runes="raido,isa,thurisaz"></svg>
+        <h2 id="ritual-title">Ритуал подачи</h2>
+        <p>Зелье не&nbsp;приносят. Его&nbsp;доводят до&nbsp;готовности у&nbsp;вас на&nbsp;глазах.</p>
+      </header>
+      <svg class="ritual-art" viewBox="0 0 1200 520" aria-hidden="true"></svg>
+      <ol class="ritual-steps">
+        <li><span class="step-num" data-glyph="sun"></span><h3>Варим</h3><p>Настойки на&nbsp;травах и&nbsp;специях стоят в&nbsp;котле с&nbsp;вечера. Анчан, бузина, копчёный ананас.</p></li>
+        <li><span class="step-num" data-glyph="air"></span><h3>Дымим</h3><p>Колпак с&nbsp;дымом розмарина, пузырь дыма поверх бокала, горящая корица.</p></li>
+        <li><span class="step-num" data-glyph="mercury"></span><h3>Подаём</h3><p>Последнюю каплю добавляете вы. И&nbsp;смотрите, как синий становится розовым.</p></li>
+      </ol>
+    </section>
+
+    <section id="hall" class="hall-sec folio" aria-labelledby="hall-title">
+      <div class="folio-frame" aria-hidden="true"></div>
+      <header class="sec-head">
+        <svg class="sec-runes" aria-hidden="true" data-runes="othala,mannaz,dagaz"></svg>
+        <h2 id="hall-title">Карта зала</h2>
+        <p>Выберите стол на&nbsp;карте. Он&nbsp;сразу попадёт в&nbsp;бронь.</p>
+      </header>
+      <div class="hall">
+        <div class="plan-wrap"><svg class="plan" viewBox="0 0 1000 640" role="group" aria-label="План зала, столы можно выбрать"></svg></div>
+        <div class="table-card" data-table-card aria-live="polite">
+          <span class="tc-label">Стол не&nbsp;выбран</span>
+          <span class="tc-meta">Наведите или&nbsp;нажмите на&nbsp;руну стола</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="booking" class="booking-sec folio" aria-labelledby="booking-title">
+      <div class="folio-frame" aria-hidden="true"></div>
+      <form class="slip" novalidate data-booking>
+        <header class="sec-head">
+          <svg class="sec-runes" aria-hidden="true" data-runes="gebo,wunjo,jera"></svg>
+          <h2 id="booking-title">Бронь стола</h2>
+          <p>Заполните записку и&nbsp;поставьте печать.</p>
+        </header>
+        <div class="fields">
+          <label class="field field-wide">
+            <span>Стол</span>
+            <select name="table" required></select>
+          </label>
+          <label class="field">
+            <span>Дата</span>
+            <input type="date" name="date" required />
+          </label>
+          <label class="field">
+            <span>Время</span>
+            <select name="time" required></select>
+          </label>
+          <label class="field">
+            <span>Гостей</span>
+            <select name="guests" required></select>
+          </label>
+          <label class="field">
+            <span>Имя</span>
+            <input type="text" name="name" autocomplete="given-name" required placeholder="Как вас записать" />
+          </label>
+          <label class="field field-wide">
+            <span>Телефон</span>
+            <input type="tel" name="phone" autocomplete="tel" inputmode="tel" required placeholder="+7 900 000-00-00" />
+          </label>
+        </div>
+        <div class="seal-row">
+          <button class="seal" type="submit" aria-label="Поставить печать и отправить бронь">
+            <svg viewBox="0 0 160 160" aria-hidden="true"></svg>
+            <span>Поставить печать</span>
+          </button>
+          <p class="slip-note" data-note>Бронь держим 15 минут. Опаздываете — напишите, подождём.</p>
+        </div>
+        <div class="slip-done" data-done hidden>
+          <h3>Печать поставлена</h3>
+          <p data-done-text></p>
+          <p class="concept-note">Это концепт: бар вымышленный, бронь никуда не&nbsp;ушла.</p>
+          <button type="button" class="btn btn-ink" data-again>Заполнить ещё раз</button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <footer class="foot folio">
+    <svg class="rune-strip" aria-hidden="true"></svg>
+    <div class="foot-row">
+      <span class="foot-mark">Зельеварня</span>
+      <span>Варим ежедневно, 18:00–03:00</span>
+      <span>Концепт KERNØ. Бар вымышленный.</span>
+      <a href="https://t.me/Kernodev" target="_blank" rel="noopener">Сделать такой сайт → t.me/Kernodev</a>
+    </div>
+  </footer>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
