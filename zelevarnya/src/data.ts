@@ -135,16 +135,30 @@ export const POTIONS: Potion[] = [
   },
 ];
 
-export interface Table { id: string; x: number; y: number; seats: number; shape: 'round' | 'long' | 'booth'; label: string; rune: string }
+export interface Table {
+  id: string; x: number; y: number; seats: number;
+  shape: 'round' | 'long' | 'booth' | 'bar';
+  label: string; rune: string;
+  /** cursed table: drawn, but never bookable */
+  cursed?: boolean;
+}
 
-// Floor plan coordinates in a 1000 × 640 box.
+// Floor plan coordinates in a 1000 × 700 box.
 export const TABLES: Table[] = [
-  { id: 't1', x: 500, y: 330, seats: 6, shape: 'round', label: 'Стол у котла', rune: 'othala' },
-  { id: 't2', x: 230, y: 175, seats: 2, shape: 'round', label: 'У окна', rune: 'ansuz' },
-  { id: 't3', x: 340, y: 175, seats: 2, shape: 'round', label: 'У окна', rune: 'kenaz' },
-  { id: 't4', x: 180, y: 430, seats: 4, shape: 'booth', label: 'Ниша алхимика', rune: 'perth' },
-  { id: 't5', x: 180, y: 545, seats: 4, shape: 'booth', label: 'Ниша травника', rune: 'berkanan' },
-  { id: 't6', x: 760, y: 470, seats: 8, shape: 'long', label: 'Длинный стол', rune: 'mannaz' },
-  { id: 't7', x: 690, y: 175, seats: 2, shape: 'round', label: 'У стойки', rune: 'tiwaz' },
-  { id: 't8', x: 800, y: 175, seats: 2, shape: 'round', label: 'У стойки', rune: 'sowilo' },
+  { id: 'cauldron', x: 500, y: 330, seats: 8, shape: 'round', label: 'Стол у котла', rune: 'othala' },
+  { id: 'win1', x: 190, y: 108, seats: 2, shape: 'round', label: 'У окна, I', rune: 'ansuz' },
+  { id: 'win2', x: 300, y: 108, seats: 2, shape: 'round', label: 'У окна, II', rune: 'kenaz' },
+  { id: 'win3', x: 410, y: 108, seats: 2, shape: 'round', label: 'У окна, III', rune: 'wunjo' },
+  { id: 'fire', x: 180, y: 240, seats: 4, shape: 'round', label: 'У камина', rune: 'sowilo' },
+  { id: 'circle', x: 318, y: 316, seats: 4, shape: 'round', label: 'Ведьмин круг', rune: 'perth' },
+  { id: 'moon', x: 690, y: 330, seats: 4, shape: 'round', label: 'Лунный стол', rune: 'jera' },
+  { id: 'library', x: 160, y: 410, seats: 2, shape: 'round', label: 'В библиотеке', rune: 'laguz' },
+  { id: 'cellar', x: 380, y: 480, seats: 2, shape: 'round', label: 'У погреба', rune: 'eihwaz' },
+  { id: 'lab', x: 700, y: 505, seats: 4, shape: 'round', label: 'У перегонного куба', rune: 'ingwaz' },
+  { id: 'bar', x: 760, y: 158, seats: 4, shape: 'bar', label: 'За стойкой', rune: 'tiwaz' },
+  { id: 'nook1', x: 900, y: 290, seats: 4, shape: 'booth', label: 'Ниша травника', rune: 'berkanan' },
+  { id: 'nook2', x: 900, y: 410, seats: 4, shape: 'booth', label: 'Ниша алхимика', rune: 'hagalaz' },
+  { id: 'nook3', x: 900, y: 530, seats: 4, shape: 'booth', label: 'Ниша звездочёта', rune: 'dagaz' },
+  { id: 'crypt', x: 175, y: 598, seats: 10, shape: 'long', label: 'Склеп, отдельный зал', rune: 'mannaz' },
+  { id: 'xiii', x: 575, y: 492, seats: 2, shape: 'round', label: 'Стол XIII', rune: 'thurisaz', cursed: true },
 ];

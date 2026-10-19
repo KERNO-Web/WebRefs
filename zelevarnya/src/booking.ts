@@ -46,7 +46,7 @@ export function buildBooking() {
 
   drawSeal(seal.querySelector('svg')!);
 
-  table.innerHTML = '<option value="">Выберите на карте или здесь</option>' + TABLES.map((t) => `<option value="${t.id}">${t.label} · до ${t.seats} гостей</option>`).join('');
+  table.innerHTML = '<option value="">Выберите на карте или здесь</option>' + TABLES.filter((t) => !t.cursed).map((t) => `<option value="${t.id}">${t.label} · до ${t.seats} гостей</option>`).join('');
   time.innerHTML = TIMES.map((t) => `<option${t === '20:00' ? ' selected' : ''}>${t}</option>`).join('');
   const today = new Date();
   const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -60,7 +60,20 @@ export function buildBooking() {
     guests.innerHTML = Array.from({ length: max }, (_, i) => `<option${i + 1 === cur ? ' selected' : ''}>${i + 1}</option>`).join('');
   };
   fillGuests();
-  table.addEventListener('change', () => { fillGuests(); clear(table); });
+  const slipTable = form.querySelector<HTMLElement>('[data-slip-table]')!;
+  const showTable = () => {
+    const t = TABLES.find((x) => x.id === table.value);
+    const box = slipTable.querySelector<HTMLElement>('.st-rune')!;
+    box.replaceChildren();
+    if (!t) { slipTable.classList.remove('on'); slipTable.querySelector('.st-text')!.textContent = 'Стол ещё не выбран. Отметьте его на карте'; return; }
+    const sv = document.createElementNS(NS, 'svg');
+    sv.setAttribute('viewBox', '-20 -20 40 40');
+    rune(sv, t.rune, 0, 0, 30);
+    box.append(sv);
+    slipTable.classList.add('on');
+    slipTable.querySelector('.st-text')!.textContent = `${t.label} · до ${t.seats} гостей`;
+  };
+  table.addEventListener('change', () => { fillGuests(); clear(table); showTable(); });
 
   phone.addEventListener('input', () => {
     let d = phone.value.replace(/\D/g, '');
@@ -136,6 +149,22 @@ export function buildBooking() {
   });
 
   return {
-    pick(t: Table) { table.value = t.id; fillGuests(); clear(table); },
+    hint(t: Table | null) {
+      if (!t) { showTable(); slipTable.classList.remove('cursed'); return; }
+      if (t.cursed) {
+        slipTable.classList.add('cursed');
+        slipTable.querySelector('.st-text')!.textContent = 'Стол XIII не бронируется. Не спрашивайте почему.';
+        return;
+      }
+      slipTable.classList.remove('cursed');
+      if (table.value) return;
+      slipTable.querySelector('.st-text')!.textContent = `${t.label} · до ${t.seats} гостей. Нажмите, чтобы выбрать`;
+    },
+    pick(t: Table) {
+      slipTable.classList.remove('cursed');
+      table.value = t.id; fillGuests(); clear(table); showTable();
+      if (!reduced) gsap.fromTo(slipTable, { scale: 1.08 }, { scale: 1, duration: 0.4, ease: 'steps(5)' });
+      if (matchMedia('(max-width: 1000px)').matches) form.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
+    },
   };
 }

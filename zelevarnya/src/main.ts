@@ -9,12 +9,15 @@ import { buildHero, debounce } from './hero';
 import { NS } from './ink';
 import { buildRitual } from './ritual';
 import { POTIONS } from './data';
+import { paintPaper } from './paper';
+import { burntHole, candle, candlelight, dust, inkBlot, note } from './atmosphere';
 
+paintPaper();
 buildHero();
 buildBook();
 buildRitual();
 const booking = buildBooking();
-buildHall((t) => booking.pick(t));
+buildHall((t) => booking.pick(t), (t) => booking.hint(t));
 
 // Header mark
 const mark = document.querySelector('.mark-glyph')!;
@@ -91,5 +94,31 @@ onFrame((t, f) => living.forEach((x) => x.step(t, f)));
 const credits = document.querySelector('[data-credits]')!;
 credits.innerHTML = POTIONS.map((p) => `<li>${p.name}: <a href="${p.credit.source}" target="_blank" rel="noopener">${p.credit.author}</a>, <a href="${p.credit.licenseUrl}" target="_blank" rel="noopener">${p.credit.license}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
   + '<li>Видео ритуала: <a href="https://mixkit.co/free-stock-video/bartender-makes-an-experimental-cocktail-4172/" target="_blank" rel="noopener">Mixkit 4172</a> и <a href="https://mixkit.co/free-stock-video/experimental-cocktail-in-the-bar-4416/" target="_blank" rel="noopener">Mixkit 4416</a>, Mixkit Free License</li>';
+
+// ---------- mood: light, dust, watchers, candles, marginalia ----------
+candlelight();
+dust();
+const $ = (sel: string) => document.querySelector<HTMLElement>(sel)!;
+document.querySelectorAll<HTMLElement>('.sec-head').forEach((h, i) => {
+  candle(h, 'candle-l', 120, i * 2 + 1);
+  candle(h, 'candle-r', 120, i * 2 + 2);
+});
+const hero = $('.hero');
+burntHole(hero, { position: 'absolute', right: '7%', top: '20%' }, 130, 1);
+inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
+note(hero, 'мешать только против часовой!', { position: 'absolute', left: '6%', top: '41%', transform: 'rotate(-5deg)' }, { dx: 230, dy: 36, bend: -0.25 });
+const book = $('.book-sec');
+note($('.book'), 'VII проверено на себе. Помню всё.', { position: 'absolute', right: '9%', bottom: '128px', transform: 'rotate(-4deg)' });
+burntHole(book, { position: 'absolute', left: '2.2%', top: '30%' }, 96, 3);
+inkBlot(book, { position: 'absolute', right: '3%', bottom: '8%' }, 54, 4);
+const ritual = $('.ritual-sec');
+note(ritual, 'дым не вдыхать (шутка)', { position: 'absolute', left: '3%', top: '310px', transform: 'rotate(-6deg)' });
+inkBlot(ritual, { position: 'absolute', right: '8%', top: '120px' }, 64, 5);
+burntHole(ritual, { position: 'absolute', right: '3%', bottom: '10%' }, 100, 6);
+const hall = $('.hall');
+note(hall, 'стол XIII не бронировать. Никогда.', { position: 'absolute', left: '50%', top: '103%', transform: 'rotate(-3deg)' }, { dx: 30, dy: -70, bend: -0.3 });
+note(hall, 'там кто-то есть', { position: 'absolute', left: '14%', top: '104%', transform: 'rotate(3deg)' }, { dx: 190, dy: -50, bend: 0.25 });
+const foot = $('.foot');
+burntHole(foot, { position: 'absolute', right: '4%', top: '-30px' }, 90, 8);
 
 start();

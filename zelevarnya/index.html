@@ -11,7 +11,7 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Unicase:wght@500;600;700&display=swap&subset=cyrillic" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+Unicase:wght@500;600;700&family=Marck+Script&display=swap&subset=cyrillic" rel="stylesheet" />
   
 </head>
 <body>
@@ -115,66 +115,60 @@
       <div class="folio-frame" aria-hidden="true"></div>
       <header class="sec-head">
         <svg class="sec-runes" aria-hidden="true" data-runes="othala,mannaz,dagaz"></svg>
-        <h2 id="hall-title">Карта зала</h2>
-        <p>Выберите стол на&nbsp;карте. Он&nbsp;сразу попадёт в&nbsp;бронь.</p>
+        <h2 id="hall-title">Зал и&nbsp;бронь</h2>
+        <p>Шестнадцать столов, камин, библиотека и&nbsp;склеп на&nbsp;десятерых. Нажмите на&nbsp;руну стола, и&nbsp;он&nbsp;попадёт в&nbsp;записку.</p>
       </header>
-      <div class="hall">
-        <div class="plan-wrap"><svg class="plan" viewBox="0 0 1000 640" role="group" aria-label="План зала, столы можно выбрать"></svg></div>
-        <div class="table-card" data-table-card aria-live="polite">
-          <span class="tc-label">Стол не&nbsp;выбран</span>
-          <span class="tc-meta">Наведите или&nbsp;нажмите на&nbsp;руну стола</span>
+      <div class="hall-grid">
+        <div class="hall">
+          <div class="plan-wrap"><svg class="plan" viewBox="0 0 1000 700" role="group" aria-label="План зала, столы можно выбрать"></svg></div>
         </div>
+        <form id="booking" class="slip" novalidate data-booking aria-labelledby="booking-title">
+          <h3 id="booking-title" class="slip-title">Записка о&nbsp;брони</h3>
+          <div class="slip-table" data-slip-table>
+            <span class="st-rune" aria-hidden="true"></span>
+            <span class="st-text" aria-live="polite">Стол ещё не&nbsp;выбран. Отметьте его на&nbsp;карте</span>
+          </div>
+          <div class="fields">
+            <label class="field field-wide">
+              <span>Стол</span>
+              <select name="table" required></select>
+            </label>
+            <label class="field">
+              <span>Дата</span>
+              <input type="date" name="date" required />
+            </label>
+            <label class="field">
+              <span>Время</span>
+              <select name="time" required></select>
+            </label>
+            <label class="field">
+              <span>Гостей</span>
+              <select name="guests" required></select>
+            </label>
+            <label class="field">
+              <span>Имя</span>
+              <input type="text" name="name" autocomplete="given-name" required placeholder="Как вас записать" />
+            </label>
+            <label class="field field-wide">
+              <span>Телефон</span>
+              <input type="tel" name="phone" autocomplete="tel" inputmode="tel" required placeholder="+7 900 000-00-00" />
+            </label>
+          </div>
+          <div class="seal-row">
+            <button class="seal" type="submit" aria-label="Поставить печать и отправить бронь">
+              <svg viewBox="0 0 160 160" aria-hidden="true"></svg>
+              <span>Поставить печать</span>
+            </button>
+            <p class="slip-note" data-note>Бронь держим 15 минут. Опаздываете? Напишите, подождём.</p>
+          </div>
+          <div class="slip-done" data-done hidden>
+            <h3>Печать поставлена</h3>
+            <p data-done-text></p>
+            <p class="concept-note">Это концепт: бар вымышленный, бронь никуда не&nbsp;ушла.</p>
+            <button type="button" class="btn btn-ink" data-again>Заполнить ещё раз</button>
+          </div>
+        </form>
       </div>
-    </section>
-
-    <section id="booking" class="booking-sec folio" aria-labelledby="booking-title">
-      <div class="folio-frame" aria-hidden="true"></div>
-      <form class="slip" novalidate data-booking>
-        <header class="sec-head">
-          <svg class="sec-runes" aria-hidden="true" data-runes="gebo,wunjo,jera"></svg>
-          <h2 id="booking-title">Бронь стола</h2>
-          <p>Заполните записку и&nbsp;поставьте печать.</p>
-        </header>
-        <div class="fields">
-          <label class="field field-wide">
-            <span>Стол</span>
-            <select name="table" required></select>
-          </label>
-          <label class="field">
-            <span>Дата</span>
-            <input type="date" name="date" required />
-          </label>
-          <label class="field">
-            <span>Время</span>
-            <select name="time" required></select>
-          </label>
-          <label class="field">
-            <span>Гостей</span>
-            <select name="guests" required></select>
-          </label>
-          <label class="field">
-            <span>Имя</span>
-            <input type="text" name="name" autocomplete="given-name" required placeholder="Как вас записать" />
-          </label>
-          <label class="field field-wide">
-            <span>Телефон</span>
-            <input type="tel" name="phone" autocomplete="tel" inputmode="tel" required placeholder="+7 900 000-00-00" />
-          </label>
-        </div>
-        <div class="seal-row">
-          <button class="seal" type="submit" aria-label="Поставить печать и отправить бронь">
-            <svg viewBox="0 0 160 160" aria-hidden="true"></svg>
-            <span>Поставить печать</span>
-          </button>
-          <p class="slip-note" data-note>Бронь держим 15 минут. Опаздываете — напишите, подождём.</p>
-        </div>
-        <div class="slip-done" data-done hidden>
-          <h3>Печать поставлена</h3>
-          <p data-done-text></p>
-          <p class="concept-note">Это концепт: бар вымышленный, бронь никуда не&nbsp;ушла.</p>
-          <button type="button" class="btn btn-ink" data-again>Заполнить ещё раз</button>
-        </div>
-      </form>
     </section>
   </main>
 
