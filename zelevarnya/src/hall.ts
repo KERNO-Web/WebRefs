@@ -130,7 +130,7 @@ function rooms(svg: SVGSVGElement) {
   el('rect', { x: W.x0 + 6, y: 190, width: 32, height: 80, fill: '#1a1009' }, g);
   const fire = el('g', { class: 'boil hearth', transform: `translate(${W.x0 + 22} 230) rotate(90) scale(0.12) translate(-400 -660)` }, g);
   paintFlames(fire, 0, 0);
-  if (!reduced) onFrame((t, f) => paintFlames(fire, t, f));
+  if (!reduced) onFrame((t, f) => paintFlames(fire, t, f), svg);
   label(g, 'Камин', 120, 182, 22);
   // Library shelves along the left wall
   for (let y = 330; y < 490; y += 4) stroke(g, [[W.x0 + 2, y], [W.x0 + 26, y]], () => (r() > 0.7 ? 2.4 : 1.2));
@@ -144,6 +144,7 @@ function rooms(svg: SVGSVGElement) {
     stroke(g, [[x, 634], [x, 626]], () => 1.4);
   }
   label(g, 'Перегонный куб', 690, 610, 22);
+  label(g, 'Ниши с диванами', 880, 226, 22);
   // Cellar stairs
   for (let i = 0; i < 8; i++) stroke(g, [[420, 572 + i * 12], [540, 572 + i * 12]], () => 1.3);
   stroke(g, [[420, 568], [420, 672]], () => 2.2);
@@ -199,15 +200,17 @@ function drawTable(svg: Element, t: Table) {
       l.textContent = 'XIII';
     }
   } else if (t.shape === 'booth') {
-    const w = 100, h = 52;
-    el('rect', { x: t.x - w / 2 - 24, y: t.y - h / 2 - 22, width: w + 48, height: h + 44, class: 'hit' }, g);
-    for (const pts of [[[t.x + w / 2 + 18, t.y - h / 2 - 16], [t.x + w / 2 + 18, t.y + h / 2 + 16]], [[t.x - w / 2, t.y - h / 2 - 16], [t.x + w / 2 + 18, t.y - h / 2 - 16]], [[t.x - w / 2, t.y + h / 2 + 16], [t.x + w / 2 + 18, t.y + h / 2 + 16]]] as P[][]) {
-      el('path', { d: `M${pts[0][0]} ${pts[0][1]}L${pts[1][0]} ${pts[1][1]}`, class: 'bench' }, g);
-      stroke(g, pts, () => 1.4);
+    // Booth: two upholstered sofas facing each other across a table,
+    // backs to the side, open towards the hall.
+    const w = 92, h = 44, sw = w + 12, sd = 24;
+    el('rect', { x: t.x - sw / 2 - 10, y: t.y - h / 2 - sd - 16, width: sw + 30, height: h + sd * 2 + 32, class: 'hit' }, g);
+    for (const side of [-1, 1]) {
+      const y0 = side < 0 ? t.y - h / 2 - 6 - sd : t.y + h / 2 + 6;
+      sofa(g, t.x - sw / 2 + 6, y0, sw, sd, side);
     }
-    el('rect', { x: t.x - w / 2, y: t.y - h / 2, width: w, height: h, class: 'top-fill' }, g);
+    el('rect', { x: t.x - w / 2, y: t.y - h / 2, width: w, height: h, rx: 6, class: 'top-fill' }, g);
     rect(g, t.x - w / 2, t.y - h / 2, w, h);
-    rune(g, t.rune, t.x - 4, t.y, 24);
+    rune(g, t.rune, t.x, t.y, 22);
   } else if (t.shape === 'bar') {
     el('rect', { x: t.x - 110, y: t.y - 26, width: 220, height: 52, class: 'hit' }, g);
     for (let i = 0; i < 4; i++) {
@@ -230,6 +233,16 @@ function drawTable(svg: Element, t: Table) {
     for (const dx of [-70, 70]) { stroke(g, [[t.x + dx, t.y - 10], [t.x + dx, t.y + 6]], () => 2); el('circle', { cx: t.x + dx, cy: t.y - 13, r: 3.5, class: 'potion' , fill: '#9be35c' }, g); }
     rune(g, t.rune, t.x, t.y, 24);
   }
+}
+
+// Sofa seen from above: seat cushions plus a thick backrest on the far side.
+function sofa(g: Element, x: number, y: number, w: number, d: number, side: number) {
+  el('rect', { x, y, width: w, height: d, rx: 7, class: 'sofa' }, g);
+  const back = side < 0 ? y : y + d - 8;
+  el('rect', { x, y: back, width: w, height: 8, rx: 4, class: 'sofa-back' }, g);
+  stroke(g, arc(x + w / 2, y + d / 2, w / 2, d / 2, 0, Math.PI * 2, 40).map(([px, py]) => [Math.max(x, Math.min(x + w, px)), py] as P), () => 1.6);
+  for (let k = 1; k < 3; k++) stroke(g, [[x + (w * k) / 3, y + (side < 0 ? 9 : 2)], [x + (w * k) / 3, y + (side < 0 ? d - 2 : d - 9)]], swell(1.1, 0.3));
+  for (let k = 0; k < 3; k++) el('circle', { cx: x + (w * (k + 0.5)) / 3, cy: y + (side < 0 ? d * 0.62 : d * 0.38), r: 1.6, class: 'ink' }, g);
 }
 
 function rect(g: Element, x: number, y: number, w: number, h: number) {

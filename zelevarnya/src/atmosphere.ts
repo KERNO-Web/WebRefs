@@ -16,17 +16,19 @@ export function candlelight() {
   let x = mx, y = my;
   const fine = matchMedia('(pointer: fine)').matches;
   const r = rng(5);
-  const paint = (t: number) => {
+  // Position follows the cursor at screen rate; only transform changes, so
+  // the compositor moves it without repainting the page.
+  const move = (now: number) => {
+    const t = now / 1000;
     const tx = fine ? mx : innerWidth * (0.5 + Math.sin(t * 0.3) * 0.18);
     const ty = fine ? my : innerHeight * (0.42 + Math.sin(t * 0.23) * 0.12);
-    x += (tx - x) * 0.35; y += (ty - y) * 0.35;
-    const flick = 1 + (r() - 0.5) * 0.06 + Math.sin(t * 7) * 0.015;
-    light.style.setProperty('--lx', `${x.toFixed(0)}px`);
-    light.style.setProperty('--ly', `${y.toFixed(0)}px`);
-    light.style.setProperty('--lr', `${(Math.max(innerWidth, innerHeight) * 0.42 * flick).toFixed(0)}px`);
+    x += (tx - x) * 0.18; y += (ty - y) * 0.18;
+    light.style.transform = `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0)`;
+    if (!reduced) requestAnimationFrame(move);
   };
-  paint(0);
-  onFrame((t) => paint(t));
+  move(0);
+  // Flame flicker stays hand-drawn: 12 fps opacity steps.
+  if (!reduced) onFrame((t) => { light.style.opacity = (0.9 + r() * 0.07 + Math.sin(t * 7) * 0.03).toFixed(3); });
 }
 
 export function dust() {
@@ -163,7 +165,7 @@ export function candle(host: Element, cls: string, h = 120, seed = 1) {
     glow.setAttribute('r', (28 + (rr() - 0.5) * 6).toFixed(1));
   };
   paint(0, 0);
-  if (!reduced) { svg.classList.add('boil'); onFrame(paint); }
+  if (!reduced) { svg.classList.add('boil'); onFrame(paint, svg); }
   return svg;
 }
 

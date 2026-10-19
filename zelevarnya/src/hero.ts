@@ -3,6 +3,7 @@ import { drawCauldron, paintFlames } from './art/cauldron';
 import { runeRing } from './art/runes';
 import { Tentacle, TentacleOpts } from './art/tentacle';
 import { arc, el, inkDefs, P, rng, stroke, swell } from './ink';
+import { stir } from './stir';
 
 export function potionGradient(defs: Element, id: string, radial = false) {
   const gr = radial
@@ -35,7 +36,7 @@ export function buildHero() {
 
   // little stars of the zodiac between title and ring
   const r = rng(2);
-  const stars = el('g', { class: 'stars boil' }, svg);
+  const stars = el('g', { class: 'stars' }, svg);
   for (let i = 0; i < 26; i++) {
     const a = Math.PI * (1.05 + r() * 0.9), d = 470 + r() * 30;
     star(stars, CENTER[0] + Math.cos(a) * d, CENTER[1] + Math.sin(a) * d, 3 + r() * 5);
@@ -92,7 +93,7 @@ export function buildHero() {
         g.remove();
       } else b.glint.setAttribute('d', '');
     });
-  });
+  }, hero);
 
   // Tentacles creeping in from the page edges.
   const tsvg = hero.querySelector<SVGSVGElement>('.tentacles')!;
@@ -113,7 +114,6 @@ export function buildHero() {
         ];
     tentacles = specs.map((o) => {
       const t = new Tentacle(tsvg, o);
-      t.g.classList.add('boil');
       t.target = reduced ? 1 : 0;
       t.extend = reduced ? 1 : 0;
       t.update(0);
@@ -123,7 +123,9 @@ export function buildHero() {
   layout();
   addEventListener('resize', debounce(layout, 200));
   whenVisible(hero, () => tentacles.forEach((t, i) => setTimeout(() => (t.target = 1), 900 + i * 350)), () => tentacles.forEach((t) => (t.target = 0.15)));
-  onFrame((t, frame) => tentacles.forEach((x) => x.step(t, frame)));
+  onFrame((t, frame) => tentacles.forEach((x) => x.step(t, frame)), hero);
+
+  stir(svg, cg as SVGGElement, c, () => tentacles, hero);
 
   hero.addEventListener('pointermove', (e) => {
     const rect = hero.getBoundingClientRect();

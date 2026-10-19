@@ -79,7 +79,6 @@ EDGES.forEach(({ sel, spec }) => {
     const prev = t;
     if (prev) { prev.g.remove(); living.splice(living.indexOf(prev), 1); }
     t = new Tentacle(svg, o);
-    t.g.classList.add('boil');
     t.extend = t.target = prev?.target ?? (reduced ? 1 : 0);
     t.update(0);
     living.push(t);
@@ -88,7 +87,7 @@ EDGES.forEach(({ sel, spec }) => {
   addEventListener('resize', debounce(layout, 200));
   whenVisible(sec, () => { if (t) t.target = 1; }, () => { if (t) t.target = 0; }, '-20% 0px');
 });
-onFrame((t, f) => living.forEach((x) => x.step(t, f)));
+onFrame((t, f) => living.forEach((x) => { if (x.g.ownerSVGElement && x.g.ownerSVGElement.getBoundingClientRect().bottom > -200 && x.g.ownerSVGElement.getBoundingClientRect().top < innerHeight + 200) x.step(t, f); }));
 
 // Photo and video credits (CC BY / BY-SA need attribution).
 const credits = document.querySelector('[data-credits]')!;
