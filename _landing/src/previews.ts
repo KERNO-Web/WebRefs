@@ -1,78 +1,59 @@
-// Video previews on the work cards: a short silent loop of the work in use
-// (recorded by _ai/portfolio/.work/clips.mjs). Nothing loads until it is needed:
-// with a mouse a clip plays while its card is hovered and rewinds on leave; on
-// a touch screen the card most in view plays, one at a time. Cards without a
-// clip are living covers that lean after the pointer. Reduced motion and data
-// saver keep the still preview.
+// Moving previews on the work cards, the way uxart does it: a work you can
+// operate plays its silent loop (recorded by _ai/portfolio/.work/clips.mjs)
+// whenever its card is on screen, on any device; a visual work has a living
+// cover that drifts slowly and keeps its idle detail going (styles.css,
+// ambient.css). Off screen everything stops, and a clip loads only when its card
+// first comes into view. Reduced motion and data saver keep the still preview.
 
 const quiet =
   matchMedia('(prefers-reduced-motion: reduce)').matches ||
   Boolean((navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData);
 const mouse = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-function start(v: HTMLVideoElement) {
+function play(v: HTMLVideoElement) {
   if (!v.src) v.src = v.dataset.src!;
   const shot = v.closest('.shot')!;
   v.onplaying = () => shot.classList.add('playing');
   v.play().catch(() => {});
 }
-function stop(v: HTMLVideoElement) {
-  v.pause();
-  v.closest('.shot')?.classList.remove('playing');
-  if (v.src) v.currentTime = 0;
-}
 
 let io: IntersectionObserver | null = null;
-const ratios = new Map<HTMLVideoElement, number>();
 
 /** Call after the cards are (re)rendered. */
 export function bindPreviews() {
   if (quiet) return;
-  const clips = [...document.querySelectorAll<HTMLVideoElement>('video.clip')];
-  if (mouse) {
-    // living covers lean a little after the pointer (styles.css reads --px/--py)
-    document.querySelectorAll<HTMLElement>('.shot.cover').forEach((shot) => {
-      const card = shot.closest('.card');
-      if (!card || card.hasAttribute('data-lean-bound')) return;
-      card.setAttribute('data-lean-bound', '');
-      card.addEventListener('mousemove', (e) => {
-        const r = shot.getBoundingClientRect();
-        const x = ((e as MouseEvent).clientX - r.left) / r.width - 0.5;
-        const y = ((e as MouseEvent).clientY - r.top) / r.height - 0.5;
-        shot.style.setProperty('--px', `${(-x * 20).toFixed(1)}px`);
-        shot.style.setProperty('--py', `${(-y * 14).toFixed(1)}px`);
-      });
-      card.addEventListener('mouseleave', () => {
-        shot.style.setProperty('--px', '0px');
-        shot.style.setProperty('--py', '0px');
-      });
-    });
-    clips.forEach((v) => {
-      const card = v.closest('.card');
-      if (!card || card.hasAttribute('data-clip-bound')) return;
-      card.setAttribute('data-clip-bound', '');
-      card.addEventListener('mouseenter', () => start(v));
-      card.addEventListener('mouseleave', () => stop(v));
-    });
-    return;
-  }
-  // touch: the card most in view plays
   io?.disconnect();
-  ratios.clear();
   io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => ratios.set(e.target as HTMLVideoElement, e.isIntersecting ? e.intersectionRatio : 0));
-      let best: HTMLVideoElement | null = null;
-      let top = 0.6;
-      ratios.forEach((r, v) => {
-        if (r >= top) {
-          top = r;
-          best = v;
-        }
-      });
-      ratios.forEach((_, v) => (v === best ? start(v) : stop(v)));
-    },
-    { threshold: [0, 0.6, 0.8, 1] },
+    (entries) =>
+      entries.forEach((e) => {
+        const shot = e.target as HTMLElement;
+        // .live drives the cover's drift and the idle detail (ambient.css)
+        shot.classList.toggle('live', e.isIntersecting);
+        const v = shot.querySelector<HTMLVideoElement>('video.clip');
+        if (!v) return;
+        if (e.isIntersecting) play(v);
+        else v.pause();
+      }),
+    { threshold: 0.25 },
   );
-  clips.forEach((v) => io!.observe(v));
+  document.querySelectorAll<HTMLElement>('.shot').forEach((s) => io!.observe(s));
+
+  if (!mouse) return;
+  // with a mouse, living covers also lean a little after the pointer (--px/--py)
+  document.querySelectorAll<HTMLElement>('.shot.cover').forEach((shot) => {
+    const card = shot.closest('.card');
+    if (!card || card.hasAttribute('data-lean-bound')) return;
+    card.setAttribute('data-lean-bound', '');
+    card.addEventListener('mousemove', (e) => {
+      const r = shot.getBoundingClientRect();
+      const x = ((e as MouseEvent).clientX - r.left) / r.width - 0.5;
+      const y = ((e as MouseEvent).clientY - r.top) / r.height - 0.5;
+      shot.style.setProperty('--px', `${(-x * 20).toFixed(1)}px`);
+      shot.style.setProperty('--py', `${(-y * 14).toFixed(1)}px`);
+    });
+    card.addEventListener('mouseleave', () => {
+      shot.style.setProperty('--px', '0px');
+      shot.style.setProperty('--py', '0px');
+    });
+  });
 }

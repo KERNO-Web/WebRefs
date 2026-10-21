@@ -407,14 +407,46 @@ main {
 /* a living cover: on hover the camera pushes in slowly and leans after the
    pointer (previews.ts sets --px/--py), while its idle detail keeps playing */
 .shot.cover img {
+  translate: var(--px, 0px) var(--py, 0px);
   transition:
     transform 1s var(--ease),
-    scale 6s cubic-bezier(0.2, 0.6, 0.2, 1),
     translate 0.9s var(--ease);
 }
-.card:hover .shot.cover img {
-  scale: 1.08;
-  translate: var(--px, 0px) var(--py, 0px);
+/* while on screen the camera drifts slowly in and out over the cover; each
+   card leans a different way and runs on its own clock (previews.ts sets .live) */
+.shot.cover.live img {
+  animation: drift var(--drift-t, 17s) ease-in-out infinite alternate;
+}
+.grid .card:nth-child(3n + 1) .shot.cover {
+  --drift-x: -2%;
+  --drift-y: -1.4%;
+  --drift-t: 15s;
+}
+.grid .card:nth-child(3n + 2) .shot.cover {
+  --drift-x: 1.8%;
+  --drift-y: -1%;
+  --drift-t: 19s;
+}
+.grid .card:nth-child(3n) .shot.cover {
+  --drift-x: -1%;
+  --drift-y: 1.4%;
+  --drift-t: 17s;
+}
+@keyframes drift {
+  from {
+    transform: scale(1.01) translate(0, 0);
+  }
+  to {
+    transform: scale(1.09) translate(var(--drift-x, -1.5%), var(--drift-y, -1%));
+  }
+}
+.scrolling .shot.cover img {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .shot.cover img {
+    animation: none !important;
+  }
 }
 /* the work's video loop sits over the still and fades in once it is playing;
    the still's own idle light steps aside meanwhile */
