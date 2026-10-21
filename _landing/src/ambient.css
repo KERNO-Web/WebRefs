@@ -365,16 +365,6 @@
   100% { translate: 25% 0; opacity: 0; }
 }
 
-/* ---------- 4. typography: the name's weight breathes, barely ---------- */
-
-.ready .hero.live .word {
-  animation: weight 7s ease-in-out 1.5s infinite alternate;
-}
-@keyframes weight {
-  from { font-weight: 800; }
-  to { font-weight: 660; }
-}
-
 /* ---------- yielding ---------- */
 
 /* scrolling and hover take priority over idle */
@@ -399,15 +389,13 @@
 /* reduced motion: the still picture only */
 .still .ambient *,
 .still .shot :is(.fx, .ev-clip i),
-.still .shot .fx::before,
-.still .word {
+.still .shot .fx::before {
   animation: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .ambient *,
   .shot :is(.fx, .ev-clip i),
-  .shot .fx::before,
-  .word {
+  .shot .fx::before {
     animation: none !important;
   }
 }
