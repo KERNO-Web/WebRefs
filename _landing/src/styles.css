@@ -404,6 +404,23 @@ main {
 .card:hover .shot img {
   transform: scale(1.02);
 }
+/* the work's video loop sits over the still and fades in once it is playing;
+   the still's own idle light steps aside meanwhile */
+.shot .clip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.shot.playing .clip {
+  opacity: 1;
+}
+.shot.playing :is(.fx, .ev-clip) {
+  visibility: hidden;
+}
 .card-title {
   font-weight: 700;
   letter-spacing: -0.035em;

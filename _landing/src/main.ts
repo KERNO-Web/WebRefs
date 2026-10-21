@@ -7,6 +7,8 @@ import { startContact } from './contact';
 import { CATS, PROJECTS, type Cat, type Project } from './projects';
 import { visibleProjects } from './settings';
 import { CASES } from './cases';
+import { CLIPS } from './clips';
+import { bindPreviews } from './previews';
 
 const ADMIN_ROUTE = '#/kerno-admin';
 const CASE_ROUTE = '#/case/';
@@ -20,10 +22,13 @@ const pad = (n: number) => String(n).padStart(2, '0');
 const linkAttrs = (p: Project) =>
   CASES[p.slug] ? `href="${CASE_ROUTE}${p.slug}"` : `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
 const goLabel = (p: Project) => (CASES[p.slug] ? 'Смотреть кейс' : 'Открыть проект');
-// the image keeps its own wrapper; .fx holds the preview's living element and
+// the image keeps its own wrapper, with the work's video loop over it when there
+// is one (previews.ts plays it); .fx holds the preview's living element and
 // .ev-clip the rare reflection, clipped to the object it crosses
+const clip = (p: Project) =>
+  CLIPS.has(p.slug) ? `<video class="clip" data-src="clips/${p.slug}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video>` : '';
 const shot = (p: Project, alt: string, extra = '') =>
-  `<div class="shot"${p.idle ? ` data-idle="${p.idle}"` : ''}><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} /></div>${p.idle ? '<span class="fx" aria-hidden="true"></span>' : ''}${p.idle === 'sweep' || p.idle === 'lamps' ? '<span class="ev-clip" aria-hidden="true"><i></i></span>' : ''}</div>`;
+  `<div class="shot"${p.idle ? ` data-idle="${p.idle}"` : ''}><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div>${p.idle ? '<span class="fx" aria-hidden="true"></span>' : ''}${p.idle === 'sweep' || p.idle === 'lamps' ? '<span class="ev-clip" aria-hidden="true"><i></i></span>' : ''}</div>`;
 const kind = (p: Project) => `<p class="kind">${esc(p.label ?? (p.real ? 'Коммерческий проект' : 'Авторский концепт'))}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');
@@ -150,6 +155,7 @@ function renderGrid(rest: Project[]) {
     )
     .join('');
   observeReveals();
+  bindPreviews();
 }
 
 /* ---------- reveals ---------- */
