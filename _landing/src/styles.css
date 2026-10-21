@@ -14,6 +14,7 @@
   --ink-2: #4c4b48;
 
   --top: 72px;
+  --hero-h: max(100svh, 620px);
   --pad: clamp(16px, 4.4vw, 64px);
   --gap: clamp(16px, 2vw, 24px);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
@@ -232,12 +233,42 @@ button {
   background: var(--accent-h);
 }
 
-/* ---------- hero: one compact row, the pinned work follows right away ---------- */
+/* ---------- hero: the first screen, the name rising out of the violet clot ---------- */
 
+main {
+  position: relative;
+}
+/* the violet clot (hero-fx.ts) fills the first screen and fades into the page */
+.hero-fx {
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--hero-h);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s var(--ease);
+  -webkit-mask-image: linear-gradient(#000 76%, transparent);
+  mask-image: linear-gradient(#000 76%, transparent);
+}
+.hero-fx canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+.has-fx .hero-fx {
+  opacity: 1;
+}
+/* the shader takes over the violet field that used to sit behind the name */
+.has-fx .light-a {
+  display: none;
+}
 .hero {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  align-content: end;
   align-items: end;
+  min-height: var(--hero-h);
   gap: 20px clamp(32px, 5vw, 96px);
   padding-top: calc(var(--top) + clamp(36px, 5vw, 72px));
   padding-bottom: clamp(32px, 4vw, 56px);

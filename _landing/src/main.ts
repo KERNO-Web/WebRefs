@@ -1,6 +1,7 @@
 import './styles.css';
 import './ambient.css';
 import { startAmbient } from './ambient';
+import { startHeroFx } from './hero-fx';
 import { CATS, type Cat, type Project } from './projects';
 import { visibleProjects } from './settings';
 
@@ -219,3 +220,4 @@ route();
 renderCats();
 render();
 startAmbient();
+startHeroFx();
