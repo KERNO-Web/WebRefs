@@ -42,7 +42,7 @@
           <a href="#build">Что я делаю</a>
           <a href="#contact">Контакты</a>
         </nav>
-        <a class="tg" href="https://t.me/Kernodev" target="_blank" rel="noopener">
+        <a class="tg" data-magnetic href="https://t.me/Kernodev" target="_blank" rel="noopener">
           <svg class="tg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.94 4.32 18.66 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.31-8.41c.4-.36-.09-.56-.63-.2L5.9 13.29 1 11.75c-1.08-.34-1.1-1.08.23-1.6l19.03-7.34c.9-.33 1.68.21 1.68 1.51Z" /></svg>
           <span>Написать</span>
         </a>
@@ -66,8 +66,8 @@
             <li>Автоматизация</li>
           </ul>
           <div class="hero-cta">
-            <a class="btn btn-line" href="#works">Смотреть работы</a>
-            <a class="btn btn-accent" href="https://t.me/Kernodev" target="_blank" rel="noopener">Обсудить проект</a>
+            <a class="btn btn-line" data-magnetic href="#works">Смотреть работы</a>
+            <a class="btn btn-accent" data-magnetic href="https://t.me/Kernodev" target="_blank" rel="noopener">Обсудить проект</a>
           </div>
         </div>
       </section>
@@ -88,28 +88,76 @@
         </div>
         <ol class="build-list">
           <li class="rv">
-            <span class="build-n">01</span>
-            <h3>Сайты</h3>
-            <p>Лендинги, корпоративные сайты, портфолио, промо-сайты.</p>
-            <a class="build-go" href="?cat=sites#works" data-cat="sites">Смотреть работы</a>
+            <details class="svc">
+              <summary>
+                <span class="build-n">01</span>
+                <h3>Сайты</h3>
+                <span class="build-d">Лендинги, корпоративные сайты, портфолио, промо-сайты.</span>
+                <span class="svc-plus" aria-hidden="true"></span>
+              </summary>
+              <div class="svc-body">
+                <ul class="svc-list"><li>Структура и тексты блоков вместе с вами</li><li>Дизайн под бренд, без шаблонов</li><li>Адаптив под телефон и планшет</li><li>Формы заявок с отправкой в Telegram или на почту</li><li>Домен, хостинг и запуск</li></ul>
+                <dl class="svc-facts">
+                  <div><dt>Сроки</dt><dd>Лендинг — от 1 до 2 недель, сайт на несколько страниц — от 3 недель</dd></div>
+                  <div><dt>Стоимость</dt><dd>Назову после короткого описания задачи</dd></div>
+                </dl>
+                <a class="build-go" href="?cat=sites#works" data-cat="sites">Смотреть работы</a>
+              </div>
+            </details>
           </li>
           <li class="rv">
-            <span class="build-n">02</span>
-            <h3>Продукты</h3>
-            <p>Приложения, веб-сервисы, личные кабинеты, SaaS, финтех и&nbsp;внутренние инструменты.</p>
-            <a class="build-go" href="?cat=apps#works" data-cat="apps">Смотреть работы</a>
+            <details class="svc">
+              <summary>
+                <span class="build-n">02</span>
+                <h3>Продукты</h3>
+                <span class="build-d">Приложения, веб-сервисы, личные кабинеты, SaaS, финтех и&nbsp;внутренние инструменты.</span>
+                <span class="svc-plus" aria-hidden="true"></span>
+              </summary>
+              <div class="svc-body">
+                <ul class="svc-list"><li>Сценарии и прототип до начала разработки</li><li>Интерфейс: кабинеты, таблицы, фильтры, статусы</li><li>Вход, роли и права доступа</li><li>Админка для вашей команды</li><li>Сервер, база данных и выкладка на свой домен</li></ul>
+                <dl class="svc-facts">
+                  <div><dt>Сроки</dt><dd>Первая рабочая версия — от 3 до 6 недель</dd></div>
+                  <div><dt>Стоимость</dt><dd>Назову после короткого описания задачи</dd></div>
+                </dl>
+                <a class="build-go" href="?cat=apps#works" data-cat="apps">Смотреть работы</a>
+              </div>
+            </details>
           </li>
           <li class="rv">
-            <span class="build-n">03</span>
-            <h3>Telegram</h3>
-            <p>Боты, Mini Apps, каталоги, запись, платёжные сценарии и&nbsp;сервисы внутри Telegram.</p>
-            <a class="build-go" href="?cat=bots#works" data-cat="bots">Смотреть работы</a>
+            <details class="svc">
+              <summary>
+                <span class="build-n">03</span>
+                <h3>Telegram</h3>
+                <span class="build-d">Боты, Mini Apps, каталоги, запись, платёжные сценарии и&nbsp;сервисы внутри Telegram.</span>
+                <span class="svc-plus" aria-hidden="true"></span>
+              </summary>
+              <div class="svc-body">
+                <ul class="svc-list"><li>Бот с меню, кнопками и ветками диалога</li><li>Mini App: каталог, корзина, запись, личный кабинет</li><li>Оплата внутри Telegram</li><li>Панель, где вы видите заявки и отвечаете</li><li>Рассылки и уведомления клиентам</li></ul>
+                <dl class="svc-facts">
+                  <div><dt>Сроки</dt><dd>Бот — от 1 недели, Mini App — от 2 недель</dd></div>
+                  <div><dt>Стоимость</dt><dd>Назову после короткого описания задачи</dd></div>
+                </dl>
+                <a class="build-go" href="?cat=bots#works" data-cat="bots">Смотреть работы</a>
+              </div>
+            </details>
           </li>
           <li class="rv">
-            <span class="build-n">04</span>
-            <h3>Автоматизация</h3>
-            <p>API-интеграции, обработка заявок, уведомления, связки между сервисами и&nbsp;внутренняя автоматизация.</p>
-            <a class="build-go" href="?cat=auto#works" data-cat="auto">Смотреть работы</a>
+            <details class="svc">
+              <summary>
+                <span class="build-n">04</span>
+                <h3>Автоматизация</h3>
+                <span class="build-d">API-интеграции, обработка заявок, уведомления, связки между сервисами и&nbsp;внутренняя автоматизация.</span>
+                <span class="svc-plus" aria-hidden="true"></span>
+              </summary>
+              <div class="svc-body">
+                <ul class="svc-list"><li>Заявки с сайта и из мессенджеров в одно место</li><li>Связка CRM, таблиц, почты и Telegram</li><li>Уведомления команде и клиентам</li><li>Отчёты, которые собираются сами</li><li>AI-помощник по документам компании</li></ul>
+                <dl class="svc-facts">
+                  <div><dt>Сроки</dt><dd>От нескольких дней до 2 недель</dd></div>
+                  <div><dt>Стоимость</dt><dd>Назову после короткого описания задачи</dd></div>
+                </dl>
+                <a class="build-go" href="?cat=auto#works" data-cat="auto">Смотреть работы</a>
+              </div>
+            </details>
           </li>
         </ol>
         <div class="pause rv">
@@ -126,14 +174,28 @@
       </section>
 
       <section id="contact" class="contact" aria-labelledby="contact-title">
-        <div class="wrap contact-in">
-          <div class="contact-main">
-            <h2 id="contact-title">Есть задача&nbsp;—<br />покажите её!</h2>
-            <p class="contact-text">Пришлите ссылку на&nbsp;текущий сайт или коротко расскажите, что нужно сделать. Обсудим задачу и&nbsp;выберем направление.</p>
+        <div class="ticker" aria-hidden="true">
+          <div class="ticker-track">
+            <span>Сайты</span><span>Telegram-боты</span><span>Mini Apps</span><span>Веб-сервисы</span><span>Личные кабинеты</span><span>Автоматизация</span>
           </div>
+        </div>
+        <div class="wrap contact-in">
+          <h2 id="contact-title" class="contact-title">Есть задача?<br /><span>Покажите её.</span></h2>
+          <p class="contact-text">Пришлите ссылку на&nbsp;текущий сайт или коротко расскажите, что нужно сделать. Обсудим задачу и&nbsp;выберем направление.</p>
           <div class="contact-actions">
-            <a class="btn btn-accent btn-lg" href="https://t.me/Kernodev" target="_blank" rel="noopener">Написать в Telegram</a>
-            <a class="btn btn-lg contact-gh" href="https://github.com/KERNO-Web" target="_blank" rel="noopener">Исходники работ на&nbsp;GitHub ↗</a>
+            <a class="orb" data-magnetic href="https://t.me/Kernodev" target="_blank" rel="noopener">
+              <span class="orb-in">
+                <svg class="tg-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21.94 4.32 18.66 19.8c-.25 1.1-.9 1.37-1.82.85l-5.03-3.7-2.42 2.33c-.27.27-.5.5-1.02.5l.36-5.12 9.31-8.41c.4-.36-.09-.56-.63-.2L5.9 13.29 1 11.75c-1.08-.34-1.1-1.08.23-1.6l19.03-7.34c.9-.33 1.68.21 1.68 1.51Z" /></svg>
+                Написать<br />в&nbsp;Telegram
+              </span>
+            </a>
+            <div class="contact-links">
+              <button class="copy" type="button" data-copy="@Kernodev" data-magnetic>
+                <span class="copy-text">@Kernodev</span>
+                <span class="copy-hint" aria-live="polite">Скопировать</span>
+              </button>
+              <a class="contact-gh" href="https://github.com/KERNO-Web" target="_blank" rel="noopener">Исходники работ на&nbsp;GitHub ↗</a>
+            </div>
           </div>
         </div>
         <footer class="wrap foot">

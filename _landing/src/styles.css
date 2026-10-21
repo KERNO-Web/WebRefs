@@ -501,6 +501,7 @@ main {
 .build-go {
   grid-column: 3;
   justify-self: start;
+  align-self: start;
   font-size: 14px;
   font-weight: 600;
   color: var(--accent-h);
@@ -717,51 +718,153 @@ main {
   background: var(--paper);
   color: var(--ink);
 }
+/* running line across the top of the light block; its speed follows the
+   scroll and turns with its direction (ticker.ts) */
+.ticker {
+  overflow: hidden;
+  padding-block: clamp(18px, 2.4vw, 34px);
+  border-bottom: 1px solid rgba(20, 20, 22, 0.12);
+}
+.ticker-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.ticker-track span {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  font-size: clamp(36px, 6vw, 96px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+.ticker-track span::after {
+  content: 'Ø';
+  margin: 0 0.42em;
+  font-size: 0.6em;
+  color: var(--accent-btn);
+}
 .contact-in {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 32px var(--gap);
+  gap: 28px var(--gap);
   align-items: end;
-  padding-block: clamp(72px, 9vw, 130px);
+  padding-block: clamp(64px, 8vw, 120px);
 }
-.contact-main {
-  grid-column: 1 / span 7;
-}
-.contact h2 {
-  margin-top: 16px;
-  font-size: clamp(40px, 5.2vw, 84px);
+.contact-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: clamp(56px, 10.5vw, 190px);
   font-weight: 800;
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  line-height: 0.88;
+  letter-spacing: -0.06em;
+}
+.contact-title span {
+  color: var(--accent-btn);
 }
 .contact-text {
-  margin-top: 22px;
+  grid-column: 1 / span 5;
+  margin: 0;
   max-width: 30em;
   font-size: 18px;
   color: var(--ink-2);
 }
 .contact-actions {
-  grid-column: 8 / -1;
-  display: grid;
-  gap: 12px;
-  align-self: end;
+  grid-column: 7 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(20px, 3vw, 48px);
 }
-.contact-actions .btn {
-  width: 100%;
-  height: clamp(68px, 5.6vw, 88px);
-  padding: 0 32px;
-  border-radius: 14px;
-  font-size: clamp(18px, 1.45vw, 23px);
+/* the one big target: a violet disc that leans toward the pointer */
+.orb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: clamp(150px, 14vw, 210px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent-btn);
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(16px, 1.3vw, 20px);
   font-weight: 700;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+.orb:hover {
+  background: var(--ink);
+}
+.orb-in {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+.orb .tg-ico {
+  width: 26px;
+  height: 26px;
+}
+.contact-links {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+.copy {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.copy-text {
+  font-size: clamp(26px, 2.6vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  border-bottom: 2px solid currentColor;
+}
+.copy-hint {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2);
+  transition: color 0.25s;
+}
+.copy:hover .copy-hint,
+.copy.done .copy-hint {
+  color: var(--accent-btn);
 }
 .contact-gh {
-  border: 2px solid var(--ink);
-  color: var(--ink);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color 0.25s;
 }
 .contact-gh:hover {
-  background: var(--ink);
-  color: var(--paper);
+  color: var(--ink);
+}
+@media (max-width: 1080px) {
+  .contact-text {
+    grid-column: 1 / span 6;
+  }
+}
+@media (max-width: 760px) {
+  .contact-in {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contact-text,
+  .contact-actions {
+    grid-column: 1;
+  }
+  .contact-actions {
+    justify-content: flex-start;
+  }
 }
 .foot {
   display: flex;
@@ -775,6 +878,136 @@ main {
 }
 .foot .o {
   color: var(--accent-btn);
+}
+
+/* ---------- pointer: the Ø cursor and magnetic buttons (cursor.ts) ---------- */
+
+html.has-cursor,
+html.has-cursor * {
+  cursor: none !important;
+}
+html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
+  cursor: auto !important;
+}
+.cur {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.cur.gone,
+.cur.off {
+  opacity: 0;
+}
+.cur i,
+.cur b {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.cur-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--text);
+  transition: opacity 0.3s, scale 0.3s var(--ease), background-color 0.3s;
+}
+.cur-ring {
+  --s: 38px;
+  width: var(--s);
+  height: var(--s);
+  margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
+  border: 1.5px solid var(--text);
+  border-radius: 50%;
+  transition:
+    width 0.5s var(--ease),
+    height 0.5s var(--ease),
+    margin 0.5s var(--ease),
+    background-color 0.35s,
+    border-color 0.35s,
+    opacity 0.3s,
+    scale 0.3s var(--ease);
+}
+.cur .cur-slash {
+  left: -25%;
+  top: 50%;
+  width: 150%;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: var(--text);
+  transition: background-color 0.35s;
+}
+.cur .cur-label {
+  left: 50%;
+  top: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+/* over a work: a violet disc that names the click */
+.cur.on-card .cur-ring {
+  --s: 92px;
+  background: var(--accent-btn);
+  border-color: transparent;
+}
+.cur.on-card .cur-slash,
+.cur.on-card .cur-dot {
+  opacity: 0 !important;
+}
+.cur.on-card .cur-label {
+  opacity: 1;
+  transition-delay: 0.12s;
+}
+/* over a link or a toggle: the ring widens and fills faintly */
+.cur.on-link .cur-ring {
+  --s: 54px;
+  background: rgba(124, 108, 255, 0.16);
+  border-color: var(--accent);
+}
+.cur.on-link .cur-slash {
+  background: var(--accent);
+}
+/* a magnetic button moves itself; the ring steps aside */
+.cur.on-magnet .cur-ring {
+  opacity: 0;
+}
+/* the light contact block */
+.cur.ink .cur-dot,
+.cur.ink .cur-slash {
+  background: var(--ink);
+}
+.cur.ink .cur-ring {
+  border-color: var(--ink);
+}
+.cur.down .cur-ring {
+  scale: 0.82;
+}
+.cur.down .cur-dot {
+  scale: 0.6;
+}
+[data-magnetic] {
+  translate: var(--mx, 0px) var(--my, 0px);
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s,
+    border-color 0.3s,
+    transform 0.4s var(--ease),
+    translate 0.8s var(--ease);
+}
+[data-magnetic].pulled {
+  transition:
+    background-color 0.3s var(--ease),
+    color 0.3s,
+    border-color 0.3s,
+    transform 0.4s var(--ease),
+    translate 0.2s ease-out;
 }
 
 /* ---------- case page (#/case/<slug>) ---------- */
@@ -1397,13 +1630,6 @@ main {
   .feat-info {
     max-width: 640px;
   }
-  .contact-main {
-    grid-column: 1 / -1;
-  }
-  .contact-actions {
-    grid-column: 1 / -1;
-    max-width: 560px;
-  }
 }
 
 /* ---------- hero: what and how to start ---------- */
@@ -1450,13 +1676,115 @@ main {
   padding: 0;
   list-style: none;
 }
-.build-list li {
+.build-list > li {
+  border-bottom: 1px solid var(--line);
+}
+/* each direction is a native disclosure: the row is the button, the body
+   holds what is included, timing and the way to the matching works */
+.svc summary {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 5fr);
   align-items: baseline;
   gap: 8px var(--gap);
   padding-block: clamp(18px, 2vw, 28px);
-  border-bottom: 1px solid var(--line);
+  padding-right: 56px;
+  list-style: none;
+  cursor: pointer;
+}
+.svc summary::-webkit-details-marker {
+  display: none;
+}
+.svc-plus {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 40px;
+  height: 40px;
+  margin-top: -20px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  transition: transform 0.5s var(--ease), background-color 0.3s, border-color 0.3s;
+}
+.svc-plus::before,
+.svc-plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -7px;
+  background: currentColor;
+}
+.svc-plus::after {
+  transform: rotate(90deg);
+}
+.svc summary:hover .svc-plus {
+  border-color: var(--accent);
+}
+.svc[open] .svc-plus {
+  transform: rotate(45deg);
+  background: var(--accent-btn);
+  border-color: var(--accent-btn);
+}
+/* the body grows open where the browser can animate to auto height */
+.svc {
+  interpolate-size: allow-keywords;
+}
+.svc::details-content {
+  height: 0;
+  overflow: clip;
+  transition: height 0.55s var(--ease), content-visibility 0.55s allow-discrete;
+}
+.svc[open]::details-content {
+  height: auto;
+}
+.svc-body {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 4fr) minmax(0, 5fr);
+  gap: 20px var(--gap);
+  padding-bottom: clamp(24px, 2.6vw, 40px);
+}
+.svc-list {
+  grid-column: 2;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 16px;
+}
+.svc-list li {
+  position: relative;
+  padding-left: 20px;
+}
+.svc-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+.svc-facts {
+  grid-column: 3;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  margin: 0;
+  font-size: 16px;
+}
+.svc-facts dt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.svc-facts dd {
+  margin: 4px 0 0;
 }
 .build-n {
   font-size: clamp(40px, 4.4vw, 76px);
@@ -1468,7 +1796,8 @@ main {
   font-variant-numeric: tabular-nums;
   transition: color 0.4s, opacity 0.4s;
 }
-.build-list li:hover .build-n {
+.svc summary:hover .build-n,
+.svc[open] .build-n {
   color: var(--accent);
   opacity: 1;
 }
@@ -1479,7 +1808,7 @@ main {
   line-height: 1;
   letter-spacing: -0.035em;
 }
-.build-list p {
+.build-d {
   margin: 0;
   max-width: 34em;
   font-size: clamp(16px, 1.25vw, 19px);
@@ -1537,10 +1866,13 @@ main {
   .hero-side {
     justify-self: start;
   }
-  .build-list li {
+  .svc summary,
+  .svc-body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
   }
-  .build-list p {
+  .build-d,
+  .svc-list,
+  .svc-facts {
     grid-column: 2;
   }
 }
@@ -1551,9 +1883,19 @@ main {
   .hero-cta .btn {
     flex: 1 1 auto;
   }
-  .build-list li {
+  .svc summary,
+  .svc-body {
     grid-template-columns: auto minmax(0, 1fr);
     column-gap: 16px;
+  }
+  .svc-body {
+    padding-left: 72px;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .svc-list,
+  .svc-facts,
+  .build-go {
+    grid-column: 1;
   }
   .build-n {
     font-size: 40px;
@@ -1597,13 +1939,6 @@ main {
   .tg {
     padding: 0 12px;
   }
-  .contact-in {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .contact-main,
-  .contact-actions {
-    grid-column: 1;
-  }
   .hero {
     grid-template-columns: minmax(0, 1fr);
     gap: 14px;
@@ -1640,11 +1975,6 @@ main {
   }
   .feat-card .shot {
     border-radius: 14px;
-  }
-  .contact-actions .btn {
-    width: 100%;
-    padding: 0 18px;
-    font-size: 17px;
   }
   .adm-user,
   .adm-tag {
