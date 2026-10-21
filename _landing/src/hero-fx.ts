@@ -41,28 +41,28 @@ void main() {
   // screens the lobes also gather toward the middle
   vec2 p = (gl_FragCoord.xy - .5 * r) / min(r.y, r.x / 1.1);
   float k = clamp(r.x / r.y / 1.6, .35, 1.);
-  // on a phone the name sits mid-screen with text under it: the clot rises into
-  // the empty top half, so the name overlaps its lower edge and the text stays on dark
-  float lift = (1. - k) / .65 * .3;
+  // the name sits centred in the space above the bottom line; on a phone that
+  // line is taller, so the name, and the clot with it, sit higher
+  float lift = .02 + (1. - k) / .65 * .25;
   float T = t * .05;
 
   // folded space, gently: the edge drifts without turning into a stain
   vec2 q = vec2(fbm(p * 1.6 + T), fbm(p * 1.6 - T + 3.1));
   vec2 w = p + mix(.35, .5, k) * (q - .5);
 
-  // one compact clot that wanders the whole width of the hero (a full sweep
-  // takes about a minute and a half); two lobes orbit its centre so it keeps
-  // changing shape, a third leans toward the cursor once there is one
-  vec2 C = vec2(.55 * k * sin(t * .07), -.04 + lift + .12 * sin(t * .083));
-  vec2 c1 = C + .11 * vec2(cos(t * .31), sin(t * .23));
-  vec2 c2 = C + .14 * vec2(cos(t * .19 + 2.), sin(t * .27 + 1.));
-  vec2 c3 = mix(C + vec2(0., -.08), m, .25 * mw);
-  float f = exp(-dot(w - c1, w - c1) * 19.)
-          + .7 * exp(-dot(w - c2, w - c2) * 25.)
-          + .55 * exp(-dot(w - c3, w - c3) * 28.);
+  // one large clot right behind the name, breathing in place: it drifts a
+  // little, two lobes orbit its centre so its outline keeps changing, and a
+  // third leans toward the cursor once there is one
+  vec2 C = vec2(.1 * k * sin(t * .07), lift + .04 * sin(t * .09));
+  vec2 c1 = C + .16 * vec2(cos(t * .23), sin(t * .17));
+  vec2 c2 = C + .2 * vec2(cos(t * .13 + 2.), sin(t * .19 + 1.));
+  vec2 c3 = mix(C + vec2(-.06, -.1), m, .25 * mw);
+  float f = exp(-dot(w - c1, w - c1) * 7.)
+          + .7 * exp(-dot(w - c2, w - c2) * 9.5)
+          + .55 * exp(-dot(w - c3, w - c3) * 12.);
 
   float folds = fbm(w * 3.4 - T * 2.) - .5;
-  float v = f + .35 * folds;
+  float v = f + .45 * folds;
   // no outline: a lit edge makes the mass read as a cell under a microscope
   float body = smoothstep(.12, 1.35, v);
 
@@ -71,7 +71,9 @@ void main() {
   vec3 vio = vec3(.42, .28, 1.);
   vec3 lil = vec3(.82, .74, 1.);
   vec3 col = mix(bg, deep, smoothstep(.01, .5, f) * .85);
-  col = mix(col, vio, body * .9);
+  // light and shade drift through the mass, so it reads as volume, not a flat fill
+  float shade = fbm(w * 2.2 + vec2(T * 1.5, -T));
+  col = mix(col, vio * (.55 + .8 * shade), body * .9);
   col += lil * smoothstep(.95, 1.6, v) * .22;
 
   // film grain, re-rolled 24 times a second, heavier where there is light
