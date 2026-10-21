@@ -57,7 +57,8 @@ b { font-weight: 600; }
 .back:hover { background: var(--pre); }
 .ava {
   width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center;
-  background: var(--ava); color: #fff; font-weight: 700; font-size: 16px;
+  /* the bot's avatar: a radar sweep that has just caught an order (avatar.svg) */
+  background: var(--ava) url(avatar.svg) center / cover; color: transparent; font-size: 0;
 }
 .who { flex: 1; min-width: 0; }
 .who b { display: block; font-size: 15.5px; }

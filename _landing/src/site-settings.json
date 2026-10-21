@@ -6,6 +6,7 @@
   "order": [
     "sorrymama",
     "kvit",
+    "zelevarnya",
     "servicebot",
     "crm",
     "assistant",
@@ -23,12 +24,10 @@
     "witcher",
     "ranked",
     "route",
-    "nexus",
-    "zelevarnya"
+    "nexus"
   ],
   "hidden": [
     "ranked",
-    "route",
-    "zelevarnya"
+    "route"
   ]
 }

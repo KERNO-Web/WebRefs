@@ -43,7 +43,7 @@ export const PROJECTS: Project[] = [
     title: 'Зельеварня',
     description:
       'Коктейльный бар-гримуар. Весь сайт нарисован кодом в технике гравюры: котёл, руны и щупальца, которые шевелятся покадрово, как в рисованном мультике.',
-    thumbnail: 'zelevarnya/og.jpg',
+    thumbnail: 'covers/zelevarnya.jpg',
     href: 'zelevarnya/',
     tags: ['Арт-дирекшн', 'SVG-анимация', 'Бронь'],
     year: 2026,

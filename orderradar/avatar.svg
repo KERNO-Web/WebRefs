@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Order Radar: a radar sweep on deep blue that has just caught one warm blip, the order -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="46%" r="62%">
+      <stop offset="0" stop-color="#1b4466" />
+      <stop offset="0.6" stop-color="#10273b" />
+      <stop offset="1" stop-color="#0a1621" />
+    </radialGradient>
+    <linearGradient id="sweep" x1="256" y1="60" x2="394" y2="117" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4fc0ff" stop-opacity="0" />
+      <stop offset="1" stop-color="#4fc0ff" stop-opacity="0.55" />
+    </linearGradient>
+    <radialGradient id="blip" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff3c4" />
+      <stop offset="0.35" stop-color="#ffd447" />
+      <stop offset="1" stop-color="#ffb21a" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)" />
+  <g fill="none" stroke="#3aa9e6">
+    <circle cx="256" cy="256" r="196" stroke-opacity="0.32" stroke-width="3" />
+    <circle cx="256" cy="256" r="136" stroke-opacity="0.38" stroke-width="3" />
+    <circle cx="256" cy="256" r="76" stroke-opacity="0.45" stroke-width="3" />
+    <path d="M256 52V460M52 256H460" stroke-opacity="0.16" stroke-width="2" />
+  </g>
+  <!-- the beam turns clockwise; the wedge trails behind it -->
+  <path d="M256 256 L394 117.4 A196 196 0 0 0 256 60 Z" fill="url(#sweep)" />
+  <path d="M256 256 L394 117.4" stroke="#8fd9ff" stroke-width="6" stroke-linecap="round" />
+  <!-- faint echoes the beam already passed -->
+  <circle cx="178" cy="330" r="7" fill="#4fc0ff" fill-opacity="0.45" />
+  <circle cx="318" cy="356" r="5" fill="#4fc0ff" fill-opacity="0.35" />
+  <!-- the catch -->
+  <circle cx="326" cy="160" r="46" fill="url(#blip)" />
+  <circle cx="326" cy="160" r="13" fill="#fff6d6" />
+  <circle cx="256" cy="256" r="10" fill="#8fd9ff" />
+</svg>
