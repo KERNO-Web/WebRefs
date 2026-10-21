@@ -20,7 +20,8 @@ float h(vec2 p) {
 }
 float n(vec2 p) {
   vec2 i = floor(p), f = fract(p);
-  f = f * f * (3. - 2. * f);
+  // quintic fade: the cubic one leaves straight creases that read as hard facets
+  f = f * f * f * (f * (f * 6. - 15.) + 10.);
   return mix(mix(h(i), h(i + vec2(1., 0.)), f.x), mix(h(i + vec2(0., 1.)), h(i + 1.), f.x), f.y);
 }
 float fbm(vec2 p) {
@@ -39,23 +40,26 @@ void main() {
   // screens the lobes also gather toward the middle
   vec2 p = (gl_FragCoord.xy - .5 * r) / min(r.y, r.x / 1.1);
   float k = clamp(r.x / r.y / 1.6, .35, 1.);
+  // on a phone the name sits mid-screen with text under it: the clot rises into
+  // the empty top half, so the name overlaps its lower edge and the text stays on dark
+  float lift = (1. - k) / .65 * .3;
   float T = t * .05;
 
   // the space itself is folded, so the edge of the mass never holds a shape
   vec2 q = vec2(fbm(p * 1.6 + T), fbm(p * 1.6 - T + 3.1));
-  vec2 w = p + .6 * (q - .5);
+  vec2 w = p + mix(.4, .6, k) * (q - .5);
 
   // three lobes on unsynchronised paths; the third one follows the cursor
-  vec2 c1 = vec2(-.34 * k + .12 * sin(t * .11), -.13 + .08 * cos(t * .13));
-  vec2 c2 = vec2(-.08 * k + .16 * cos(t * .07), .03 + .07 * sin(t * .09));
-  vec2 c3 = mix(vec2(-.24 * k, -.3), m, .3);
+  vec2 c1 = vec2(-.34 * k + .12 * sin(t * .11), -.13 + lift + .08 * cos(t * .13));
+  vec2 c2 = vec2(-.08 * k + .16 * cos(t * .07), .03 + lift + .07 * sin(t * .09));
+  vec2 c3 = mix(vec2(-.24 * k, -.3 + lift), m, .3);
   float f = exp(-dot(w - c1, w - c1) * 11.)
           + .7 * exp(-dot(w - c2, w - c2) * 15.)
           + .5 * exp(-dot(w - c3, w - c3) * 17.);
 
   float folds = fbm(w * 3.4 - T * 2.) - .5;
   float v = f + .45 * folds;
-  float body = smoothstep(.35, 1.2, v);
+  float body = smoothstep(.25, 1.3, v);
   float rim = smoothstep(.6, .78, v) - smoothstep(.78, 1.1, v);
 
   vec3 bg = vec3(.071, .071, .078);
@@ -101,11 +105,15 @@ export function startHeroFx() {
   const uT = gl.getUniformLocation(prog, 't');
   const uM = gl.getUniformLocation(prog, 'm');
 
-  // one canvas pixel per CSS pixel: the grain stays coarse like film, and the
-  // shader costs a quarter of what it would at retina resolution
+  // about 1.6 million pixels at most: a desktop gets one canvas pixel per CSS
+  // pixel (coarse film grain, a light shader), a phone gets its retina density,
+  // otherwise its 3× screen would blow every grain up into a visible square
   const size = () => {
-    canvas.width = Math.max(1, Math.round(box.clientWidth));
-    canvas.height = Math.max(1, Math.round(box.clientHeight));
+    const w = box.clientWidth;
+    const h = box.clientHeight;
+    const scale = Math.max(1, Math.min(devicePixelRatio, Math.sqrt(1.6e6 / Math.max(1, w * h))));
+    canvas.width = Math.max(1, Math.round(w * scale));
+    canvas.height = Math.max(1, Math.round(h * scale));
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.uniform2f(uR, canvas.width, canvas.height);
   };
@@ -115,7 +123,7 @@ export function startHeroFx() {
   // cursor in the shader's space: centred, y up, shorter side = 1
   // until the cursor moves it rests where the shader's third lobe rests
   const k = Math.min(Math.max(box.clientWidth / box.clientHeight / 1.6, 0.35), 1);
-  const aim = { x: -0.24 * k, y: -0.3 };
+  const aim = { x: -0.24 * k, y: -0.3 + ((1 - k) / 0.65) * 0.3 };
   const cur = { ...aim };
   addEventListener(
     'pointermove',

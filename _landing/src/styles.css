@@ -253,7 +253,6 @@ main {
   display: block;
   width: 100%;
   height: 100%;
-  image-rendering: pixelated;
 }
 .has-fx .hero-fx {
   opacity: 1;
@@ -776,6 +775,177 @@ main {
 }
 .foot .o {
   color: var(--accent-btn);
+}
+
+/* ---------- case page (#/case/<slug>) ---------- */
+
+.case-view {
+  padding-top: calc(var(--top) + clamp(24px, 3.4vw, 48px));
+  padding-bottom: clamp(72px, 9vw, 130px);
+}
+.case svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.case-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--grey);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+.case-back svg {
+  transform: rotate(-135deg);
+}
+.case-back:hover {
+  color: var(--text);
+}
+.case-head {
+  display: grid;
+  justify-items: start;
+  margin-top: clamp(40px, 6vw, 88px);
+}
+.case-title {
+  margin: 0;
+  font-size: clamp(48px, 8vw, 132px);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+}
+.case-lead {
+  margin: clamp(16px, 2vw, 28px) 0 0;
+  max-width: 26em;
+  font-size: clamp(19px, 1.8vw, 28px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--text-2);
+}
+.case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 48px;
+  margin: 28px 0 0;
+  font-size: 15px;
+}
+.case-meta dt {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.case-meta dd {
+  margin: 4px 0 0;
+}
+.case-open {
+  gap: 12px;
+  margin-top: 32px;
+}
+.case-shot {
+  margin: clamp(48px, 6vw, 88px) 0 0;
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--panel);
+}
+.case-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
+}
+.case-body {
+  margin-top: clamp(40px, 5vw, 72px);
+}
+.case-row {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  gap: 12px var(--gap);
+  padding-block: clamp(24px, 2.6vw, 40px);
+  border-bottom: 1px solid var(--line);
+}
+.case-row h2 {
+  margin: 0;
+  font-size: clamp(24px, 2.4vw, 38px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+.case-row p,
+.case-row ul {
+  margin: 0;
+  max-width: 38em;
+  font-size: clamp(16px, 1.25vw, 19px);
+  color: var(--text-2);
+}
+.case-row ul {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.case-row li {
+  position: relative;
+  padding-left: 22px;
+}
+.case-row li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+.case-next {
+  display: grid;
+  gap: 10px;
+  margin-top: clamp(64px, 8vw, 120px);
+  text-decoration: none;
+}
+.case-next-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--grey);
+}
+.case-next-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2em;
+  font-size: clamp(40px, 6vw, 96px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  transition: color 0.3s;
+}
+.case-next-title svg {
+  width: 0.6em;
+  height: 0.6em;
+  transition: transform 0.5s var(--ease);
+}
+.case-next:hover .case-next-title {
+  color: var(--accent-h);
+}
+.case-next:hover .case-next-title svg {
+  transform: translate(0.08em, -0.08em);
+}
+@media (max-width: 760px) {
+  .case-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .case-open {
+    width: 100%;
+  }
+  .case-shot {
+    border-radius: 12px;
+  }
 }
 
 /* ---------- admin ---------- */
@@ -1451,26 +1621,9 @@ main {
   .role {
     font-size: 22px;
   }
+  /* the lead already names every direction; on a phone the list only adds noise */
   .kinds {
-    justify-content: flex-start;
-    margin-top: 6px;
-    font-size: 15px;
-  }
-  .kinds {
-    display: grid;
-    grid-template-columns: auto auto;
-    justify-content: start;
-    gap: 4px 22px;
-  }
-  .kinds li::before,
-  .kinds li + li::before {
-    content: '';
-    display: inline-block;
-    width: 5px;
-    height: 5px;
-    margin: 0 9px 0 0;
-    vertical-align: 0.2em;
-    background: var(--accent);
+    display: none;
   }
   .grid {
     grid-template-columns: minmax(0, 1fr);

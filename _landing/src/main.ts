@@ -2,17 +2,22 @@ import './styles.css';
 import './ambient.css';
 import { startAmbient } from './ambient';
 import { startHeroFx } from './hero-fx';
-import { CATS, type Cat, type Project } from './projects';
+import { CATS, PROJECTS, type Cat, type Project } from './projects';
 import { visibleProjects } from './settings';
+import { CASES } from './cases';
 
 const ADMIN_ROUTE = '#/kerno-admin';
+const CASE_ROUTE = '#/case/';
 const ARROW =
   '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12 12 4M5.5 4H12v6.5"/></svg>';
 
 const esc = (s: string) =>
   s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
 const pad = (n: number) => String(n).padStart(2, '0');
-const linkAttrs = (p: Project) => `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
+// a commercial work with a write-up leads to its case page; the rest open the work itself
+const linkAttrs = (p: Project) =>
+  CASES[p.slug] ? `href="${CASE_ROUTE}${p.slug}"` : `href="${esc(p.href)}"${p.external ? ' target="_blank" rel="noopener"' : ''}`;
+const goLabel = (p: Project) => (CASES[p.slug] ? 'Смотреть кейс' : 'Открыть проект');
 // the image keeps its own wrapper; .fx holds the preview's living element and
 // .ev-clip the rare reflection, clipped to the object it crosses
 const shot = (p: Project, alt: string, extra = '') =>
@@ -102,7 +107,7 @@ function render() {
           ${kind(p)}
           <h2 class="card-title">${esc(p.title)}</h2>
           <p class="desc">${esc(glue(p.description))}</p>
-          <span class="go">Открыть проект ${ARROW}</span>
+          <span class="go">${goLabel(p)} ${ARROW}</span>
         </div>
       </a>`,
         )
@@ -118,7 +123,7 @@ function render() {
         ${kind(p)}
         <h2 class="card-title">${esc(p.title)}</h2>
         <p class="desc">${esc(glue(p.description))}</p>
-        <span class="go">Открыть проект ${ARROW}</span>
+        <span class="go">${goLabel(p)} ${ARROW}</span>
       </div>
     </a>`;
   }
@@ -137,7 +142,7 @@ function renderGrid(rest: Project[]) {
           ${kind(r)}
           <h3 class="card-title">${esc(r.title)}</h3>
           <p class="desc">${esc(glue(r.description))}</p>
-          <span class="go">Открыть проект ${ARROW}</span>
+          <span class="go">${goLabel(r)} ${ARROW}</span>
         </div>
       </a>`,
     )
@@ -168,17 +173,84 @@ function observeReveals() {
   els.forEach((e) => io!.observe(e));
 }
 
-/* ---------- hidden admin route ---------- */
+/* ---------- case pages ---------- */
+
+const caseView = document.getElementById('case')!;
+// where the visitor was on the homepage, so «back» lands on the same card
+let homeScroll = 0;
+
+function renderCase(slug: string) {
+  const all = visibleProjects();
+  const list = [...all.featured, ...all.rest].filter((p) => CASES[p.slug]);
+  const i = list.findIndex((p) => p.slug === slug);
+  const p = i >= 0 ? list[i] : PROJECTS.find((x) => x.slug === slug);
+  const c = CASES[slug];
+  if (!p || !c) return false;
+  const next = list.length > 1 ? list[(i + 1) % list.length] : null;
+  const year = p.year ? `<div><dt>Год</dt><dd>${p.year}</dd></div>` : '';
+  caseView.innerHTML = `
+    <article class="case wrap">
+      <a class="case-back" href="#works">${ARROW} Все работы</a>
+      <header class="case-head">
+        ${kind(p)}
+        <h1 class="case-title">${esc(p.title)}</h1>
+        <p class="case-lead">${esc(glue(c.lead))}</p>
+        <dl class="case-meta">
+          ${year}
+          <div><dt>Стек</dt><dd>${c.stack.map(esc).join(', ')}</dd></div>
+        </dl>
+        <a class="btn btn-accent btn-lg case-open" href="${esc(p.href)}"${p.external || /^https?:/.test(p.href) ? ' target="_blank" rel="noopener"' : ''}>${esc(c.open ?? 'Открыть проект')} ${ARROW}</a>
+      </header>
+      <figure class="case-shot">
+        <img src="${esc(p.thumbnail)}" alt="${esc(p.title)} — первый экран" width="1200" height="630" />
+      </figure>
+      <div class="case-body">
+        <section class="case-row">
+          <h2>Задача</h2>
+          <p>${esc(glue(c.task))}</p>
+        </section>
+        <section class="case-row">
+          <h2>Что сделал</h2>
+          <ul>${c.did.map((d) => `<li>${esc(glue(d))}</li>`).join('')}</ul>
+        </section>
+        <section class="case-row">
+          <h2>Что вышло</h2>
+          <p>${esc(glue(c.result))}</p>
+        </section>
+      </div>
+      ${
+        next
+          ? `<a class="case-next" href="${CASE_ROUTE}${next.slug}">
+        <span class="case-next-label">Следующий кейс</span>
+        <span class="case-next-title">${esc(next.title)} ${ARROW}</span>
+      </a>`
+          : ''
+      }
+    </article>`;
+  return true;
+}
+
+/* ---------- views: home, case page, hidden admin ---------- */
 
 const home = document.getElementById('home')!;
 const admin = document.getElementById('admin')!;
 let adminMounted = false;
+let view: 'home' | 'case' | 'admin' = 'home';
+// the page scrolls smoothly by default; switching views must jump, not glide
+const jump = (top: number) => window.scrollTo({ top, behavior: 'instant' });
 
 async function route() {
-  const isAdmin = location.hash === ADMIN_ROUTE;
+  const hash = location.hash;
+  const isAdmin = hash === ADMIN_ROUTE;
+  const slug = hash.startsWith(CASE_ROUTE) ? hash.slice(CASE_ROUTE.length) : '';
+  const isCase = Boolean(slug) && renderCase(slug);
+  if (view === 'home' && (isAdmin || isCase)) homeScroll = scrollY;
+  const prev = view;
+  view = isAdmin ? 'admin' : isCase ? 'case' : 'home';
   document.documentElement.classList.toggle('admin-mode', isAdmin);
-  home.hidden = isAdmin;
+  home.hidden = view !== 'home';
   admin.hidden = !isAdmin;
+  caseView.hidden = !isCase;
   if (isAdmin) {
     document.title = 'KERNØ — закреп на главной';
     if (!adminMounted) {
@@ -186,9 +258,19 @@ async function route() {
       const { mountAdmin } = await import('./admin');
       mountAdmin(admin);
     }
-    window.scrollTo(0, 0);
+    jump(0);
+  } else if (isCase) {
+    document.title = `${PROJECTS.find((p) => p.slug === slug)!.title} — кейс KERNØ`;
+    jump(0);
   } else {
     document.title = 'KERNØ — дизайн и разработка';
+    // back from a case: return to the card the visitor left from
+    if (prev !== 'home') {
+      const target = hash.length > 1 && !hash.startsWith('#/') ? document.querySelector(hash) : null;
+      if (prev === 'case' && hash === '#works' && homeScroll) jump(homeScroll);
+      else if (target) target.scrollIntoView({ behavior: 'instant' });
+      else jump(homeScroll);
+    }
   }
 }
 
