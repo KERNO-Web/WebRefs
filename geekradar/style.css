@@ -1,0 +1,109 @@
+/* Geek Radar demo: a Telegram chat in the bot's own colours — deep indigo,
+   neon pink for the radar, acid lime for what it catches. */
+:root {
+  --bg: #120a24;
+  --bg-2: #1a1033;
+  --bubble: #22163f;
+  --bubble-out: #3b1f63;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #f1ecff;
+  --sub: #a99bc9;
+  --pink: #ff4fa3;
+  --pink-soft: #ff8cc4;
+  --lime: #c6ff4f;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100svh;
+  font: 400 15.5px/1.45 Onest, system-ui, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(60% 40% at 85% 0%, rgba(255, 79, 163, 0.14), transparent 70%),
+    radial-gradient(50% 35% at 0% 100%, rgba(198, 255, 79, 0.07), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+a { color: inherit; }
+.ava {
+  width: 40px; height: 40px; flex: none; border-radius: 50%;
+  background: url(avatar.svg) center / cover;
+  box-shadow: 0 0 0 1px rgba(255, 79, 163, 0.35), 0 4px 14px rgba(255, 79, 163, 0.18);
+}
+
+/* top bar */
+.bar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; align-items: center; gap: 12px;
+  height: 60px; padding: 0 14px;
+  background: rgba(18, 10, 36, 0.86);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+.back { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--sub); font-size: 20px; text-decoration: none; }
+.back:hover { background: var(--bubble); }
+.who { flex: 1; min-width: 0; }
+.who b { display: block; font-size: 15.5px; }
+.who small { color: var(--sub); font-size: 13.5px; }
+.who small.live { color: var(--lime); }
+.kerno { font: 800 13px Onest; letter-spacing: 0.04em; text-decoration: none; color: var(--sub); }
+
+/* chat */
+.chat { max-width: 760px; margin: 0 auto; padding: 18px 14px 28px; display: grid; gap: 14px; }
+.day { justify-self: center; margin: 6px 0; padding: 3px 12px; border-radius: 999px; background: var(--bubble); color: var(--sub); font-size: 13px; }
+.m { display: flex; align-items: flex-end; gap: 10px; }
+.m.out { justify-content: flex-end; }
+.m .ava { width: 34px; height: 34px; }
+.col { display: grid; gap: 6px; min-width: 0; max-width: 560px; flex: 1; }
+.b { position: relative; padding: 10px 14px 22px; border-radius: 18px 18px 18px 6px; background: var(--bubble); max-width: 560px; }
+.out .b { border-radius: 18px 18px 6px 18px; background: var(--bubble-out); padding-right: 74px; padding-bottom: 10px; }
+.tm { position: absolute; right: 12px; bottom: 6px; font-size: 11.5px; color: var(--sub); }
+.tm i { font-style: normal; color: var(--lime); }
+
+.intro h1 { margin: 2px 0 8px; font-size: 21px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; }
+.intro p { margin: 0; color: #d9d0f0; }
+.intro.tail p b { color: var(--text); }
+.sources { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.sources li { padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(255, 79, 163, 0.35); color: var(--pink-soft); font: 500 12px var(--mono); }
+
+/* the story card */
+.card { padding: 14px 16px 24px; border: 1px solid var(--line); }
+.card.hot { border-color: rgba(255, 79, 163, 0.32); box-shadow: 0 0 0 1px rgba(255, 79, 163, 0.08), 0 16px 40px -20px rgba(255, 79, 163, 0.45); }
+.score { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.pts { padding: 3px 10px; border-radius: 999px; background: rgba(255, 79, 163, 0.16); color: var(--pink-soft); font: 700 13px var(--mono); }
+.kind { padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); color: var(--sub); font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: 0.04em; }
+.kind.unique { background: rgba(198, 255, 79, 0.14); color: var(--lime); }
+.card h2 { margin: 0 0 8px; font-size: 18px; font-weight: 800; line-height: 1.22; letter-spacing: -0.015em; }
+.sum { margin: 0 0 12px; color: #d9d0f0; }
+.why { margin: 0 0 12px; padding: 9px 12px; border-left: 3px solid var(--lime); border-radius: 4px 10px 10px 4px; background: rgba(198, 255, 79, 0.07); color: var(--text); }
+.why b { display: block; margin-bottom: 2px; color: var(--lime); font: 700 11.5px var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.meta dt { color: var(--sub); font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
+.meta dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 500; }
+
+/* the inline keyboard: six feedback buttons, two per row */
+.kb { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.kb button {
+  height: 38px; padding: 0 10px; border: 0; border-radius: 10px;
+  background: rgba(34, 22, 63, 0.92); color: var(--text); font: 500 13.5px Onest; cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+.kb button:hover { background: #2e1d55; }
+.kb button.on { background: var(--lime); color: #17200a; font-weight: 700; }
+
+.note { max-width: 760px; margin: 0 auto; padding: 0 14px 28px; color: var(--sub); font-size: 12.5px; text-align: center; }
+
+/* messages arrive as the chat scrolls (app.js) */
+.js .m.wait { opacity: 0; transform: translateY(14px); }
+.js .m { transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+@media (max-width: 560px) {
+  .m.in > .ava { display: none; }
+  .meta { grid-template-columns: 1fr 1fr; }
+  .meta div:last-child { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .js .m.wait { opacity: 1; transform: none; }
+}

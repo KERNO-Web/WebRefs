@@ -257,6 +257,20 @@ export const PROJECTS: Project[] = [
     accent: '#3aa9e6',
   },
   {
+    id: 22,
+    slug: 'geekradar',
+    cats: ['bots', 'auto'],
+    label: 'Рабочий Telegram-бот',
+    title: 'Geek Radar',
+    description:
+      'Радар гик-новостей для редактора игрового канала: опрашивает десятки источников, склеивает дубли в одну историю, отсеивает нишевое и присылает только то, что стоит поста.',
+    thumbnail: 'covers/geekradar.jpg',
+    href: 'geekradar/',
+    tags: ['Telegram-бот', 'Парсинг', 'Python'],
+    year: 2026,
+    accent: '#ff4fa3',
+  },
+  {
     id: 17,
     slug: 'miniapp',
     cats: ['bots'],

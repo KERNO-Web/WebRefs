@@ -38,7 +38,7 @@ jobs:
           # Esports Pro: Next.js + Postgres app, committed as a prebuilt static snapshot.
           cp -R esports "_site/esports"
           # Plain HTML/CSS/JS showcases, no build step.
-          for p in orderradar assistant crm servicebot; do cp -R "$p" "_site/$p"; done
+          for p in orderradar geekradar assistant crm servicebot; do cp -R "$p" "_site/$p"; done
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
