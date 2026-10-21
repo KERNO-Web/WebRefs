@@ -1,7 +1,6 @@
 // The pointer as the brand mark: a small Ø that sits exactly under the mouse.
 // It never stretches or turns. Over a work it opens into a small light disc
 // that says «Открыть»; over the light contact block it turns dark.
-// Buttons marked data-magnetic lean toward the pointer.
 // Mouse and trackpad only; touch screens and reduced motion keep the system cursor.
 
 export function startCursor() {
@@ -26,12 +25,10 @@ export function startCursor() {
   const state = (t: Element | null) => {
     const card = t?.closest<HTMLAnchorElement>('a.card');
     const ink = Boolean(t?.closest('.contact, [data-cursor-ink]'));
-    const magnet = Boolean(t?.closest('[data-magnetic]'));
-    const link = !card && !magnet && Boolean(t?.closest('a, button, summary, label, [role="button"]'));
+    const link = !card && Boolean(t?.closest('a, button, summary, label, [role="button"]'));
     const text = Boolean(t?.closest('input, textarea, select, [contenteditable="true"]'));
     el.classList.toggle('on-card', Boolean(card));
     el.classList.toggle('on-link', link);
-    el.classList.toggle('on-magnet', magnet);
     el.classList.toggle('ink', ink);
     el.classList.toggle('off', text);
   };
@@ -57,34 +54,4 @@ export function startCursor() {
   document.addEventListener('pointerleave', () => el.classList.add('gone'));
   addEventListener('pointerdown', () => el.classList.add('down'));
   addEventListener('pointerup', () => el.classList.remove('down'));
-
-  startMagnets();
-}
-
-/** Buttons with data-magnetic drift toward the pointer and spring back when it leaves. */
-function startMagnets() {
-  const PULL = 0.32;
-  document.addEventListener(
-    'pointermove',
-    (e) => {
-      const b = (e.target as Element).closest<HTMLElement>('[data-magnetic]');
-      document.querySelectorAll<HTMLElement>('[data-magnetic].pulled').forEach((m) => {
-        if (m !== b) release(m);
-      });
-      if (!b) return;
-      const r = b.getBoundingClientRect();
-      const x = (e.clientX - (r.left + r.width / 2)) * PULL;
-      const y = (e.clientY - (r.top + r.height / 2)) * PULL;
-      b.classList.add('pulled');
-      b.style.setProperty('--mx', `${x.toFixed(1)}px`);
-      b.style.setProperty('--my', `${y.toFixed(1)}px`);
-    },
-    { passive: true },
-  );
-  const release = (m: HTMLElement) => {
-    m.classList.remove('pulled');
-    m.style.setProperty('--mx', '0px');
-    m.style.setProperty('--my', '0px');
-  };
-  document.addEventListener('pointerleave', () => document.querySelectorAll<HTMLElement>('[data-magnetic]').forEach(release));
 }

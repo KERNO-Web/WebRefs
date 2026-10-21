@@ -880,7 +880,7 @@ main {
   color: var(--accent-btn);
 }
 
-/* ---------- pointer: the Ø cursor and magnetic buttons (cursor.ts) ---------- */
+/* ---------- pointer: the Ø cursor (cursor.ts) ---------- */
 
 html.has-cursor,
 html.has-cursor * {
@@ -935,19 +935,22 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   transition: opacity 0.2s, background-color 0.3s;
 }
 .cur-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #fff;
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.2s;
 }
-/* over a work: a small light disc that says where the click leads */
+/* over a work: a small dark glass disc that says where the click leads; dark
+   with a light hairline so it reads on bright previews and dark ones alike */
 .cur.on-card .cur-ring {
-  --s: 64px;
-  background: var(--text);
-  border-color: var(--text);
+  --s: 76px;
+  background: rgba(18, 18, 20, 0.78);
+  border-color: rgba(242, 239, 233, 0.22);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
 }
 .cur.on-card .cur-slash {
   opacity: 0;
@@ -964,10 +967,6 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
 .cur.on-link .cur-slash {
   background: var(--accent);
 }
-/* a magnetic button moves itself; the mark steps aside */
-.cur.on-magnet .cur-ring {
-  opacity: 0;
-}
 /* the light contact block */
 .cur.ink .cur-slash {
   background: var(--ink);
@@ -978,24 +977,6 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
 .cur.down .cur-ring {
   scale: 0.8;
 }
-[data-magnetic] {
-  translate: var(--mx, 0px) var(--my, 0px);
-  transition:
-    background-color 0.3s var(--ease),
-    color 0.3s,
-    border-color 0.3s,
-    transform 0.4s var(--ease),
-    translate 0.8s var(--ease);
-}
-[data-magnetic].pulled {
-  transition:
-    background-color 0.3s var(--ease),
-    color 0.3s,
-    border-color 0.3s,
-    transform 0.4s var(--ease),
-    translate 0.2s ease-out;
-}
-
 /* ---------- case page (#/case/<slug>) ---------- */
 
 .case-view {
@@ -1631,6 +1612,12 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 24px;
+}
+/* both hero buttons share one size; only the fill tells them apart */
+.hero-cta .btn-hero {
+  height: 52px;
+  padding: 0 24px;
+  font-size: 15px;
 }
 
 /* ---------- honest project type on cards ---------- */
