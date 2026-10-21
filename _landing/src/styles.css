@@ -289,6 +289,12 @@ main {
 .word .ch {
   display: inline-block;
 }
+/* in the hero the violet lives in the clot behind the name; a violet Ø would
+   sink into it, so here the letter burns white with a violet halo */
+.word .o {
+  color: var(--text);
+  text-shadow: 0 0 0.14em rgba(124, 108, 255, 0.55);
+}
 .js .word .ch {
   transform: translate3d(0, 105%, 0);
   transition: transform 1.1s var(--ease);
