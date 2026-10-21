@@ -352,6 +352,48 @@
   52% { opacity: 0.95; }
 }
 
+/* SORRY MAMA: the blossom tree glows pink and sheds a petal now and then */
+[data-idle='bloom'] .fx {
+  opacity: 1;
+  background: radial-gradient(22% 34% at 56% 44%, rgba(255, 170, 200, 0.45), rgba(255, 170, 200, 0.12) 55%, transparent 80%);
+  mix-blend-mode: screen;
+}
+[data-idle='bloom'] .fx::before,
+[data-idle='bloom'] .fx::after {
+  left: 52%;
+  top: 22%;
+  width: 9px;
+  height: 6px;
+  border-radius: 60% 40% 60% 40%;
+  background: rgba(255, 214, 228, 0.95);
+  opacity: 0;
+}
+[data-idle='bloom'] .fx::after {
+  left: 61%;
+  top: 28%;
+  width: 7px;
+  height: 5px;
+}
+.live[data-idle='bloom'] .fx {
+  animation: bloom 6.4s ease-in-out infinite;
+}
+.live[data-idle='bloom'] .fx::before {
+  animation: petal 5.2s ease-in 0.6s infinite;
+}
+.live[data-idle='bloom'] .fx::after {
+  animation: petal 6.8s ease-in 3.1s infinite;
+}
+@keyframes bloom {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+@keyframes petal {
+  0% { opacity: 0; translate: 0 0; rotate: 0deg; }
+  12% { opacity: 1; }
+  80% { opacity: 0.9; }
+  100% { opacity: 0; translate: -46px 150px; rotate: 220deg; }
+}
+
 /* the reflections travel inside a box the width of 2.2 frames with the band in
    its middle, so the band sits at 50% + 2.2 × translate: these keep it on target */
 @keyframes ev-card {
@@ -367,11 +409,11 @@
 
 /* ---------- yielding ---------- */
 
-/* scrolling and hover take priority over idle */
+/* scrolling takes priority over idle; hovering a living cover keeps it going
+   (a card with a video hides its idle light while the clip plays) */
 .scrolling .shot .fx,
 .scrolling .shot .fx::before,
-.card:hover .shot .fx,
-.card:hover .shot .fx::before {
+.scrolling .shot .fx::after {
   animation-play-state: paused;
 }
 /* off-screen previews stop entirely (their idle rules all require .live) */
@@ -389,13 +431,15 @@
 /* reduced motion: the still picture only */
 .still .ambient *,
 .still .shot :is(.fx, .ev-clip i),
-.still .shot .fx::before {
+.still .shot .fx::before,
+.still .shot .fx::after {
   animation: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
   .ambient *,
   .shot :is(.fx, .ev-clip i),
-  .shot .fx::before {
+  .shot .fx::before,
+  .shot .fx::after {
     animation: none !important;
   }
 }

@@ -52,7 +52,8 @@ export type Idle =
   | 'scan' // a scan line runs down the QR code
   | 'mailbox' // blue light glows under the mailbox
   | 'gloss' // a glint slides along the rim of the drop
-  | 'eyes'; // the hero's red eyes smoulder
+  | 'eyes' // the hero's red eyes smoulder
+  | 'bloom'; // the blossom tree glows pink and sheds a few petals
 
 export const PROJECTS: Project[] = [
   {
@@ -247,6 +248,7 @@ export const PROJECTS: Project[] = [
     id: 14,
     slug: 'sorrymama',
     cats: ['sites'],
+    idle: 'bloom',
     real: true,
     title: 'SORRY MAMA',
     description:

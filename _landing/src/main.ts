@@ -27,8 +27,9 @@ const goLabel = (p: Project) => (CASES[p.slug] ? 'Смотреть кейс' : '
 // .ev-clip the rare reflection, clipped to the object it crosses
 const clip = (p: Project) =>
   CLIPS.has(p.slug) ? `<video class="clip" data-src="clips/${p.slug}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video>` : '';
+// a work without a clip has a living cover: it moves on hover (styles.css, previews.ts)
 const shot = (p: Project, alt: string, extra = '') =>
-  `<div class="shot"${p.idle ? ` data-idle="${p.idle}"` : ''}><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div>${p.idle ? '<span class="fx" aria-hidden="true"></span>' : ''}${p.idle === 'sweep' || p.idle === 'lamps' ? '<span class="ev-clip" aria-hidden="true"><i></i></span>' : ''}</div>`;
+  `<div class="shot${CLIPS.has(p.slug) ? '' : ' cover'}"${p.idle ? ` data-idle="${p.idle}"` : ''}><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div>${p.idle ? '<span class="fx" aria-hidden="true"></span>' : ''}${p.idle === 'sweep' || p.idle === 'lamps' ? '<span class="ev-clip" aria-hidden="true"><i></i></span>' : ''}</div>`;
 const kind = (p: Project) => `<p class="kind">${esc(p.label ?? (p.real ? 'Коммерческий проект' : 'Авторский концепт'))}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');

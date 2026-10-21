@@ -404,6 +404,18 @@ main {
 .card:hover .shot img {
   transform: scale(1.02);
 }
+/* a living cover: on hover the camera pushes in slowly and leans after the
+   pointer (previews.ts sets --px/--py), while its idle detail keeps playing */
+.shot.cover img {
+  transition:
+    transform 1s var(--ease),
+    scale 6s cubic-bezier(0.2, 0.6, 0.2, 1),
+    translate 0.9s var(--ease);
+}
+.card:hover .shot.cover img {
+  scale: 1.08;
+  translate: var(--px, 0px) var(--py, 0px);
+}
 /* the work's video loop sits over the still and fades in once it is playing;
    the still's own idle light steps aside meanwhile */
 .shot .clip {

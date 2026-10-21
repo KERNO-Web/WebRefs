@@ -1,8 +1,9 @@
 // Video previews on the work cards: a short silent loop of the work in use
 // (recorded by _ai/portfolio/.work/clips.mjs). Nothing loads until it is needed:
 // with a mouse a clip plays while its card is hovered and rewinds on leave; on
-// a touch screen the card most in view plays, one at a time. Reduced motion and
-// data saver keep the still preview.
+// a touch screen the card most in view plays, one at a time. Cards without a
+// clip are living covers that lean after the pointer. Reduced motion and data
+// saver keep the still preview.
 
 const quiet =
   matchMedia('(prefers-reduced-motion: reduce)').matches ||
@@ -29,6 +30,23 @@ export function bindPreviews() {
   if (quiet) return;
   const clips = [...document.querySelectorAll<HTMLVideoElement>('video.clip')];
   if (mouse) {
+    // living covers lean a little after the pointer (styles.css reads --px/--py)
+    document.querySelectorAll<HTMLElement>('.shot.cover').forEach((shot) => {
+      const card = shot.closest('.card');
+      if (!card || card.hasAttribute('data-lean-bound')) return;
+      card.setAttribute('data-lean-bound', '');
+      card.addEventListener('mousemove', (e) => {
+        const r = shot.getBoundingClientRect();
+        const x = ((e as MouseEvent).clientX - r.left) / r.width - 0.5;
+        const y = ((e as MouseEvent).clientY - r.top) / r.height - 0.5;
+        shot.style.setProperty('--px', `${(-x * 20).toFixed(1)}px`);
+        shot.style.setProperty('--py', `${(-y * 14).toFixed(1)}px`);
+      });
+      card.addEventListener('mouseleave', () => {
+        shot.style.setProperty('--px', '0px');
+        shot.style.setProperty('--py', '0px');
+      });
+    });
     clips.forEach((v) => {
       const card = v.closest('.card');
       if (!card || card.hasAttribute('data-clip-bound')) return;
