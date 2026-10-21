@@ -11,6 +11,7 @@ precision highp float;
 uniform vec2 r;
 uniform float t;
 uniform vec2 m;
+uniform float mw;
 
 // Dave Hoskins' hash: no sin(), no stripes at large coordinates
 float h(vec2 p) {
@@ -45,30 +46,33 @@ void main() {
   float lift = (1. - k) / .65 * .3;
   float T = t * .05;
 
-  // the space itself is folded, so the edge of the mass never holds a shape
+  // folded space, gently: the edge drifts without turning into a stain
   vec2 q = vec2(fbm(p * 1.6 + T), fbm(p * 1.6 - T + 3.1));
-  vec2 w = p + mix(.4, .6, k) * (q - .5);
+  vec2 w = p + mix(.35, .5, k) * (q - .5);
 
-  // three lobes on unsynchronised paths; the third one follows the cursor
-  vec2 c1 = vec2(-.34 * k + .12 * sin(t * .11), -.13 + lift + .08 * cos(t * .13));
-  vec2 c2 = vec2(-.08 * k + .16 * cos(t * .07), .03 + lift + .07 * sin(t * .09));
-  vec2 c3 = mix(vec2(-.24 * k, -.3 + lift), m, .3);
-  float f = exp(-dot(w - c1, w - c1) * 11.)
-          + .7 * exp(-dot(w - c2, w - c2) * 15.)
-          + .5 * exp(-dot(w - c3, w - c3) * 17.);
+  // one compact clot that wanders the whole width of the hero (a full sweep
+  // takes about a minute and a half); two lobes orbit its centre so it keeps
+  // changing shape, a third leans toward the cursor once there is one
+  vec2 C = vec2(.55 * k * sin(t * .07), -.04 + lift + .12 * sin(t * .083));
+  vec2 c1 = C + .11 * vec2(cos(t * .31), sin(t * .23));
+  vec2 c2 = C + .14 * vec2(cos(t * .19 + 2.), sin(t * .27 + 1.));
+  vec2 c3 = mix(C + vec2(0., -.08), m, .25 * mw);
+  float f = exp(-dot(w - c1, w - c1) * 19.)
+          + .7 * exp(-dot(w - c2, w - c2) * 25.)
+          + .55 * exp(-dot(w - c3, w - c3) * 28.);
 
   float folds = fbm(w * 3.4 - T * 2.) - .5;
-  float v = f + .45 * folds;
-  float body = smoothstep(.25, 1.3, v);
-  float rim = smoothstep(.6, .78, v) - smoothstep(.78, 1.1, v);
+  float v = f + .35 * folds;
+  // no outline: a lit edge makes the mass read as a cell under a microscope
+  float body = smoothstep(.12, 1.35, v);
 
   vec3 bg = vec3(.071, .071, .078);
   vec3 deep = vec3(.12, .03, .36);
   vec3 vio = vec3(.42, .28, 1.);
   vec3 lil = vec3(.82, .74, 1.);
-  vec3 col = mix(bg, deep, smoothstep(.02, .45, f) * .9);
+  vec3 col = mix(bg, deep, smoothstep(.01, .5, f) * .85);
   col = mix(col, vio, body * .9);
-  col += lil * (rim * .2 + smoothstep(1.1, 1.7, v) * .16);
+  col += lil * smoothstep(.95, 1.6, v) * .22;
 
   // film grain, re-rolled 24 times a second, heavier where there is light
   float g = h(gl_FragCoord.xy + mod(floor(t * 24.), 97.) * vec2(17.31, 41.7)) - .5;
@@ -104,6 +108,7 @@ export function startHeroFx() {
   const uR = gl.getUniformLocation(prog, 'r');
   const uT = gl.getUniformLocation(prog, 't');
   const uM = gl.getUniformLocation(prog, 'm');
+  const uMw = gl.getUniformLocation(prog, 'mw');
 
   // about 1.6 million pixels at most: a desktop gets one canvas pixel per CSS
   // pixel (coarse film grain, a light shader), a phone gets its retina density,
@@ -120,18 +125,25 @@ export function startHeroFx() {
   size();
   new ResizeObserver(size).observe(box);
 
-  // cursor in the shader's space: centred, y up, shorter side = 1
-  // until the cursor moves it rests where the shader's third lobe rests
-  const k = Math.min(Math.max(box.clientWidth / box.clientHeight / 1.6, 0.35), 1);
-  const aim = { x: -0.24 * k, y: -0.3 + ((1 - k) / 0.65) * 0.3 };
+  // cursor in the shader's space: centred, y up, shorter side = 1; its pull
+  // fades in only after a real mouse has moved, so touch screens never feel it
+  const aim = { x: 0, y: 0 };
   const cur = { ...aim };
+  let pull = 0;
+  let pullTo = 0;
   addEventListener(
     'pointermove',
     (e) => {
+      if (e.pointerType !== 'mouse') return;
       const b = box.getBoundingClientRect();
       const unit = Math.min(b.height, b.width / 1.1);
       aim.x = (e.clientX - b.left - b.width / 2) / unit;
       aim.y = (b.top + b.height / 2 - e.clientY) / unit;
+      if (!pullTo) {
+        pullTo = 1;
+        cur.x = aim.x;
+        cur.y = aim.y;
+      }
     },
     { passive: true },
   );
@@ -141,8 +153,10 @@ export function startHeroFx() {
   const draw = (now: number) => {
     cur.x += (aim.x - cur.x) * 0.02;
     cur.y += (aim.y - cur.y) * 0.02;
+    pull += (pullTo - pull) * 0.01;
     gl.uniform1f(uT, (now - t0) / 1000);
     gl.uniform2f(uM, cur.x, cur.y);
+    gl.uniform1f(uMw, pull);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   };
 

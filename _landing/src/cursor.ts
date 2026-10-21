@@ -1,12 +1,8 @@
-// The pointer as the brand mark: a ring crossed by a slash, an Ø that trails
-// the mouse a little. The slash turns toward where the pointer is heading and
-// the ring stretches with speed; when the pointer rests the mark settles back
-// into a plain Ø. Over a work it opens into a violet disc that says where the
-// click leads; over the light contact block it turns dark.
+// The pointer as the brand mark: a small Ø that sits exactly under the mouse.
+// It never stretches or turns. Over a work it opens into a small light disc
+// that says «Открыть»; over the light contact block it turns dark.
 // Buttons marked data-magnetic lean toward the pointer.
 // Mouse and trackpad only; touch screens and reduced motion keep the system cursor.
-
-const REST = -45; // the slash of Ø, bottom-left to top-right
 
 export function startCursor() {
   if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -16,45 +12,15 @@ export function startCursor() {
   const el = document.createElement('div');
   el.className = 'cur';
   el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = '<i class="cur-dot"></i><i class="cur-ring"><i class="cur-slash"></i><b class="cur-label"></b></i>';
+  el.innerHTML = '<i class="cur-ring"><i class="cur-slash"></i><b class="cur-label">Открыть</b></i>';
   document.body.appendChild(el);
-  const dot = el.querySelector<HTMLElement>('.cur-dot')!;
-  const ring = el.querySelector<HTMLElement>('.cur-ring')!;
-  const slash = el.querySelector<HTMLElement>('.cur-slash')!;
-  const label = el.querySelector<HTMLElement>('.cur-label')!;
 
-  const at = { x: innerWidth / 2, y: innerHeight / 2 };
-  const ringAt = { ...at };
-  let angle = REST;
-  let stretch = 0;
+  const at = { x: 0, y: 0 };
   let seen = false;
   let raf = 0;
-
-  const loop = () => {
-    const dx = at.x - ringAt.x;
-    const dy = at.y - ringAt.y;
-    ringAt.x += dx * 0.2;
-    ringAt.y += dy * 0.2;
-    const speed = Math.hypot(dx, dy);
-    // heading while moving, the Ø's own slash once still
-    const target = speed > 2 ? (Math.atan2(dy, dx) * 180) / Math.PI : REST;
-    let turn = ((target - angle + 540) % 360) - 180;
-    // a line looks the same both ways round: take the shorter half-turn
-    if (turn > 90) turn -= 180;
-    if (turn < -90) turn += 180;
-    angle += turn * (speed > 2 ? 0.18 : 0.08);
-    stretch += (Math.min(speed / 60, 0.35) - stretch) * 0.2;
-
-    dot.style.transform = `translate3d(${at.x}px, ${at.y}px, 0)`;
-    ring.style.transform = `translate3d(${ringAt.x}px, ${ringAt.y}px, 0) rotate(${angle}deg) scale(${1 + stretch}, ${1 - stretch * 0.6})`;
-    slash.style.opacity = String(1 - stretch * 1.5);
-    // the label must stay upright whatever the ring does
-    label.style.transform = `translate(-50%, -50%) scale(${1 / (1 + stretch)}, ${1 / (1 - stretch * 0.6)}) rotate(${-angle}deg)`;
-
-    raf = speed > 0.1 || Math.abs(turn) > 0.2 || stretch > 0.002 ? requestAnimationFrame(loop) : 0;
-  };
-  const wake = () => {
-    if (!raf) raf = requestAnimationFrame(loop);
+  const place = () => {
+    raf = 0;
+    el.style.transform = `translate3d(${at.x}px, ${at.y}px, 0)`;
   };
 
   const state = (t: Element | null) => {
@@ -68,7 +34,6 @@ export function startCursor() {
     el.classList.toggle('on-magnet', magnet);
     el.classList.toggle('ink', ink);
     el.classList.toggle('off', text);
-    if (card) label.textContent = card.getAttribute('href')?.startsWith('#/case/') ? 'Кейс' : 'Открыть';
   };
 
   addEventListener(
@@ -79,13 +44,11 @@ export function startCursor() {
       at.y = e.clientY;
       if (!seen) {
         seen = true;
-        ringAt.x = at.x;
-        ringAt.y = at.y;
         root.classList.add('has-cursor');
       }
       el.classList.remove('gone');
       state(e.target as Element);
-      wake();
+      raf ||= requestAnimationFrame(place);
     },
     { passive: true },
   );

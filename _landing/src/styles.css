@@ -901,85 +901,74 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
 .cur.off {
   opacity: 0;
 }
-.cur i,
-.cur b {
+/* a small Ø: ring and slash, centred on the pointer */
+.cur-ring {
+  --s: 18px;
   position: absolute;
   left: 0;
   top: 0;
-}
-.cur-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  border-radius: 50%;
-  background: var(--text);
-  transition: opacity 0.3s, scale 0.3s var(--ease), background-color 0.3s;
-}
-.cur-ring {
-  --s: 38px;
+  display: grid;
+  place-items: center;
   width: var(--s);
   height: var(--s);
   margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2);
   border: 1.5px solid var(--text);
   border-radius: 50%;
   transition:
-    width 0.5s var(--ease),
-    height 0.5s var(--ease),
-    margin 0.5s var(--ease),
-    background-color 0.35s,
-    border-color 0.35s,
-    opacity 0.3s,
-    scale 0.3s var(--ease);
+    width 0.45s var(--ease),
+    height 0.45s var(--ease),
+    margin 0.45s var(--ease),
+    background-color 0.3s,
+    border-color 0.3s,
+    opacity 0.25s,
+    scale 0.25s var(--ease);
 }
-.cur .cur-slash {
-  left: -25%;
-  top: 50%;
-  width: 150%;
-  height: 1.5px;
-  margin-top: -0.75px;
-  background: var(--text);
-  transition: background-color 0.35s;
-}
-.cur .cur-label {
+.cur-slash {
+  position: absolute;
   left: 50%;
   top: 50%;
-  font-size: 13px;
+  width: 26px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -13px;
+  background: var(--text);
+  transform: rotate(-55deg);
+  transition: opacity 0.2s, background-color 0.3s;
+}
+.cur-label {
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.01em;
-  color: #fff;
+  letter-spacing: 0.02em;
+  color: var(--ink);
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.25s;
+  transition: opacity 0.2s;
 }
-/* over a work: a violet disc that names the click */
+/* over a work: a small light disc that says where the click leads */
 .cur.on-card .cur-ring {
-  --s: 92px;
-  background: var(--accent-btn);
-  border-color: transparent;
+  --s: 64px;
+  background: var(--text);
+  border-color: var(--text);
 }
-.cur.on-card .cur-slash,
-.cur.on-card .cur-dot {
-  opacity: 0 !important;
+.cur.on-card .cur-slash {
+  opacity: 0;
 }
 .cur.on-card .cur-label {
   opacity: 1;
-  transition-delay: 0.12s;
+  transition-delay: 0.1s;
 }
-/* over a link or a toggle: the ring widens and fills faintly */
+/* over a link or a toggle: the ring widens a little */
 .cur.on-link .cur-ring {
-  --s: 54px;
-  background: rgba(124, 108, 255, 0.16);
+  --s: 30px;
   border-color: var(--accent);
 }
 .cur.on-link .cur-slash {
   background: var(--accent);
 }
-/* a magnetic button moves itself; the ring steps aside */
+/* a magnetic button moves itself; the mark steps aside */
 .cur.on-magnet .cur-ring {
   opacity: 0;
 }
 /* the light contact block */
-.cur.ink .cur-dot,
 .cur.ink .cur-slash {
   background: var(--ink);
 }
@@ -987,10 +976,7 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   border-color: var(--ink);
 }
 .cur.down .cur-ring {
-  scale: 0.82;
-}
-.cur.down .cur-dot {
-  scale: 0.6;
+  scale: 0.8;
 }
 [data-magnetic] {
   translate: var(--mx, 0px) var(--my, 0px);
