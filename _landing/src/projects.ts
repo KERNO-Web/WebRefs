@@ -23,11 +23,6 @@ export interface Project {
   accent?: string;
   /** external sites open in a new tab */
   external?: boolean;
-  /**
-   * The preview's own quiet idle behaviour on the homepage (see ambient.css).
-   * Each work gets a different one, so no two cards move alike.
-   */
-  idle?: Idle;
 }
 
 export type Cat = 'sites' | 'apps' | 'bots' | 'auto';
@@ -39,21 +34,6 @@ export const CATS: { id: Cat; name: string }[] = [
   { id: 'bots', name: 'Боты' },
   { id: 'auto', name: 'Автоматизация' },
 ];
-
-export type Idle =
-  | 'folder' // the red folder throws a soft red light on the wall
-  | 'led' // the keyboard's red knob glows like an indicator
-  | 'flash' // a camera flash blooms over the portrait now and then
-  | 'backlight' // warm backlight breathes in the hair
-  | 'tonal' // a soft highlight wanders over the object
-  | 'sweep' // light under the card; a reflection crosses it from time to time
-  | 'lamps' // the wall lamps pulse; a sheen crosses the hood from time to time
-  | 'ember' // firelight flickers at the bottom of the frame
-  | 'scan' // a scan line runs down the QR code
-  | 'mailbox' // blue light glows under the mailbox
-  | 'gloss' // a glint slides along the rim of the drop
-  | 'eyes' // the hero's red eyes smoulder
-  | 'bloom'; // the blossom tree glows pink and sheds a few petals
 
 export const PROJECTS: Project[] = [
   {
@@ -73,11 +53,10 @@ export const PROJECTS: Project[] = [
     id: 1,
     slug: 'roman',
     cats: ['sites'],
-    idle: 'folder',
     real: true,
     title: 'Роман Переверзев',
     description: 'Персональный сайт о контенте, событиях и коммуникациях — с реальными работами, фото и контактами.',
-    thumbnail: 'previews/roman.jpg',
+    thumbnail: 'covers/roman.jpg',
     href: 'https://kerno-web.github.io/portfolio/',
     tags: ['Персональный бренд', 'React', 'Лендинг'],
     year: 2026,
@@ -88,10 +67,9 @@ export const PROJECTS: Project[] = [
     id: 2,
     slug: 'key01',
     cats: ['sites'],
-    idle: 'led',
     title: 'KEY/01',
     description: 'Яркий интерактивный showcase механической клавиатуры с 3D и анимацией.',
-    thumbnail: 'key01/og.jpg',
+    thumbnail: 'covers/key01.jpg',
     href: 'key01/',
     tags: ['Three.js', '3D', 'Анимация'],
     year: 2026,
@@ -101,10 +79,9 @@ export const PROJECTS: Project[] = [
     id: 3,
     slug: 'afterimage',
     cats: ['sites'],
-    idle: 'flash',
     title: 'Afterimage',
     description: 'Экспериментальный editorial-сайт вокруг музыки, фотографии и типографики.',
-    thumbnail: 'afterimage/og.jpg',
+    thumbnail: 'covers/afterimage.jpg',
     href: 'afterimage/',
     tags: ['Editorial', 'Фотография', 'Типографика'],
     year: 2026,
@@ -114,10 +91,9 @@ export const PROJECTS: Project[] = [
     id: 4,
     slug: 'noctis',
     cats: ['sites'],
-    idle: 'backlight',
     title: 'NOCTIS',
     description: 'Визуальная кампания вымышленного парфюмерного бренда.',
-    thumbnail: 'noctis/og.jpg',
+    thumbnail: 'covers/noctis.jpg',
     href: 'noctis/',
     tags: ['WebGL', 'Кампания', 'Моушн'],
     year: 2026,
@@ -127,10 +103,9 @@ export const PROJECTS: Project[] = [
     id: 5,
     slug: 'null',
     cats: ['sites'],
-    idle: 'tonal',
     title: 'NULL',
     description: 'Абстрактный digital-объект и эксперимент с формой, движением и WebGL.',
-    thumbnail: 'null/og.jpg',
+    thumbnail: 'covers/null.jpg',
     href: 'null/',
     tags: ['Three.js', 'Шейдеры', 'Эксперимент'],
     year: 2026,
@@ -140,10 +115,9 @@ export const PROJECTS: Project[] = [
     id: 6,
     slug: 'witcher',
     cats: ['sites'],
-    idle: 'ember',
     title: 'Wild Hunt',
     description: 'Визуальный трибьют The Witcher 3.',
-    thumbnail: 'witcher/og.jpg',
+    thumbnail: 'covers/witcher.jpg',
     href: 'witcher/',
     tags: ['Трибьют', 'Атмосфера', 'Два языка'],
     year: 2026,
@@ -165,10 +139,9 @@ export const PROJECTS: Project[] = [
     id: 8,
     slug: 'nexus',
     cats: ['apps'],
-    idle: 'sweep',
     title: 'TapShift',
     description: 'Интерактивный продукт крипто-карты: онбординг, кабинет, платежи, обмен и управление картой.',
-    thumbnail: 'nexus/og.jpg',
+    thumbnail: 'covers/nexus.jpg',
     href: 'nexus/',
     tags: ['Финтех', 'Продукт', 'UI'],
     year: 2026,
@@ -190,12 +163,11 @@ export const PROJECTS: Project[] = [
     id: 10,
     slug: 'facemail',
     cats: ['apps'],
-    idle: 'mailbox',
     real: true,
     title: 'FACEMAIL',
     description:
       'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Работает на facemail.site.',
-    thumbnail: 'previews/facemail.jpg',
+    thumbnail: 'covers/facemail.jpg',
     href: 'https://facemail.site',
     tags: ['Веб-почта', 'UI', 'Продукт'],
     year: 2026,
@@ -206,10 +178,9 @@ export const PROJECTS: Project[] = [
     id: 11,
     slug: 'brightline',
     cats: ['sites'],
-    idle: 'lamps',
     title: 'BRIGHTLINE',
     description: 'Сайт детейлинг-студии: до/после на одном кадре, услуги с ценами, реальные кейсы и запись на осмотр.',
-    thumbnail: 'brightline/og.jpg',
+    thumbnail: 'covers/brightline.jpg',
     href: 'brightline/',
     tags: ['Детейлинг', 'Локальный бизнес', 'Интерфейс'],
     year: 2026,
@@ -219,11 +190,10 @@ export const PROJECTS: Project[] = [
     id: 12,
     slug: 'kvit',
     cats: ['apps'],
-    idle: 'scan',
     title: 'KVIT',
     description:
       'Приём криптовалюты для бизнеса: сайт продукта и рабочее демо — касса с QR, экран оплаты, счета, ссылки, возвраты и выплаты в USDT. Два языка, реальные курсы.',
-    thumbnail: 'kvit/og.jpg',
+    thumbnail: 'covers/kvit.jpg',
     href: 'kvit/',
     tags: ['Финтех', 'Продукт', 'Демо'],
     year: 2026,
@@ -233,11 +203,10 @@ export const PROJECTS: Project[] = [
     id: 13,
     slug: 'lumi',
     cats: ['sites', 'apps'],
-    idle: 'gloss',
     title: 'LUMI',
     description:
       'Сайт студии маникюра с онлайн-записью: прайс, работы по мастерам, запись только на реально свободные окна и кабинет мастера с графиком.',
-    thumbnail: 'previews/lumi.jpg',
+    thumbnail: 'covers/lumi.jpg',
     href: 'https://kerno-web.github.io/nails-beauty/',
     tags: ['Бьюти', 'Онлайн-запись', 'Локальный бизнес'],
     year: 2026,
@@ -248,12 +217,11 @@ export const PROJECTS: Project[] = [
     id: 14,
     slug: 'sorrymama',
     cats: ['sites'],
-    idle: 'bloom',
     real: true,
     title: 'SORRY MAMA',
     description:
       'Сайт рест-лаунжа в Казани: дневная терраса уходит в вечерний зал под цветущим деревом, меню с фото блюд и бронь стола.',
-    thumbnail: 'sorrymama/og.jpg',
+    thumbnail: 'covers/sorrymama.jpg',
     href: 'sorrymama/',
     tags: ['Ресторан', 'Локальный бизнес', 'Интерфейс'],
     year: 2026,
@@ -263,12 +231,11 @@ export const PROJECTS: Project[] = [
     id: 15,
     slug: 'epc',
     cats: ['apps', 'sites'],
-    idle: 'eyes',
     real: true,
     title: 'Esports Pro Circuit',
     description:
       'Турнирная платформа по Dota 2: сезоны, сетки, матч-центр, ростеры, заявки команд и админка. Работает на epc-tournament.com.',
-    thumbnail: 'previews/epc.jpg',
+    thumbnail: 'covers/epc.jpg',
     href: 'https://epc-tournament.com',
     tags: ['Киберспорт', 'Платформа', 'Next.js'],
     year: 2026,
@@ -283,7 +250,7 @@ export const PROJECTS: Project[] = [
     title: 'Order Radar',
     description:
       'Telegram-бот, который каждые 5 минут обходит биржи и чаты, отсеивает мусор и присылает карточку заказа с готовым откликом.',
-    thumbnail: 'orderradar/og.jpg',
+    thumbnail: 'covers/orderradar.jpg',
     href: 'orderradar/',
     tags: ['Telegram-бот', 'Парсинг', 'Python'],
     year: 2026,
@@ -297,7 +264,7 @@ export const PROJECTS: Project[] = [
     title: 'Оранжерея',
     description:
       'Магазин цветов внутри Telegram: каталог, размеры и открытка с живой ценой, корзина, оформление и заказ менеджеру в бота.',
-    thumbnail: 'previews/miniapp.jpg',
+    thumbnail: 'covers/miniapp.jpg',
     href: 'https://kerno-web.github.io/tg-miniapp-shop/',
     tags: ['Mini App', 'E-commerce', 'React'],
     year: 2026,
@@ -312,7 +279,7 @@ export const PROJECTS: Project[] = [
     title: 'Справочная',
     description:
       'AI-ассистент по документам компании: отвечает сотрудникам и клиентам сайта со ссылкой на пункт регламента. Можно загрузить свой PDF и спросить по нему.',
-    thumbnail: 'assistant/og.jpg',
+    thumbnail: 'covers/assistant.jpg',
     href: 'assistant/',
     tags: ['AI-ассистент', 'Поиск по документам', 'Виджет'],
     year: 2026,
@@ -326,7 +293,7 @@ export const PROJECTS: Project[] = [
     title: 'Ангара CRM',
     description:
       'Учёт заявок для мастерской кухонь: воронка с перетаскиванием, задачи, автоматизации на каждом этапе, отчёт по деньгам и права менеджера.',
-    thumbnail: 'crm/og.jpg',
+    thumbnail: 'covers/crm.jpg',
     href: 'crm/',
     tags: ['CRM', 'Автоматизация', 'Отчёты'],
     year: 2026,
@@ -340,7 +307,7 @@ export const PROJECTS: Project[] = [
     title: 'Отвёртка',
     description:
       'Telegram-бот сервисного центра: клиент сдаёт технику в ремонт и получает статусы, мастер ведёт заявки в панели, оплата и рассылка там же.',
-    thumbnail: 'servicebot/og.jpg',
+    thumbnail: 'covers/servicebot.jpg',
     href: 'servicebot/',
     tags: ['Telegram-бот', 'Статусы ремонта', 'Оплата'],
     year: 2026,

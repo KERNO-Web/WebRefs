@@ -1,16 +1,12 @@
-// Idle life for the homepage. Four layers, from always-on to rare:
+// Idle life behind the homepage, from always-on to rare:
 //   1. three soft light fields drifting behind everything (ambient.css)
 //   2. grain and a handful of dust motes in the same back layer
-//   3. on each preview one element of the picture comes alive (a glow, a flame,
-//      a scan line) while the frame itself stays still; only while on screen
-//   4. one rare event at a time: a reflection on the card or across the hood
-// Scrolling pauses layers 3 and 4; hover pauses a card; reduced motion keeps
-// only the still picture. The motion is meant to be noticed late, not first.
+//   3. now and then the violet field swells for a few seconds
+// The cards move on their own (previews.ts). Scrolling holds the swell back;
+// reduced motion keeps only the still picture. Meant to be noticed late.
 
 const root = document.documentElement;
 
-/** Cards whose idle includes a one-shot event, and how long that event runs. */
-const EVENTS: Record<string, number> = { sweep: 2600, lamps: 2400 };
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 
@@ -44,7 +40,7 @@ export function startAmbient() {
     }
   }
 
-  /* ---------- scrolling yields: idles pause, events wait ---------- */
+  /* ---------- scrolling yields: the swell waits, covers hold still ---------- */
 
   let scrollTimer = 0;
   let lastScroll = 0;
@@ -65,36 +61,16 @@ export function startAmbient() {
     (entries) => entries.forEach((e) => e.target.classList.toggle('live', e.isIntersecting)),
     { rootMargin: '12% 0px 12% 0px' },
   );
-  document.querySelectorAll('.shot[data-idle], .hero').forEach((el) => live.observe(el));
+  document.querySelectorAll('.hero').forEach((el) => live.observe(el));
 
-  /* ---------- rare events, one at a time, never on a schedule you can feel ---------- */
-
-  let last: Element | null = null;
-  const fullyInView = (el: Element) => {
-    const r = el.getBoundingClientRect();
-    return r.top > 40 && r.bottom < innerHeight - 20;
-  };
+  /* ---------- the rare swell, never on a schedule you can feel ---------- */
 
   const fire = () => {
-    const quiet = performance.now() - lastScroll > 800 && !document.hidden;
-    if (quiet) {
-      const cards = [...document.querySelectorAll<HTMLElement>('.shot.live[data-idle]')].filter(
-        (el) => el.dataset.idle! in EVENTS && fullyInView(el) && !el.closest('.card')?.matches(':hover'),
-      );
-      // the background swell competes with no card, so it gets a turn now and then
-      const pool: Element[] = [...cards, ...(cards.length < 2 || Math.random() < 0.25 ? [root] : [])];
-      const choices = pool.filter((el) => el !== last);
-      const pick = choices[Math.floor(Math.random() * choices.length)];
-      if (pick) {
-        last = pick;
-        const isRoot = pick === root;
-        const cls = isRoot ? 'swell' : 'ev';
-        const dur = isRoot ? 6000 : EVENTS[(pick as HTMLElement).dataset.idle!];
-        pick.classList.add(cls);
-        setTimeout(() => pick.classList.remove(cls), dur + 100);
-      }
+    if (performance.now() - lastScroll > 800 && !document.hidden) {
+      root.classList.add('swell');
+      setTimeout(() => root.classList.remove('swell'), 6100);
     }
-    setTimeout(fire, rand(5000, 10000));
+    setTimeout(fire, rand(12000, 20000));
   };
-  setTimeout(fire, rand(2500, 4500));
+  setTimeout(fire, rand(4000, 8000));
 }

@@ -1,8 +1,8 @@
 // Moving previews on the work cards, the way uxart does it: a work you can
-// operate plays its silent loop (recorded by _ai/portfolio/.work/clips.mjs)
-// whenever its card is on screen, on any device; a visual work has a living
-// cover that drifts slowly and keeps its idle detail going (styles.css,
-// ambient.css). Off screen everything stops, and a clip loads only when its card
+// operate plays its 5 s cover loop (clips.ts says which and where they come
+// from) whenever its card is on screen, on any device; a visual work has a living
+// cover that drifts slowly with a sheen passing over it now and then
+// (styles.css). Off screen everything stops, and a clip loads only when its card
 // first comes into view. Reduced motion and data saver keep the still preview.
 
 const quiet =
@@ -27,7 +27,7 @@ export function bindPreviews() {
     (entries) =>
       entries.forEach((e) => {
         const shot = e.target as HTMLElement;
-        // .live drives the cover's drift and the idle detail (ambient.css)
+        // .live drives the cover's drift and sheen (styles.css)
         shot.classList.toggle('live', e.isIntersecting);
         const v = shot.querySelector<HTMLVideoElement>('video.clip');
         if (!v) return;

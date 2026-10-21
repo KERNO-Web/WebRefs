@@ -1,17 +1,5 @@
-// Works that have a video preview at public/clips/<slug>.mp4 (recorded and
-// encoded by _ai/portfolio/.work/clips.mjs and clips-encode.mjs). A slug listed
-// here gets the clip on its card; remove it to fall back to the still image.
-// Clips are for works with something to operate (clicks, forms, a product UI);
-// visual works get a living cover instead (ambient.css, cover hover in styles.css).
-export const CLIPS = new Set<string>([
-  'assistant',
-  'crm',
-  'epc',
-  'facemail',
-  'kvit',
-  'lumi',
-  'miniapp',
-  'nexus',
-  'orderradar',
-  'servicebot',
-]);
+// Works whose card cover is a 5 s loop at public/clips/<slug>.mp4: the interface
+// on the cover's device steps through three states. Rendered from the same
+// template as the still covers (_ai/portfolio/.work/covers-web/cover.html, see
+// covers-render.mjs). The rest of the covers are stills that drift (styles.css).
+export const CLIPS = new Set<string>(['kvit', 'crm', 'assistant', 'servicebot', 'miniapp']);

@@ -404,8 +404,8 @@ main {
 .card:hover .shot img {
   transform: scale(1.02);
 }
-/* a living cover: on hover the camera pushes in slowly and leans after the
-   pointer (previews.ts sets --px/--py), while its idle detail keeps playing */
+/* a living cover leans a little after the mouse
+   pointer (previews.ts sets --px/--py) */
 .shot.cover img {
   translate: var(--px, 0px) var(--py, 0px);
   transition:
@@ -421,16 +421,35 @@ main {
   --drift-x: -2%;
   --drift-y: -1.4%;
   --drift-t: 15s;
+  --sheen-d: 0.8s;
 }
 .grid .card:nth-child(3n + 2) .shot.cover {
   --drift-x: 1.8%;
   --drift-y: -1%;
   --drift-t: 19s;
+  --sheen-d: 4.2s;
 }
 .grid .card:nth-child(3n) .shot.cover {
   --drift-x: -1%;
   --drift-y: 1.4%;
   --drift-t: 17s;
+  --sheen-d: 7.1s;
+}
+/* now and then a sheen passes over the cover, like light across glass */
+.shot.cover .shot-in::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.12) 46%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0.1) 54%, transparent 62%);
+  translate: -110% 0;
+  pointer-events: none;
+}
+.shot.cover.live .shot-in::after {
+  animation: sheen 10s cubic-bezier(0.45, 0, 0.4, 1) var(--sheen-d, 2s) infinite;
+}
+@keyframes sheen {
+  0% { translate: -110% 0; }
+  18%, 100% { translate: 110% 0; }
 }
 @keyframes drift {
   from {
@@ -440,11 +459,13 @@ main {
     transform: scale(1.09) translate(var(--drift-x, -1.5%), var(--drift-y, -1%));
   }
 }
-.scrolling .shot.cover img {
+.scrolling .shot.cover img,
+.scrolling .shot.cover .shot-in::after {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
-  .shot.cover img {
+  .shot.cover img,
+  .shot.cover .shot-in::after {
     animation: none !important;
   }
 }
@@ -462,9 +483,7 @@ main {
 .shot.playing .clip {
   opacity: 1;
 }
-.shot.playing :is(.fx, .ev-clip) {
-  visibility: hidden;
-}
+
 .card-title {
   font-weight: 700;
   letter-spacing: -0.035em;
