@@ -298,8 +298,15 @@ const spy = new IntersectionObserver(
 );
 ['works', 'build', 'contact'].forEach((id) => spy.observe(document.getElementById(id)!));
 
-// two frames so the entrance transitions start from their initial state
-requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready')));
+// the name rises only once its own face has arrived, so it never jumps from the
+// fallback width to Dela's; a slow network gets 1.5 s before the fallback is used.
+// Then two frames, so the entrance transitions start from their initial state
+Promise.race([
+  document.fonts.load("1em 'Dela Gothic One'", 'KERNØ'),
+  new Promise((done) => setTimeout(done, 1500)),
+])
+  .catch(() => {})
+  .then(() => requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready'))));
 route();
 renderCats();
 render();
