@@ -105,7 +105,9 @@ document.querySelectorAll<HTMLElement>('.sec-head').forEach((h, i) => {
 const hero = $('.hero');
 burntHole(hero, { position: 'absolute', right: '7%', top: '20%' }, 130, 1);
 inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
-note(hero, 'мешать только против часовой!', { position: 'absolute', left: '6%', top: '41%', transform: 'rotate(-5deg)' }, { dx: 230, dy: 36, bend: -0.25 });
+// pinned to the copy, just above the heading, so a short screen never slides the heading into it;
+// the arrow points up and over to the cauldron
+note($('.hero-copy'), 'мешать только против часовой!', { position: 'absolute', left: '-6px', bottom: 'calc(100% + 22px)', transform: 'rotate(-5deg)', whiteSpace: 'nowrap' }, { dx: 250, dy: -34, bend: 0.25 });
 const book = $('.book-sec');
 note($('.book'), 'VII проверено на себе. Помню всё.', { position: 'absolute', right: '9%', bottom: '128px', transform: 'rotate(-4deg)' });
 burntHole(book, { position: 'absolute', left: '2.2%', top: '30%' }, 96, 3);

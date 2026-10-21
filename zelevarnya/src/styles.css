@@ -395,7 +395,13 @@ svg .roughen { filter: url(#ink-rough); }
 .hall { min-width: 0; }
 @media (max-width: 1000px) { .hall-grid { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 640px) {
-  .hero .hole { top: auto !important; bottom: 36%; right: 1% !important; }
+  /* phones: the scene and the copy stack instead of overlapping, so a short screen
+     can't slide the heading over the cauldron */
+  .hero { display: block; min-height: 0; padding-bottom: calc(var(--frame) + 26px); }
+  .hero-art { position: relative; display: block; margin-top: 24px; top: auto; }
+  .hero-copy { position: relative; left: auto; right: auto; bottom: auto; margin: 6vw calc(var(--frame) + var(--pad)) 0; }
+  /* the eyes watch from beside the cauldron's legs, clear of it */
+  .hero .hole { top: calc(24px + 88vw) !important; bottom: auto; right: 1% !important; transform: scale(0.58); }
   .hero .blot { display: none; }
 }
 .hall-grid .stamp { top: auto; bottom: 26px; right: 22px; width: 110px; height: 110px; }
