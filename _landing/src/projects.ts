@@ -268,7 +268,7 @@ export const PROJECTS: Project[] = [
     href: 'geekradar/',
     tags: ['Telegram-бот', 'Парсинг', 'Python'],
     year: 2026,
-    accent: '#ff4fa3',
+    accent: '#ffd400',
   },
   {
     id: 17,

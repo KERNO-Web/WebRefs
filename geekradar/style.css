@@ -1,109 +1,141 @@
-/* Geek Radar demo: a Telegram chat in the bot's own colours — deep indigo,
-   neon pink for the radar, acid lime for what it catches. */
+/* Geek Radar: страница в виде чата с ботом. Цвета повторяют Telegram (день / ночь по системе),
+   обои чата — размытая полка с мангой (wallpaper.jpg, автор в подвале). */
 :root {
-  --bg: #120a24;
-  --bg-2: #1a1033;
-  --bubble: #22163f;
-  --bubble-out: #3b1f63;
-  --line: rgba(255, 255, 255, 0.08);
-  --text: #f1ecff;
-  --sub: #a99bc9;
-  --pink: #ff4fa3;
-  --pink-soft: #ff8cc4;
-  --lime: #c6ff4f;
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --wall: #d6e2c8;
+  --bar: #ffffff;
+  --bar-line: #dadce0;
+  --in: #ffffff;
+  --out: #effdde;
+  --text: #000000;
+  --sub: #707579;
+  --out-sub: #4fae4e;
+  --link: #3390ec;
+  --ava: #3390ec;
+  --pre: rgba(51, 144, 236, 0.08);
+  --pre-line: #3390ec;
+  --kb: rgba(0, 0, 0, 0.32);
+  --service: rgba(0, 0, 0, 0.3);
+  --strike: #a2acb4;
+  --shadow: 0 1px 2px rgba(16, 35, 47, 0.15);
+  --tint: rgba(255, 250, 240, 0.28);
 }
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body {
-  margin: 0;
-  min-height: 100svh;
-  font: 400 15.5px/1.45 Onest, system-ui, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(60% 40% at 85% 0%, rgba(255, 79, 163, 0.14), transparent 70%),
-    radial-gradient(50% 35% at 0% 100%, rgba(198, 255, 79, 0.07), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
-}
-a { color: inherit; }
-.ava {
-  width: 40px; height: 40px; flex: none; border-radius: 50%;
-  background: url(avatar.svg) center / cover;
-  box-shadow: 0 0 0 1px rgba(255, 79, 163, 0.35), 0 4px 14px rgba(255, 79, 163, 0.18);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wall: #0e1621;
+    --bar: #17212b;
+    --bar-line: #0b1118;
+    --in: #182533;
+    --out: #2b5278;
+    --text: #f5f5f5;
+    --sub: #6d7f8f;
+    --out-sub: #7da8d3;
+    --link: #6ab3f3;
+    --ava: #5288c1;
+    --pre: #1b2c3d;
+    --pre-line: #6ab3f3;
+    --kb: rgba(24, 37, 51, 0.82);
+    --service: rgba(24, 37, 51, 0.82);
+    --strike: #56677a;
+    --shadow: none;
+    --tint: rgba(10, 16, 24, 0.62);
+  }
 }
 
-/* top bar */
-.bar {
-  position: sticky; top: 0; z-index: 5;
-  display: flex; align-items: center; gap: 12px;
-  height: 60px; padding: 0 14px;
-  background: rgba(18, 10, 36, 0.86);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--line);
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--wall); }
+/* the chat wallpaper, as Telegram shows a custom one: the photo under a tint */
+html::before {
+  content: ''; position: fixed; inset: 0; z-index: -1;
+  background: linear-gradient(var(--tint), var(--tint)), url(wallpaper.jpg) center / cover;
 }
-.back { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--sub); font-size: 20px; text-decoration: none; }
-.back:hover { background: var(--bubble); }
+body {
+  min-height: 100dvh; background: transparent; color: var(--text);
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, 'SF Pro Text', Roboto, 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--link); text-decoration: none; }
+b { font-weight: 600; }
+
+/* ---------- шапка чата ---------- */
+.bar {
+  position: sticky; top: 0; z-index: 2; height: 56px; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; background: var(--bar); border-bottom: 1px solid var(--bar-line);
+}
+.back { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 50%; color: var(--sub); font-size: 20px; }
+.back:hover { background: var(--pre); }
+.ava {
+  width: 40px; height: 40px; flex: none; border-radius: 50%; display: grid; place-items: center;
+  /* the bot's avatar: a pixel invader with a radar dish (avatar.svg) */
+  background: #ffd400 url(avatar.svg) center / cover; color: transparent; font-size: 0;
+}
 .who { flex: 1; min-width: 0; }
 .who b { display: block; font-size: 15.5px; }
 .who small { color: var(--sub); font-size: 13.5px; }
-.who small.live { color: var(--lime); }
-.kerno { font: 800 13px Onest; letter-spacing: 0.04em; text-decoration: none; color: var(--sub); }
+.who small.live { color: var(--link); }
+.kerno { color: var(--text); font-weight: 700; letter-spacing: 0.06em; font-size: 14px; padding: 8px 10px; border-radius: 8px; }
+.kerno:hover { background: var(--pre); }
 
-/* chat */
-.chat { max-width: 760px; margin: 0 auto; padding: 18px 14px 28px; display: grid; gap: 14px; }
-.day { justify-self: center; margin: 6px 0; padding: 3px 12px; border-radius: 999px; background: var(--bubble); color: var(--sub); font-size: 13px; }
-.m { display: flex; align-items: flex-end; gap: 10px; }
-.m.out { justify-content: flex-end; }
-.m .ava { width: 34px; height: 34px; }
-.col { display: grid; gap: 6px; min-width: 0; max-width: 560px; flex: 1; }
-.b { position: relative; padding: 10px 14px 22px; border-radius: 18px 18px 18px 6px; background: var(--bubble); max-width: 560px; }
-.out .b { border-radius: 18px 18px 6px 18px; background: var(--bubble-out); padding-right: 74px; padding-bottom: 10px; }
-.tm { position: absolute; right: 12px; bottom: 6px; font-size: 11.5px; color: var(--sub); }
-.tm i { font-style: normal; color: var(--lime); }
-
-.intro h1 { margin: 2px 0 8px; font-size: 21px; font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; }
-.intro p { margin: 0; color: #d9d0f0; }
-.intro.tail p b { color: var(--text); }
-.sources { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
-.sources li { padding: 3px 9px; border-radius: 999px; border: 1px solid rgba(255, 79, 163, 0.35); color: var(--pink-soft); font: 500 12px var(--mono); }
-
-/* the story card */
-.card { padding: 14px 16px 24px; border: 1px solid var(--line); }
-.card.hot { border-color: rgba(255, 79, 163, 0.32); box-shadow: 0 0 0 1px rgba(255, 79, 163, 0.08), 0 16px 40px -20px rgba(255, 79, 163, 0.45); }
-.score { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
-.pts { padding: 3px 10px; border-radius: 999px; background: rgba(255, 79, 163, 0.16); color: var(--pink-soft); font: 700 13px var(--mono); }
-.kind { padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); color: var(--sub); font: 500 12px var(--mono); text-transform: uppercase; letter-spacing: 0.04em; }
-.kind.unique { background: rgba(198, 255, 79, 0.14); color: var(--lime); }
-.card h2 { margin: 0 0 8px; font-size: 18px; font-weight: 800; line-height: 1.22; letter-spacing: -0.015em; }
-.sum { margin: 0 0 12px; color: #d9d0f0; }
-.why { margin: 0 0 12px; padding: 9px 12px; border-left: 3px solid var(--lime); border-radius: 4px 10px 10px 4px; background: rgba(198, 255, 79, 0.07); color: var(--text); }
-.why b { display: block; margin-bottom: 2px; color: var(--lime); font: 700 11.5px var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
-.meta { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0; }
-.meta dt { color: var(--sub); font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: 0.05em; }
-.meta dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 500; }
-
-/* the inline keyboard: six feedback buttons, two per row */
-.kb { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.kb button {
-  height: 38px; padding: 0 10px; border: 0; border-radius: 10px;
-  background: rgba(34, 22, 63, 0.92); color: var(--text); font: 500 13.5px Onest; cursor: pointer;
-  transition: background-color 0.2s, color 0.2s;
+/* ---------- лента ---------- */
+.chat { max-width: 728px; margin: 0 auto; padding: 16px 16px 40px; display: flex; flex-direction: column; gap: 6px; }
+.day {
+  align-self: center; margin: 10px 0; padding: 3px 10px; border-radius: 12px;
+  background: var(--service); color: #fff; font-size: 13.5px; font-weight: 500;
 }
-.kb button:hover { background: #2e1d55; }
-.kb button.on { background: var(--lime); color: #17200a; font-weight: 700; }
+.m { display: flex; align-items: flex-end; gap: 8px; }
+.m.in .ava { width: 34px; height: 34px; font-size: 14px; }
+.m.out { justify-content: flex-end; margin-top: 6px; }
+.col { display: flex; flex-direction: column; gap: 4px; max-width: min(520px, calc(100% - 42px)); }
+.b {
+  position: relative; max-width: min(520px, calc(100% - 42px)); padding: 6px 10px 6px 11px;
+  background: var(--in); border-radius: 14px 14px 14px 4px; box-shadow: var(--shadow);
+}
+.col .b { max-width: none; }
+.out .b { background: var(--out); border-radius: 14px 14px 4px 14px; }
+.b p + p { margin-top: 2px; }
+.b i { color: var(--sub); }
+.tm { float: right; margin: 8px 0 -4px 12px; font-size: 12px; color: var(--sub); line-height: 1; }
+.out .tm, .out .tm i { color: var(--out-sub); font-style: normal; }
+.b::after { content: ''; display: block; clear: both; }
+.b pre {
+  margin: 5px 0 2px; padding: 6px 9px; border-left: 3px solid var(--pre-line); border-radius: 6px;
+  background: var(--pre); white-space: pre-wrap; font: 13.5px/1.45 ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+.b pre.stats { white-space: pre; overflow-x: auto; }
+.kb {
+  display: block; padding: 9px 12px; border-radius: 10px; text-align: center;
+  background: var(--kb); color: #fff; font-size: 14px; font-weight: 500;
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  transition: filter 0.2s;
+}
+.kb:hover { filter: brightness(1.12); }
+.kbs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.kbs .kb { border: 0; font: inherit; font-size: 14px; font-weight: 500; cursor: pointer; }
+.kbs .kb.on { background: var(--link); }
+.kb:active { transform: scale(0.99); }
 
-.note { max-width: 760px; margin: 0 auto; padding: 0 14px 28px; color: var(--sub); font-size: 12.5px; text-align: center; }
+.intro h1 { font-size: 15px; font-weight: 600; line-height: 1.45; }
 
-/* messages arrive as the chat scrolls (app.js) */
-.js .m.wait { opacity: 0; transform: translateY(14px); }
-.js .m { transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.how p + p { margin-top: 7px; }
+/* a story card as the bot sends it: label lines in bold, values under them */
+.story .lbl { margin-top: 8px; font-weight: 600; }
+.story .lbl + p { margin-top: 0; }
+.note { max-width: 728px; margin: 0 auto; padding: 0 16px 28px; color: #fff; opacity: 0.75; font-size: 12px; text-align: center; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); }
+.note a { color: inherit; text-decoration: underline; }
+.stack { font: 12.5px/1.5 ui-monospace, 'SF Mono', Menlo, Consolas, monospace; color: var(--sub); }
+
+/* появление сообщений */
+.js .m.wait { opacity: 0; transform: translateY(10px); }
+.m { transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+
 
 @media (max-width: 560px) {
-  .m.in > .ava { display: none; }
-  .meta { grid-template-columns: 1fr 1fr; }
-  .meta div:last-child { display: none; }
+  .bar { padding: 0 8px; gap: 10px; }
+  .chat { padding: 12px 8px 32px; }
+  .m.in .ava { display: none; }
+  .b, .col { max-width: 100%; }
+  .m.out .b { max-width: 85%; }
 }
+
 @media (prefers-reduced-motion: reduce) {
-  .js .m.wait { opacity: 1; transform: none; }
+  .m { transition: none; }
 }

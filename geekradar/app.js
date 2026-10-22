@@ -5,7 +5,7 @@ const statusEl = document.getElementById('status');
 const msgs = [...document.querySelectorAll('.chat .m')];
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-document.querySelectorAll('.kb').forEach((kb) =>
+document.querySelectorAll('.kbs').forEach((kb) =>
   kb.addEventListener('click', (e) => {
     const b = e.target.closest('button');
     if (!b) return;

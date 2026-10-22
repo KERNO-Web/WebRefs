@@ -3,21 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Geek Radar · редакторский радар гик-новостей</title>
-  <meta name="description" content="Telegram-бот KERNØ для редактора игрового канала: опрашивает десятки источников, склеивает дубли в одну историю, отсеивает нишевое и присылает только то, что стоит поста." />
+  <title>Geek Radar · радар гик-новостей для редактора</title>
+  <meta name="description" content="Telegram-бот KERNØ для редактора игрового канала: опрашивает сотни источников, склеивает дубли в одну историю, отсеивает нишевое и присылает только то, что стоит поста." />
   <meta property="og:title" content="Geek Radar · радар гик-новостей для редактора" />
   <meta property="og:image" content="og.jpg" />
-  <meta name="theme-color" content="#120a24" />
+  <meta name="theme-color" content="#17212b" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
   <link rel="icon" href="avatar.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="bar">
     <a class="back" href="../" aria-label="Все работы KERNØ"><span aria-hidden="true">←</span></a>
-    <span class="ava" aria-hidden="true"></span>
+    <span class="ava" aria-hidden="true">G</span>
     <div class="who"><b>Geek Radar</b><small id="status">бот</small></div>
     <a class="kerno" href="../">KERNØ</a>
   </header>
@@ -28,119 +26,119 @@
     <div class="m out"><div class="b">/start<span class="tm">10:02 <i>✓✓</i></span></div></div>
 
     <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
+      <span class="ava" aria-hidden="true">G</span>
       <div class="b intro">
-        <h1>Сам нахожу то, о чём<br />стоит написать.</h1>
-        <p>Опрашиваю десятки источников: игровые медиа, Reddit, Nexus Mods, ModDB, GitHub, Telegram-каналы. Двадцать сайтов про один трейлер — одна карточка. Нишевое и девелоперское отсеиваю, присылаю только то, что зайдёт обычному гику.</p>
-        <ul class="sources" aria-label="Источники">
-          <li>GoHa.Ru</li><li>PlayGround.ru</li><li>VGTimes</li><li>3DNews</li><li>Reddit</li><li>Nexus Mods</li><li>ModDB</li><li>GitHub</li>
-        </ul>
+        <h1>Привет! Я ищу, о чём написать в канал.</h1>
+        <p>Опрашиваю игровые медиа, Reddit, Nexus Mods, ModDB, GitHub и Telegram-каналы. Двадцать сайтов про один трейлер — одна карточка. Нишевое и девелоперское отсеиваю, присылаю то, что зайдёт обычному гику.</p>
         <span class="tm">10:02</span>
       </div>
     </div>
 
     <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
+      <span class="ava" aria-hidden="true">G</span>
       <div class="col">
-        <article class="b card hot">
-          <p class="score"><span class="pts">🔥 93</span><span class="kind">4 источника</span></p>
-          <h2>Теперь в Project Zomboid можно поиграть с видом от первого и третьего лица — началось тестирование модификации</h2>
-          <p class="sum">Популярный изометрический симулятор выживания Project Zomboid готовится пережить настоящую революцию благодаря энтузиастам.</p>
-          <p class="why"><b>Почему интересно</b>свежая новость, только что найдена</p>
-          <dl class="meta">
-            <div><dt>Источник</dt><dd>GoHa.Ru</dd></div>
-            <div><dt>Найдено</dt><dd>4 минуты назад</dd></div>
-            <div><dt>В истории</dt><dd>4 источника</dd></div>
-          </dl>
+        <div class="b story">
+          <p>🔥 93 · 4 ИСТОЧНИКОВ</p>
+          <p><b>Теперь в Project Zomboid можно поиграть с видом от первого и третьего лица — началось тестирование модификации</b></p>
+          <p>Популярный изометрический симулятор выживания Project Zomboid готовится пережить настоящую революцию благодаря энтузиастам.</p>
+          <p class="lbl">Почему интересно:</p><p>свежая новость, только что найдена</p>
+          <p class="lbl">Источник:</p><p>GoHa.Ru</p>
+          <p class="lbl">Найдено:</p><p>4 минуты назад</p>
+          <p class="lbl">Источников в story:</p><p>4</p>
           <span class="tm">10:14</span>
-        </article>
-        <div class="kb" aria-label="Оценка карточки">
-          <button type="button">👍 Хорошо</button><button type="button">⭐ Очень хорошо</button>
-          <button type="button">👎 Мусор</button><button type="button">🔇 Не интересует тема</button>
-          <button type="button">⏰ Опоздал</button><button type="button">📝 Заметка</button>
+        </div>
+        <div class="kbs">
+          <button class="kb" type="button">👍 Хорошо</button><button class="kb" type="button">⭐ Очень хорошо</button>
+          <button class="kb" type="button">👎 Мусор</button><button class="kb" type="button">🔇 Не интересует тема</button>
+          <button class="kb" type="button">⏰ Опоздал</button><button class="kb" type="button">📝 Заметка</button>
         </div>
       </div>
     </div>
 
     <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
+      <span class="ava" aria-hidden="true">G</span>
       <div class="col">
-        <article class="b card hot">
-          <p class="score"><span class="pts">🔥 92</span><span class="kind unique">UNIQUE</span></p>
-          <h2>Легендарный GUNSLINGER Mod полноценно перенесли на S.T.A.L.K.E.R.: «Чистое Небо»</h2>
-          <p class="sum">Один из самых технологичных оружейных проектов в истории сталкерского модинга получил полноценный порт на вторую часть трилогии. Раньше мод был доступен в основном для «Зова Припяти».</p>
-          <p class="why"><b>Почему интересно</b>свежая новость, только что найдена</p>
-          <dl class="meta">
-            <div><dt>Источник</dt><dd>PlayGround.ru</dd></div>
-            <div><dt>Найдено</dt><dd>11 минут назад</dd></div>
-            <div><dt>В истории</dt><dd>1 источник</dd></div>
-          </dl>
+        <div class="b story">
+          <p>🔥 92 · UNIQUE</p>
+          <p><b>Легендарный GUNSLINGER Mod полноценно перенесли на S.T.A.L.K.E.R.: «Чистое Небо»</b></p>
+          <p>Один из самых технологичных оружейных проектов в истории сталкерского модинга получил полноценный порт на вторую часть трилогии. Раньше мод был доступен в основном для «Зова Припяти».</p>
+          <p class="lbl">Почему интересно:</p><p>свежая новость, только что найдена</p>
+          <p class="lbl">Источник:</p><p>PlayGround.ru</p>
+          <p class="lbl">Найдено:</p><p>11 минут назад</p>
+          <p class="lbl">Источников в story:</p><p>1</p>
           <span class="tm">11:37</span>
-        </article>
-        <div class="kb picked" aria-label="Оценка карточки">
-          <button type="button">👍 Хорошо</button><button type="button" class="on">⭐ Очень хорошо</button>
-          <button type="button">👎 Мусор</button><button type="button">🔇 Не интересует тема</button>
-          <button type="button">⏰ Опоздал</button><button type="button">📝 Заметка</button>
+        </div>
+        <div class="kbs">
+          <button class="kb" type="button">👍 Хорошо</button><button class="kb on" type="button">⭐ Очень хорошо</button>
+          <button class="kb" type="button">👎 Мусор</button><button class="kb" type="button">🔇 Не интересует тема</button>
+          <button class="kb" type="button">⏰ Опоздал</button><button class="kb" type="button">📝 Заметка</button>
         </div>
       </div>
     </div>
 
     <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
+      <span class="ava" aria-hidden="true">G</span>
       <div class="col">
-        <article class="b card hot">
-          <p class="score"><span class="pts">🔥 87</span><span class="kind">4 источника</span></p>
-          <h2>GTA VI: анонсирован коллекционный набор The Goodtime State — Vice City Collection</h2>
-          <p class="sum">Фанаты обсуждают главное: у каждой GTA с 1997 года в коробке лежала бумажная карта, а у GTA VI она будет только в этом отдельном наборе.</p>
-          <p class="why"><b>Почему интересно</b>яркий, необычный или смешной инфоповод</p>
-          <dl class="meta">
-            <div><dt>Источник</dt><dd>Reddit r/GTA6</dd></div>
-            <div><dt>Найдено</dt><dd>2 минуты назад</dd></div>
-            <div><dt>В истории</dt><dd>4 источника</dd></div>
-          </dl>
+        <div class="b story">
+          <p>🔥 87 · 4 ИСТОЧНИКОВ</p>
+          <p><b>GTA VI: анонсирован коллекционный набор The Goodtime State — Vice City Collection</b></p>
+          <p>Фанаты обсуждают главное: у каждой GTA с 1997 года в коробке лежала бумажная карта, а у GTA VI она будет только в этом отдельном наборе.</p>
+          <p class="lbl">Почему интересно:</p><p>яркий, необычный или смешной инфоповод</p>
+          <p class="lbl">Источник:</p><p>Reddit r/GTA6</p>
+          <p class="lbl">Найдено:</p><p>2 минуты назад</p>
+          <p class="lbl">Источников в story:</p><p>4</p>
           <span class="tm">14:05</span>
-        </article>
-        <div class="kb" aria-label="Оценка карточки">
-          <button type="button">👍 Хорошо</button><button type="button">⭐ Очень хорошо</button>
-          <button type="button">👎 Мусор</button><button type="button">🔇 Не интересует тема</button>
-          <button type="button">⏰ Опоздал</button><button type="button">📝 Заметка</button>
+        </div>
+        <div class="kbs">
+          <button class="kb" type="button">👍 Хорошо</button><button class="kb" type="button">⭐ Очень хорошо</button>
+          <button class="kb" type="button">👎 Мусор</button><button class="kb" type="button">🔇 Не интересует тема</button>
+          <button class="kb" type="button">⏰ Опоздал</button><button class="kb" type="button">📝 Заметка</button>
         </div>
       </div>
     </div>
 
+    <div class="m out"><div class="b">/stats<span class="tm">21:40 <i>✓✓</i></span></div></div>
+
     <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
+      <span class="ava" aria-hidden="true">G</span>
+      <div class="b">
+        <p>За 49 дней работы:</p>
+        <pre class="stats">увидел материалов   124 203
+собрал историй      107 096
+из них склеены        7 902
+прислал тебе          6 265</pre>
+        <p>Источников: 316. До тебя доходит около 5%, остальное отсеиваю сам.</p>
+        <span class="tm">21:40</span>
+      </div>
+    </div>
+
+    <div class="m out"><div class="b">Как ты это делаешь?<span class="tm">21:41 <i>✓✓</i></span></div></div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">G</span>
+      <div class="b how">
+        <p><b>Собираю.</b> RSS игровых медиа, Reddit, Nexus Mods, ModDB, GitHub Trending и публичные Telegram-каналы.</p>
+        <p><b>Склеиваю.</b> Одна новость из двадцати мест становится одной историей, а не двадцатью сообщениями.</p>
+        <p><b>Оцениваю.</b> Баллы за узнаваемость франшизы, свежесть и необычность, штраф за нишевое и девелоперское. Уникальная находка проходит и без шума вокруг.</p>
+        <p><b>Учусь у редактора.</b> «Мусор» снижает вес темы в следующих подборках. Сам в канал ничего не публикую — решает человек.</p>
+        <p class="stack">Python 3.12, PostgreSQL, Telegram Bot API. Работает на Mac редактора, без платных API.</p>
+        <span class="tm">21:41</span>
+      </div>
+    </div>
+
+    <div class="m in">
+      <span class="ava" aria-hidden="true">G</span>
       <div class="col">
-        <article class="b card">
-          <p class="score"><span class="pts">✨ 49</span><span class="kind unique">UNIQUE</span></p>
-          <h2>Геймпад Nyan-Tama с «кошачьими бубенцами» вместо стиков вызвал бурную реакцию в сети</h2>
-          <p class="sum">Концептуальный геймпад с кошачьим дизайном обратил на себя внимание необычным расположением кнопок и стиков: реакции — от восторга до шуток.</p>
-          <p class="why"><b>Почему интересно</b>свежая новость, только что найдена</p>
-          <dl class="meta">
-            <div><dt>Источник</dt><dd>VGTimes</dd></div>
-            <div><dt>Найдено</dt><dd>7 минут назад</dd></div>
-            <div><dt>В истории</dt><dd>1 источник</dd></div>
-          </dl>
-          <span class="tm">16:48</span>
-        </article>
-        <div class="kb" aria-label="Оценка карточки">
-          <button type="button">👍 Хорошо</button><button type="button">⭐ Очень хорошо</button>
-          <button type="button">👎 Мусор</button><button type="button">🔇 Не интересует тема</button>
-          <button type="button">⏰ Опоздал</button><button type="button">📝 Заметка</button>
+        <div class="b">
+          <p>Такой же радар можно собрать под вашу нишу: новости рынка, упоминания бренда, релизы конкурентов. Собрать отовсюду, убрать дубли и шум, прислать в Telegram только важное.</p>
+          <span class="tm">21:42</span>
         </div>
-      </div>
-    </div>
-
-    <div class="m in">
-      <span class="ava" aria-hidden="true"></span>
-      <div class="b intro tail">
-        <p><b>Ни одна карточка не уходит в канал сама</b> — решает редактор. «Мусор» снижает вес темы в следующих подборках, а по «опоздал» видно, какие источники стоит опрашивать чаще.</p>
-        <span class="tm">16:49</span>
+        <a class="kb" href="../">Все работы KERNØ</a>
       </div>
     </div>
   </main>
 
-  <footer class="note">Демо KERNØ. Карточки — настоящие находки бота за октябрь, переведены на русский, как это делает бот. Сам бот работает на компьютере редактора и пишет ему в личку.</footer>
+  <footer class="note">Демо KERNØ: карточки — настоящие находки бота за октябрь. Обои чата: фото «Bookshelves with books and mangas», aokomoriuta, <a href="https://commons.wikimedia.org/wiki/File:Aokomoriuta%27s_bookshelves_with_books_and_mangas_20090215.jpg" target="_blank" rel="noopener">Wikimedia Commons</a>, CC BY-SA 3.0, размыто.</footer>
   <script src="app.js" defer></script>
 </body>
 </html>
