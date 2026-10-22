@@ -12,10 +12,10 @@ import { paintPaper } from './paper';
 import { burntHole, candle, candlelight, dust, inkBlot, note } from './atmosphere';
 
 paintPaper();
-buildHero();
+const cellar = buildHero();
 const booking = buildBooking();
 buildHall((t) => booking.pick(t), (t) => booking.hint(t));
-buildNight();
+buildNight(cellar);
 
 // Header mark
 const mark = document.querySelector('.mark-glyph')!;
@@ -115,9 +115,6 @@ const hero = $('.hero');
 // between the left tentacle and the title
 burntHole(hero, { position: 'absolute', left: '19%', top: '13%' }, 130, 1);
 inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
-// pinned to the copy, just above the heading, so a short screen never slides the heading into it;
-// the arrow points up and over to the cauldron
-note($('.hero-copy'), 'мешать только против часовой!', { position: 'absolute', left: '-6px', bottom: 'calc(100% + 22px)', transform: 'rotate(-5deg)', whiteSpace: 'nowrap' }, { dx: 250, dy: -34, bend: 0.25 });
 const hall = $('.hall');
 note(hall, 'стол XIII не бронировать. Никогда.', { position: 'absolute', left: '50%', top: '103%', transform: 'rotate(-3deg)' }, { dx: 30, dy: -70, bend: -0.3 });
 note(hall, 'там кто-то есть', { position: 'absolute', left: '14%', top: '104%', transform: 'rotate(3deg)' }, { dx: 190, dy: -50, bend: 0.25 });

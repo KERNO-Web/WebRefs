@@ -204,7 +204,8 @@ export function inkBlot(host: HTMLElement, css: Partial<CSSStyleDeclaration>, si
 }
 
 // Handwritten marginal note with a hand-drawn arrow.
-export function note(host: HTMLElement, text: string, css: Partial<CSSStyleDeclaration>, arrow?: { dx: number; dy: number; bend?: number }) {
+/** arrow.at: 'start' (default) draws from above the note's first word, 'end' from just past its last one */
+export function note(host: HTMLElement, text: string, css: Partial<CSSStyleDeclaration>, arrow?: { dx: number; dy: number; bend?: number; at?: 'start' | 'end' }) {
   const n = document.createElement('p');
   n.className = 'marginal';
   n.textContent = text;
@@ -226,7 +227,8 @@ export function note(host: HTMLElement, text: string, css: Partial<CSSStyleDecla
     const [px, py] = pts[14], ang = Math.atan2(y1 - py, x1 - px);
     for (const s of [-1, 1]) stroke(svg, [[x1, y1], [x1 - Math.cos(ang + s * 0.5) * 12, y1 - Math.sin(ang + s * 0.5) * 12]], swell(2, 0.5));
     n.append(svg);
-    Object.assign(svg.style, { left: arrow.dx < 0 ? `${-W + 30}px` : '20px', top: arrow.dy < 0 ? `${-H + 8}px` : '100%' });
+    if (arrow.at === 'end') Object.assign(svg.style, { left: 'calc(100% - 8px)', top: arrow.dy < 0 ? `${-H + 30}px` : '0px' });
+    else Object.assign(svg.style, { left: arrow.dx < 0 ? `${-W + 30}px` : '20px', top: arrow.dy < 0 ? `${-H + 8}px` : '100%' });
   }
   return n;
 }

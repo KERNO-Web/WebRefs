@@ -20,10 +20,9 @@
 .n-head h2 { font-size: clamp(40px, 5.2vw, 86px); line-height: 0.95; font-weight: 600; text-wrap: balance; }
 .n-head > p:not(.kicker) { margin: 20px 0 0; font-size: 20px; color: var(--cream-dim); max-width: 560px; }
 
-/* ---------- the portal: the potion pours out of the cauldron ---------- */
+/* ---------- the portal: the bar at the bottom of the cellar stairs ---------- */
 .opening { position: relative; }
 .portal { min-height: 100svh; padding: 0; overflow: hidden; }
-.portal-rim { display: none; }
 .portal-view { position: relative; min-height: 100svh; overflow: hidden; background: var(--night); }
 .portal-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .portal-view::after {
@@ -37,12 +36,12 @@
 .portal-hint::after { content: ''; display: block; width: 1px; height: 54px; margin: 10px auto 0; background: linear-gradient(var(--cream-dim), transparent); }
 
 .opening.is-live .portal { position: absolute; inset: 0; z-index: 6; min-height: 0; background: none; pointer-events: none; }
-.opening.is-live .portal-rim {
-  display: block; position: absolute; inset: 0; clip-path: circle(0 at 50% 50%);
-  background: radial-gradient(circle at 50% 50%, #d9ff9f 0%, #7bd63a 45%, #2f6d14 100%);
-}
-.opening.is-live .portal-view { position: absolute; inset: 0; min-height: 0; clip-path: circle(0 at 50% 50%); }
+.opening.is-live .portal-view { position: absolute; inset: 0; min-height: 0; opacity: 0; }
 .opening.is-live .portal-img { will-change: transform; }
+.hero::after { transition: opacity 0.25s; }
+.hero.descending::after { opacity: 0; }
+/* at rest the art keeps to its box; walking in, the stairwell spills past it */
+.opening.is-live .hero:not(.descending) .hero-art { overflow: hidden; }
 
 /* ---------- night: one large photo and the room in words ---------- */
 .night { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 90px); align-items: center; padding-top: clamp(80px, 12vh, 150px); padding-bottom: clamp(80px, 12vh, 150px); }
