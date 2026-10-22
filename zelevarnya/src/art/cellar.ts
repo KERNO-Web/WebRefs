@@ -6,8 +6,6 @@ import { arc, el, P, poly, rng, stroke, swell } from '../ink';
 // (viewBox 0 -60 1000 1080).
 
 export const ARCH = { x: 500, spring: 430, ri: 230, ro: 312, floor: 1020 };
-/** the doorway runs on below the art's edge, so a tall phone screen never sees parchment under the stairs */
-const BOT = 1700;
 /** vanishing point of the vault, at eye level */
 export const VP: P = [500, 540];
 /** how deep the end wall stands: the corridor is short, the bar's door large */
@@ -50,7 +48,7 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
   const warm = el('radialGradient', { id: 'cellar-warm' }, defs);
   el('stop', { offset: '0%', 'stop-color': '#ffd98a', 'stop-opacity': 0.9 }, warm);
   el('stop', { offset: '100%', 'stop-color': '#ffb04a', 'stop-opacity': 0 }, warm);
-  const inner = poly(archOutline(RI, BOT), true);
+  const inner = poly(archOutline(RI, FL), true);
   el('path', { d: inner }, el('clipPath', { id: 'cellar-clip' }, defs));
   const doorPts: P[] = [[DOOR.x - DOOR.hw, DOOR.bottom], ...arc(DOOR.x, DOOR.bottom - DOOR.h + DOOR.hw, DOOR.hw, DOOR.hw, Math.PI, Math.PI * 2, 24), [DOOR.x + DOOR.hw, DOOR.bottom]];
   el('path', { d: poly(doorPts, true) }, el('clipPath', { id: 'door-clip' }, defs));
@@ -117,7 +115,7 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
   // --- the doors: plank leaves hinged on the jambs
   const leaves = el('g', { class: 'leaves' }, tunnel);
   const leafPaths = [0, 1].map(() => ({ fill: el('path', { class: 'leaf-wood' }, leaves), ink: el('path', { class: 'ink' }, leaves) }));
-  const closedLeaf: P[] = archOutline(RI, BOT);
+  const closedLeaf: P[] = archOutline(RI, FL);
   const mapLeaf = (side: number, theta: number) => (p: P): P => {
     // u: 0 at the hinge, 1 at the meeting edge
     const u = side < 0 ? (p[0] - (AX - RI)) / RI : ((AX + RI) - p[0]) / RI;
@@ -127,7 +125,7 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
   };
   const halfLeaf = (side: number): P[] => {
     const pts = closedLeaf.filter((p) => (side < 0 ? p[0] <= AX : p[0] >= AX));
-    return side < 0 ? [...pts, [AX, pts[pts.length - 1][1]], [AX, BOT]] : [[AX, BOT], [AX, pts[0][1]], ...pts];
+    return side < 0 ? [...pts, [AX, pts[pts.length - 1][1]], [AX, FL]] : [[AX, FL], [AX, pts[0][1]], ...pts];
   };
   const leafShapes = [halfLeaf(-1), halfLeaf(1)];
   const open = (theta: number) => {
@@ -142,7 +140,7 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
       const topAt = (x: number) => SY - Math.sqrt(Math.max(0, RI * RI - (x - AX) ** 2));
       for (let k = 1; k < 5; k++) {
         const x = side < 0 ? AX - RI + (k / 5) * RI : AX + RI - (k / 5) * RI;
-        d += stroke(leaves, ([[x, topAt(x) + 4], [x, BOT]] as P[]).map(m), swell(1.1, 0.4)).getAttribute('d')!;
+        d += stroke(leaves, ([[x, topAt(x) + 4], [x, FL]] as P[]).map(m), swell(1.1, 0.4)).getAttribute('d')!;
         leaves.lastElementChild!.remove();
       }
       for (const y of [620, 900]) {
@@ -181,9 +179,9 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
   for (const side of [-1, 1]) {
     let y = SY;
     let row = 0;
-    while (y < BOT) {
+    while (y < FL) {
       const h = 62 + r() * 18, x0 = AX + side * RI, w = (RO - RI) + (row % 2 ? 14 : -6);
-      const pts: P[] = [[x0, y], [x0 + side * w, y], [x0 + side * w, Math.min(BOT, y + h)], [x0, Math.min(BOT, y + h)]];
+      const pts: P[] = [[x0, y], [x0 + side * w, y], [x0 + side * w, Math.min(FL, y + h)], [x0, Math.min(FL, y + h)]];
       el('path', { d: poly(pts, true), class: 'paper-fill' }, stone);
       stroke(stone, pts.concat([pts[0]]), () => 1.6);
       for (let k = 0; k < 3; k++) {
@@ -193,6 +191,10 @@ export function drawCellar(svg: SVGSVGElement, defs: Element): Cellar {
       y += h; row++;
     }
   }
+  // the ground the arch stands on: the page's double frame line, drawn into the scene so it
+  // stays under the arch while the view closes in (at rest it lies on the page's own line)
+  stroke(root, [[-4000, FL - 0.5], [5000, FL - 0.5]], () => 1.1);
+  stroke(root, [[-4000, FL + 8], [5000, FL + 8]], () => 2);
   // the springing line, one heavy stroke across each jamb's top
   for (const side of [-1, 1]) stroke(stone, [[AX + side * RI, SY], [AX + side * (RO + 8), SY]], () => 2.6);
 
