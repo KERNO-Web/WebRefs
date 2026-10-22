@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Отвёртка · Mini App сервисного центра</title>
+  <meta name="description" content="Демо KERNØ: Telegram Mini App сервисного центра. Клиент сдаёт технику в ремонт в три касания, видит статус по номеру квитанции и цены." />
+  <meta property="og:title" content="Отвёртка · Mini App для сервиса и мастерской" />
+  <meta property="og:image" content="og.jpg" />
+  <meta name="theme-color" content="#16181b" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=PT+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="miniapp.css" />
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="../" aria-label="Все работы KERNØ"><i class="ph ph-arrow-left"></i></a>
+    <div class="brand"><span class="logo"><i class="ph-fill ph-screwdriver"></i></span><div><b>Отвёртка</b><small>Mini App сервисного центра</small></div></div>
+    <nav class="variant" aria-label="Вариант"><a href="./">Бот</a><a href="app.html" aria-current="page">Mini App</a></nav>
+    <a class="talk" href="https://t.me/Kernodev" target="_blank" rel="noopener">Обсудить проект</a>
+  </header>
+
+  <main class="mini-stage">
+    <div class="phone mini" id="app">
+      <!-- Telegram's own bar above a Mini App -->
+      <div class="wa-bar"><span>Закрыть</span><b>Отвёртка</b><i class="ph ph-dots-three-circle"></i></div>
+
+      <section class="pane" data-pane="repair">
+        <header class="hero">
+          <p class="hello">Здравствуйте! Сдадите технику в&nbsp;ремонт?</p>
+          <p class="addr"><i class="ph ph-map-pin"></i>ул. Ленина, 112, вход со двора · до 20:00</p>
+        </header>
+        <div class="step">
+          <h2><span>1</span>Что чиним</h2>
+          <div class="chips" data-pick="type">
+            <button data-v="phone"><i class="ph ph-device-mobile"></i>Смартфон</button>
+            <button data-v="laptop"><i class="ph ph-laptop"></i>Ноутбук</button>
+            <button data-v="tablet"><i class="ph ph-device-tablet"></i>Планшет</button>
+          </div>
+        </div>
+        <div class="step" data-after="type">
+          <h2><span>2</span>Что случилось</h2>
+          <div class="chips" data-pick="issue">
+            <button data-v="screen">Разбит экран</button><button data-v="charge">Не заряжается</button>
+            <button data-v="power">Не включается</button><button data-v="water">Попала вода</button>
+          </div>
+        </div>
+        <div class="step" data-after="issue">
+          <h2><span>3</span>Когда принесёте</h2>
+          <div class="chips slots" data-pick="slot">
+            <button data-v="Сегодня, 18:00">Сегодня<b>18:00</b></button>
+            <button data-v="Завтра, 11:00">Завтра<b>11:00</b></button>
+            <button data-v="Завтра, 15:30">Завтра<b>15:30</b></button>
+          </div>
+        </div>
+        <div class="estimate" id="estimate" hidden></div>
+        <div class="done" id="done" hidden></div>
+      </section>
+
+      <section class="pane" data-pane="status" hidden>
+        <header class="hero"><p class="hello">Статус ремонта</p></header>
+        <form class="lookup" id="lookup"><label class="sr" for="no">Номер квитанции</label><span>№</span><input id="no" inputmode="numeric" value="2414" maxlength="4" /><button>Найти</button></form>
+        <div id="track"></div>
+      </section>
+
+      <section class="pane" data-pane="prices" hidden>
+        <header class="hero"><p class="hello">Цены</p><p class="addr">Диагностика бесплатно. Окончательная цена — после осмотра.</p></header>
+        <div id="prices"></div>
+      </section>
+
+      <button class="main-btn" id="mainBtn" hidden>Оформить заявку</button>
+      <nav class="tabs" aria-label="Разделы">
+        <button data-tab="repair" aria-current="page"><i class="ph ph-wrench"></i>Ремонт</button>
+        <button data-tab="status"><i class="ph ph-receipt"></i>Статус</button>
+        <button data-tab="prices"><i class="ph ph-tag"></i>Цены</button>
+      </nav>
+    </div>
+
+    <aside class="mini-note">
+      <p class="cap">Тот же сервис, но приложением</p>
+      <h1>Заявка в три касания — без переписки</h1>
+      <p>Mini App открывается кнопкой в боте или ссылкой. Клиент выбирает устройство, поломку и время, сразу видит ориентир по цене. Статус смотрит по номеру квитанции, а уведомления приходят в тот же чат.</p>
+      <p class="hint">Бот или Mini App — выбирают под клиентов мастерской: кому-то проще диалог, кому-то кнопки.</p>
+    </aside>
+  </main>
+
+  <script src="miniapp.js"></script>
+</body>
+</html>

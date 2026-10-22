@@ -293,3 +293,32 @@ button { cursor: pointer; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ===================================================================
+   Redesign layer (Oct 2026): the shop's tool wall. The page is a
+   graphite pegboard; the client's phone and the master's ticket board
+   hang on it. One signal yellow. Bot / Mini App switch in the bar.
+   =================================================================== */
+body {
+  background-color: #23262b;
+  background-image:
+    radial-gradient(circle at 50% 50%, #15171a 0 3.2px, transparent 3.6px),
+    radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.05) 0 4.2px, transparent 4.6px);
+  background-size: 28px 28px;
+  background-position: 0 0, 0 1px;
+}
+.top { background: #16181b; box-shadow: 0 1px 0 #2f3338; }
+.cap { color: #b9bdc3; font-weight: 600; letter-spacing: 0.02em; }
+.phone { box-shadow: 0 0 0 1px #3a3e44, 0 40px 70px -30px rgb(0 0 0 / 0.8), 0 12px 24px -12px rgb(0 0 0 / 0.6); }
+/* the master's board: a yellow-topped clipboard hung on the wall */
+.admin { border: 0; border-top: 6px solid var(--yellow); border-radius: 10px 10px 6px 6px; background: #ecebe6;
+  box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.75), 0 8px 18px -10px rgb(0 0 0 / 0.5); }
+.a-tabs { background: #f6f5f0; }
+.talk { border-radius: 999px; }
+.reset { border-radius: 999px; }
+/* bot / mini app: two ways to give the same service to a client */
+.variant { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: #2c2f33; }
+.variant a { padding: 6px 13px; border-radius: 999px; font-size: 13.5px; font-weight: 600; color: #c9ccd0; text-decoration: none; white-space: nowrap; }
+.variant a[aria-current='page'] { background: var(--yellow); color: var(--graphite); }
+.variant a:not([aria-current]):hover { color: #fff; }
+@media (max-width: 700px) { .variant a { padding: 6px 10px; font-size: 12.5px; } .brand small { display: none; } }
