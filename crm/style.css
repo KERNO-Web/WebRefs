@@ -390,3 +390,104 @@ button { cursor: pointer; }
 .bar-row:nth-child(5) .fill:not(.alt) { background: var(--f-production); }
 .bar-row:nth-child(6) .fill:not(.alt) { background: var(--f-done); }
 .bar-row .fill.alt { background: var(--ink); opacity: 0.75; }
+
+/* ===================================================================
+   Redesign layer (Oct 2026): a workshop, not a SaaS template.
+   Warm birch paper and walnut ink instead of grey on grey; one copper
+   accent; the side rail becomes a top bar on desktop; each funnel stage
+   is a solid facade-coloured plank header; cards lose their frames and
+   sit on the plank by a tinted shadow; numbers carry the hierarchy.
+   =================================================================== */
+:root {
+  --bg: #f1ece3;
+  --panel: #e8e1d5;
+  --raise: #fffcf6;
+  --ink: #1f1b16;
+  --muted: #5b5348;
+  --faint: #8c8274;
+  --line: #ddd4c5;
+  --line-2: #c9bead;
+  --accent: #a94f22;
+  --soft: #f2dccd;
+  --side: #1f1b16;
+  --side-2: #ebe4d8;
+  --side-ink: #1f1b16;
+  --side-muted: #6f675b;
+  --shadow: 0 1px 0 rgb(80 56 30 / 0.06), 0 10px 24px -14px rgb(80 56 30 / 0.45);
+  --r: 6px;
+}
+body { background: var(--bg); }
+/* a faint grain, like a sheet of plywood under the paper */
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.35;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .15 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.app { position: relative; z-index: 1; }
+.btn { border-radius: 999px; padding: 0 16px; }
+.btn:hover { background: #8f421c; border-color: #8f421c; }
+.btn.ghost { border-radius: 999px; }
+.search { border-radius: 999px; background: var(--raise); border-color: var(--line); }
+.bar h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.035em; }
+.bar { background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom-color: transparent; }
+.ava { border-radius: 50% 50% 50% 8px; }
+
+/* the funnel: planks with solid facade-coloured heads */
+.board { gap: 14px; }
+.col { background: var(--panel); border: 0; border-radius: 10px; overflow: hidden; }
+.col.over { background: color-mix(in srgb, var(--st) 18%, var(--panel)); }
+.col-head { background: var(--st); color: #fffaf2; padding: 12px 14px 12px; gap: 0 10px; }
+.col-head b { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.col-head .n { background: rgb(255 255 255 / 0.22); color: #fffaf2; border-radius: 999px; padding: 0 7px; }
+.col-head .sum { color: rgb(255 250 242 / 0.85); font-weight: 600; font-variant-numeric: tabular-nums; }
+.col-list { padding: 10px 8px 10px; gap: 8px; }
+.col-empty { border-color: var(--line-2); background: rgb(255 255 255 / 0.35); }
+.card { border: 0; border-radius: 8px; padding: 12px 13px; box-shadow: 0 1px 0 rgb(80 56 30 / 0.07); position: relative; }
+.card::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--st); }
+.card:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+.card .name { font-size: 14.5px; font-weight: 650; letter-spacing: -0.01em; }
+.card .meta .money { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* desktop: the rail becomes a top bar */
+@media (min-width: 1101px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .side {
+    height: 62px; flex-direction: row; align-items: center; gap: 22px; padding: 0 22px; z-index: 10;
+    background: var(--raise); color: var(--ink); border-bottom: 1px solid var(--line);
+  }
+  .back { color: var(--faint); }
+  .back:hover { background: var(--panel); color: var(--ink); }
+  .brand { padding: 0; }
+  .brand b { font-size: 18px; letter-spacing: -0.02em; }
+  .brand small { color: var(--faint); }
+  .logo { color: var(--ink); background:
+    linear-gradient(90deg, var(--f-new) 0 16.66%, var(--f-measure) 0 33.33%, var(--f-project) 0 50%, var(--f-contract) 0 66.66%, var(--f-production) 0 83.33%, var(--f-done) 0) bottom / 100% 6px no-repeat, var(--panel); }
+  .nav { display: flex; gap: 2px; height: 100%; }
+  .nav button { height: 100%; border-radius: 0; padding: 0 12px; color: var(--muted); gap: 8px; }
+  .nav button:hover { background: none; color: var(--ink); }
+  .nav button[aria-current='page'] { background: none; color: var(--ink); font-weight: 650; box-shadow: inset 0 -3px 0 var(--accent); }
+  .me { margin: 0 0 0 auto; padding: 0; border: 0; display: flex; align-items: center; gap: 12px; }
+  .me-label { display: none; }
+  .roles { background: var(--panel); border-radius: 999px; }
+  .roles button { border-radius: 999px; color: var(--muted); padding: 6px 12px; }
+  .roles button[aria-checked='true'] { background: var(--ink); color: var(--raise); }
+  .me-card small { display: none; }
+  .me-card .ava { background: var(--accent); color: #fffaf2; }
+  .reset { color: var(--faint); }
+  .reset:hover { color: var(--ink); }
+  .bar { top: 62px; }
+}
+@media (max-width: 780px) {
+  .side { background: var(--raise); border-top: 1px solid var(--line); }
+  .nav button { color: var(--muted); }
+  .nav button[aria-current='page'] { color: var(--ink); background: none; box-shadow: inset 0 3px 0 var(--accent); }
+  .bar h1 { font-size: 24px; }
+}
+/* the funnel keeps its gutter while it scrolls sideways: no snapping on a
+   wide screen (it pulled the first plank flush to the edge), and on a phone
+   each plank snaps with the gutter kept */
+.view.board { padding-left: 22px; padding-right: 22px; scroll-snap-type: none; }
+@media (max-width: 780px) {
+  /* .view and .board are one element: the old -16px bleed pulled it past the screen edge */
+  .view.board { margin: 0; padding-left: 16px; padding-right: 16px; scroll-snap-type: x mandatory; }
+  .view.board .col { scroll-margin-left: 16px; }
+}
