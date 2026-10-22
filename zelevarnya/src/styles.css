@@ -113,71 +113,6 @@ svg .roughen { filter: url(#ink-rough); }
 .sec-head p { margin: 0; font-size: 21px; color: var(--ink-soft); }
 .sec-runes { width: 150px; height: 44px; overflow: visible; }
 
-/* ---------- book ---------- */
-.book-sec { padding-top: calc(var(--frame) + 44px); }
-.book-sec .sec-head { margin-bottom: 22px; gap: 6px; }
-.book-sec .sec-head h2 { font-size: clamp(44px, 4.6vw, 68px); }
-.book { max-width: 1240px; margin: 0 auto; position: relative; }
-.book-body { position: relative; display: grid; grid-template-columns: 1fr 1fr; perspective: 2400px; min-height: 540px;
-  background: var(--parchment-deep); box-shadow: 0 30px 50px -30px rgba(40, 25, 10, 0.5), 0 0 0 1.5px var(--ink); }
-.page { position: relative; padding: 36px 44px; background: linear-gradient(90deg, rgba(120, 84, 40, 0) 78%, rgba(90, 56, 20, 0.22)), linear-gradient(rgba(244, 233, 207, 0.55), rgba(244, 233, 207, 0.55)), var(--paper, var(--parchment)); background-size: auto, auto, 1024px; }
-.page-r { background: linear-gradient(270deg, rgba(120, 84, 40, 0) 78%, rgba(90, 56, 20, 0.24)), linear-gradient(rgba(244, 233, 207, 0.55), rgba(244, 233, 207, 0.55)), var(--paper, var(--parchment)); background-size: auto, auto, 1024px; background-position: 0 0, 0 0, 400px 200px; }
-.page::before { content: ''; position: absolute; inset: 14px; border: 0.75px solid var(--ink); pointer-events: none; }
-.spine { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--ink); transform: translateX(-1px); }
-.leaf { position: absolute; top: 0; bottom: 0; width: 50%; transform-style: preserve-3d; z-index: 5; }
-.leaf .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.leaf .back { transform: rotateY(180deg); }
-.leaf .page { height: 100%; }
-.leaf-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(30, 24, 18, 0.25), transparent); opacity: 0; }
-
-.pl-vessel { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; height: 100%; position: relative; }
-.pl-vessel svg { width: min(100%, 300px); height: auto; overflow: visible; }
-.pl-num { position: absolute; top: 34px; left: 42px; font-family: var(--display); font-weight: 700; font-size: 22px; }
-.pl-zero { position: absolute; top: 34px; right: 42px; font-family: var(--display); font-weight: 700; font-size: 17px; border: 1.5px solid var(--ink); padding: 2px 10px; }
-.pr { display: flex; flex-direction: column; height: 100%; gap: 14px; }
-.pr h3 { font-size: clamp(38px, 3.6vw, 56px); }
-.pr-base { font-size: 21px; font-weight: 600; margin: 0; }
-.pr-serve { margin: 0; color: var(--ink-soft); }
-.pr-effect { margin: 0; font-style: italic; font-size: 21px; }
-.pr-effect b { font-family: var(--display); font-style: normal; font-weight: 700; font-size: 17px; margin-right: 6px; }
-.pr-glyphs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 4px 0; padding: 14px 0; border-top: 0.75px solid var(--ink); border-bottom: 0.75px solid var(--ink); }
-.pr-glyphs figure { margin: 0; display: grid; justify-items: center; gap: 4px; font-size: 16px; }
-.pr-glyphs svg { width: 44px; height: 44px; overflow: visible; }
-.pr-foot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.pr-price { font-family: var(--display); font-weight: 700; font-size: 40px; }
-.lemon { font-size: 17px; --h: 46px; }
-.lemon[disabled] { opacity: 0.5; cursor: default; }
-
-.book-tabs { position: absolute; right: -46px; top: 30px; display: grid; gap: 6px; z-index: 6; }
-.book-tabs button {
-  width: 46px; height: 58px; border: 1.5px solid var(--ink); border-left: none; background: var(--parchment-deep);
-  font-family: var(--display); font-weight: 700; font-size: 15px; cursor: pointer; color: var(--ink);
-  transition: background-color 0.2s, width 0.2s;
-}
-.book-tabs button[aria-selected='true'] { background: var(--potion); width: 54px; }
-.book-nav { display: flex; justify-content: center; align-items: center; gap: 28px; margin-top: 26px; }
-.turn { width: 64px; height: 48px; display: grid; place-items: center; border: 1.5px solid var(--ink); background: none; cursor: pointer; }
-.turn svg { width: 36px; fill: none; stroke: var(--ink); stroke-width: 2; }
-.turn:hover { background: var(--ink); }
-.turn:hover svg { stroke: var(--parchment); }
-.folio-num { font-family: var(--display); font-weight: 700; font-size: 22px; min-width: 110px; text-align: center; }
-
-/* ---------- ritual ---------- */
-.ritual-plates { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 3vw, 48px); }
-.ritual-trail { position: absolute; left: 12%; width: 76%; top: 50%; height: 120px; transform: translateY(-50%); z-index: -1; overflow: visible; }
-.medal { position: relative; margin: 0; aspect-ratio: 1; }
-.medal video, .medal-shift { position: absolute; inset: 12.5%; width: 75%; height: 75%; border-radius: 50%; object-fit: cover; background: #1a140e; overflow: hidden; }
-.medal-shift img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.medal-shift .pink { opacity: 0; }
-.medal-shift.drawn { background: var(--parchment); display: grid; place-items: center; }
-.medal-shift.drawn svg { width: 62%; height: auto; overflow: visible; }
-.medal-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.ritual-steps { list-style: none; padding: 0; margin: 10px auto 0; max-width: 1240px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
-.ritual-steps li { display: grid; justify-items: center; text-align: center; gap: 8px; }
-.ritual-steps h3 { font-size: 40px; }
-.ritual-steps p { margin: 0; color: var(--ink-soft); max-width: 330px; }
-.step-num svg { width: 40px; height: 40px; overflow: visible; }
-
 /* ---------- hall ---------- */
 .hall { position: relative; }
 .plan { width: 100%; height: auto; display: block; overflow: visible; }
@@ -242,23 +177,6 @@ svg .roughen { filter: url(#ink-rough); }
   .mark { margin-right: auto; }
 }
 @media (max-width: 900px) {
-  .book-body { grid-template-columns: 1fr; min-height: 0; }
-  .page-l { display: none; }
-  .spine { display: none; }
-  .book-tabs { position: static; display: flex; gap: 6px; overflow-x: auto; margin-bottom: 10px; padding-bottom: 4px; }
-  .book-tabs button { width: auto; min-width: 46px; height: 46px; border-left: 1.5px solid var(--ink); clip-path: none; flex: none; }
-  .book-tabs button[aria-selected='true'] { width: auto; }
-  .page { padding: 32px 26px; }
-  .pr-vessel-mobile { display: grid !important; }
-  .ritual-steps { grid-template-columns: 1fr; gap: 30px; }
-  .ritual-sec { display: grid; justify-items: center; }
-  .ritual-plates, .ritual-steps { display: contents; }
-  .ritual-trail { display: none; }
-  .ritual-sec .sec-head { order: 0; }
-  .medal { width: min(100%, 320px); }
-  .medal:nth-of-type(1) { order: 1; } .ritual-steps li:nth-child(1) { order: 2; margin-bottom: 36px; }
-  .medal:nth-of-type(2) { order: 3; } .ritual-steps li:nth-child(2) { order: 4; margin-bottom: 36px; }
-  .medal:nth-of-type(3) { order: 5; } .ritual-steps li:nth-child(3) { order: 6; }
   .fields { grid-template-columns: 1fr 1fr; }
   .field-wide, .field:nth-child(5) { grid-column: span 2; }
   .table-card { position: static; margin-top: 16px; box-shadow: 4px 4px 0 var(--ink); }
@@ -284,7 +202,6 @@ svg .roughen { filter: url(#ink-rough); }
   .field-wide, .field:nth-child(5) { grid-column: span 1; }
   .seal-row { flex-direction: column; align-items: center; text-align: center; gap: 40px; }
   .slip { transform: none; }
-  .pr-price { font-size: 32px; }
   .foot-row { flex-direction: column; }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -293,11 +210,9 @@ svg .roughen { filter: url(#ink-rough); }
 }
 .bubble { fill: var(--bubble, #c4f58f); stroke: var(--ink); stroke-width: 1.6; }
 .plan-label { font-family: var(--display); font-weight: 700; fill: var(--ink); }
-.pr-vessel-mobile { display: none; justify-items: center; }
-.pr-vessel-mobile svg { width: 200px; height: auto; overflow: visible; }
 .drop { fill: var(--ink); }
 .edge-tentacle { inset: 0; width: 100%; height: 100%; z-index: 0; }
-.book, .ritual-plates, .ritual-steps, .hall, .slip, .sec-head { position: relative; z-index: 1; }
+.hall, .slip, .sec-head { position: relative; z-index: 1; }
 .hall .plan { pointer-events: auto; }
 .top { transition: transform 0.3s; }
 @media (max-height: 520px) and (orientation: landscape) {
@@ -308,23 +223,12 @@ svg .roughen { filter: url(#ink-rough); }
   .hero-margin { display: none; }
 }
 
-/* ---------- photo plates (menu) ---------- */
-.plate { position: relative; margin: 0; width: min(100%, 360px, 52vh); aspect-ratio: 4 / 5; border-radius: 999px 999px 6px 6px / 46% 46% 6px 6px; overflow: hidden; background: var(--ink); box-shadow: 0 0 0 1.5px var(--ink), 0 0 0 7px var(--parchment), 0 0 0 8px var(--ink), 0 24px 40px -24px rgba(40, 25, 10, 0.6); }
-.plate img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; filter: sepia(0.18) contrast(1.04); }
-.plate .pink { opacity: 0; }
-.plate-frame { position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 70px rgba(20, 14, 8, 0.55), inset 0 0 0 1px rgba(233, 220, 192, 0.25); pointer-events: none; }
-.pr-vessel-mobile .plate { width: min(100%, 300px); }
-.book-tabs { gap: 4px; top: 18px; }
-.book-tabs button { height: 40px; font-size: 14px; }
 
-.pl-credit { font-size: 13px; color: var(--ink-soft); text-decoration: none; white-space: nowrap; font-style: italic; }
-.pl-credit:hover { text-decoration: underline; }
 .credits { margin-top: 18px; font-size: 15px; color: var(--ink-soft); }
 .credits summary { cursor: pointer; font-family: var(--display); font-weight: 700; color: var(--ink); padding: 8px 0; }
 .credits ul { margin: 6px 0 0; padding: 0; list-style: none; columns: 2; column-gap: 32px; }
 .credits li { break-inside: avoid; margin-bottom: 4px; }
 @media (max-width: 640px) { .credits ul { columns: 1; } }
-.pl-credit-m { display: block; text-align: center; font-size: 13px; font-style: italic; color: var(--ink-soft); margin-top: 14px; text-decoration: none; }
 
 /* ---------- aged pages & mood ---------- */
 .folio { box-shadow: inset 0 0 160px rgba(70, 38, 10, 0.32), inset 0 0 40px rgba(60, 30, 6, 0.25); }
@@ -429,24 +333,10 @@ svg .roughen { filter: url(#ink-rough); }
   input[type='text'], input[type='tel'] { cursor: text; }
 }
 
-/* ---------- the hero's pinned photos: the bar itself, taped to the page ---------- */
-.hero-photos { position: absolute; z-index: 4; right: calc(var(--frame) + 14px); top: 19%; width: 262px; height: 420px; }
-.pin { position: absolute; margin: 0; padding: 8px 8px 36px; background: #f8f2e2; box-shadow: 0 1px 0 rgb(60 40 20 / 0.12), 0 14px 26px -12px rgb(50 30 10 / 0.6); }
-.pin img { display: block; width: 100%; height: auto; }
-.pin figcaption { position: absolute; left: 10px; right: 8px; bottom: 7px; font-family: 'Marck Script', var(--serif); font-size: 18px; line-height: 1; color: #3b2814; }
-.pin::before { content: ''; position: absolute; top: -11px; left: 50%; width: 74px; height: 24px; translate: -50% 0; rotate: -5deg; background: rgb(232 219 176 / 0.78); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
-.pin-a { width: 182px; top: 0; right: 62px; rotate: 5deg; }
-.pin-b { width: 214px; top: 214px; right: 0; rotate: -4deg; }
-.pin-b::before { rotate: 4deg; }
 @media (max-width: 640px) {
-  /* on a phone: cauldron, then the photos, then the copy */
+  /* on a phone: cauldron, then the copy */
   .hero { display: flex; flex-direction: column; }
   .hero-art { order: 1; align-self: flex-start; }
-  .hero-photos { order: 2; position: relative; right: auto; top: auto; width: auto; height: 200px; margin: 2vw calc(var(--frame) + var(--pad)) 0; }
   .hero-copy { order: 3; }
-  .pin { padding: 6px 6px 28px; }
-  .pin figcaption { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; bottom: 6px; }
-  .pin-a { width: 47%; left: 2%; right: auto; }
-  .pin-b { width: 50%; top: 22px; right: 0; }
   .hero .hole { left: auto !important; }
 }

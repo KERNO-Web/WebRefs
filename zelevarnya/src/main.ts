@@ -2,22 +2,20 @@ import './styles.css';
 import { onFrame, reduced, start, whenVisible } from './anim';
 import { glyph, rune, RUNE_NAMES } from './art/runes';
 import { Tentacle, TentacleOpts } from './art/tentacle';
-import { buildBook } from './book';
 import { buildBooking } from './booking';
 import { buildHall } from './hall';
 import { buildHero, debounce } from './hero';
 import { NS } from './ink';
-import { buildRitual } from './ritual';
+import { buildNight } from './night';
 import { POTIONS } from './data';
 import { paintPaper } from './paper';
 import { burntHole, candle, candlelight, dust, inkBlot, note } from './atmosphere';
 
 paintPaper();
 buildHero();
-buildBook();
-buildRitual();
 const booking = buildBooking();
 buildHall((t) => booking.pick(t), (t) => booking.hint(t));
+buildNight();
 
 // Header mark
 const mark = document.querySelector('.mark-glyph')!;
@@ -57,8 +55,6 @@ addEventListener('resize', debounce(drawStrip, 200));
 // Tentacles creeping from behind section edges.
 interface Edge { sel: string; spec: (W: number, H: number) => TentacleOpts }
 const EDGES: Edge[] = [
-  { sel: '.book-sec', spec: (W, H) => ({ x: -30, y: H * 0.8, angle: -0.55, length: Math.min(340, W * 0.3), width: 74, curl: -1, phase: 1 }) },
-  { sel: '.ritual-sec', spec: (W, H) => ({ x: W + 30, y: H * 0.14, angle: Math.PI - 0.1, length: Math.min(300, W * 0.3), width: 64, curl: -1, phase: 3 }) },
   { sel: '.hall-sec', spec: (W, H) => ({ x: -30, y: H * 0.55, angle: 0.1, length: Math.min(260, W * 0.24), width: 66, curl: 1, phase: 5 }) },
   { sel: '.booking-sec', spec: (W, H) => ({ x: W + 30, y: H * 0.78, angle: Math.PI + 0.35, length: Math.min(320, W * 0.28), width: 80, curl: 1, phase: 2 }) },
 ];
@@ -90,10 +86,20 @@ EDGES.forEach(({ sel, spec }) => {
 onFrame((t, f) => living.forEach((x) => { if (x.g.ownerSVGElement && x.g.ownerSVGElement.getBoundingClientRect().bottom > -200 && x.g.ownerSVGElement.getBoundingClientRect().top < innerHeight + 200) x.step(t, f); }));
 
 // Photo and video credits (CC BY / BY-SA need attribution).
+const PHOTOS: [string, string, string, string, string][] = [
+  ['Стойка бара', 'Achim Schleuning', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Cocktail-Bar_(Kleines_Phi)_in_Hamburg_2.jpg'],
+  ['Тёмный зал', 'Matti Blume', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Wiki_Loves_Cocktails_2017,_Berlin,_20170716_(DSC06538).jpg'],
+  ['Огонь над бокалом', 'istolethetv', 'CC BY 2.0', 'by/2.0', 'https://commons.wikimedia.org/wiki/File:Pouring_(3386574550).jpg'],
+  ['Склеп', 'Pascal Reusch', 'CC BY 3.0', 'by/3.0', 'https://commons.wikimedia.org/wiki/File:Residence_W%C3%BCrzburg_-_Wine_cellar.JPG'],
+  ['Бармен с шейкером', 'Achim Schleuning', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Barkeeper_Shaking.jpg'],
+  ['Библиотека', 'Wolfmann', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Grand_Hotel_Terminus_(1928)_whisky_bar_lounge_dining_Bergen_Norway_2017-10-18_a.jpg'],
+  ['Свеча на стойке', 'Victorgrigas', 'CC BY-SA 3.0', 'by-sa/3.0', 'https://commons.wikimedia.org/wiki/File:Candle_on_table_in_Wine_cellar-9473.jpg'],
+  ['Лаборатория', 'Matti Blume', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Wiki_Loves_Cocktails_2017,_Berlin,_20170716_(DSC06558).jpg'],
+  ['Лестница вниз', 'Matti Blume', 'CC BY-SA 4.0', 'by-sa/4.0', 'https://commons.wikimedia.org/wiki/File:Wiki_Loves_Cocktails_2017,_Berlin,_20170716_(DSC06519).jpg'],
+];
 const credits = document.querySelector('[data-credits]')!;
-credits.innerHTML = POTIONS.map((p) => `<li>${p.name}: <a href="${p.credit.source}" target="_blank" rel="noopener">${p.credit.author}</a>, <a href="${p.credit.licenseUrl}" target="_blank" rel="noopener">${p.credit.license}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
-  + '<li>Фото «Голубой блейзер»: <a href="https://commons.wikimedia.org/wiki/File:Bartender_preparing_a_blue_blazer_cocktail03.jpg" target="_blank" rel="noopener">Stefan Giesbert (cocktailpodcast.de)</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, Wikimedia Commons; кадрировано и тонировано</li>'
-  + '<li>Фото зала: <a href="https://commons.wikimedia.org/wiki/File:Interior_of_the_old_Public_Bar_in_The_Spreadeagle_-_geograph.org.uk_-_1742671.jpg" target="_blank" rel="noopener">tristan forward</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">CC BY-SA 2.0</a>, Wikimedia Commons; тонировано</li>'
+credits.innerHTML = PHOTOS.map(([what, author, lic, lu, src]) => `<li>${what}: <a href="${src}" target="_blank" rel="noopener">${author}</a>, <a href="https://creativecommons.org/licenses/${lu}/" target="_blank" rel="noopener">${lic}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
+  + POTIONS.map((p) => `<li>${p.name}: <a href="${p.credit.source}" target="_blank" rel="noopener">${p.credit.author}</a>, <a href="${p.credit.licenseUrl}" target="_blank" rel="noopener">${p.credit.license}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
   + '<li>Видео ритуала: <a href="https://mixkit.co/free-stock-video/bartender-makes-an-experimental-cocktail-4172/" target="_blank" rel="noopener">Mixkit 4172</a> и <a href="https://mixkit.co/free-stock-video/experimental-cocktail-in-the-bar-4416/" target="_blank" rel="noopener">Mixkit 4416</a>, Mixkit Free License</li>';
 
 // ---------- mood: light, dust, watchers, candles, marginalia ----------
@@ -112,14 +118,6 @@ inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
 // pinned to the copy, just above the heading, so a short screen never slides the heading into it;
 // the arrow points up and over to the cauldron
 note($('.hero-copy'), 'мешать только против часовой!', { position: 'absolute', left: '-6px', bottom: 'calc(100% + 22px)', transform: 'rotate(-5deg)', whiteSpace: 'nowrap' }, { dx: 250, dy: -34, bend: 0.25 });
-const book = $('.book-sec');
-note($('.book'), 'VII проверено на себе. Помню всё.', { position: 'absolute', right: '9%', bottom: '128px', transform: 'rotate(-4deg)' });
-burntHole(book, { position: 'absolute', left: '2.2%', top: '30%' }, 96, 3);
-inkBlot(book, { position: 'absolute', right: '3%', bottom: '8%' }, 54, 4);
-const ritual = $('.ritual-sec');
-note(ritual, 'дым не вдыхать (шутка)', { position: 'absolute', left: '3%', top: '310px', transform: 'rotate(-6deg)' });
-inkBlot(ritual, { position: 'absolute', right: '8%', top: '120px' }, 64, 5);
-burntHole(ritual, { position: 'absolute', right: '3%', bottom: '10%' }, 100, 6);
 const hall = $('.hall');
 note(hall, 'стол XIII не бронировать. Никогда.', { position: 'absolute', left: '50%', top: '103%', transform: 'rotate(-3deg)' }, { dx: 30, dy: -70, bend: -0.3 });
 note(hall, 'там кто-то есть', { position: 'absolute', left: '14%', top: '104%', transform: 'rotate(3deg)' }, { dx: 190, dy: -50, bend: 0.25 });

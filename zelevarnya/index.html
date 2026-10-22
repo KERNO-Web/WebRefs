@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Зельеварня · коктейльный бар-гримуар</title>
-  <meta name="description" content="Концепт KERNØ: коктейльный бар, где напитки варят, а не мешают. Сайт целиком нарисован кодом в технике гравюры." />
+  <meta name="description" content="Концепт KERNØ: коктейльный бар, где напитки варят, а не мешают. Первый экран — гравюра-гримуар, дальше бар на крупных фото." />
   <meta property="og:title" content="Зельеварня" />
   <meta property="og:description" content="Коктейльный бар-гримуар. Концепт KERNØ." />
   <meta property="og:image" content="og.jpg" />
@@ -31,12 +31,13 @@
     <nav class="nav" aria-label="Разделы">
       <a href="#book">Книга рецептов</a>
       <a href="#ritual">Ритуал</a>
-      <a href="#hall">Зал</a>
+      <a href="#interior">Зал</a>
     </nav>
     <a class="btn btn-potion btn-sm" href="#booking">Забронировать стол</a>
   </header>
 
   <main id="top">
+    <div class="opening" data-opening>
     <section class="hero folio" aria-labelledby="hero-title">
       <div class="folio-frame" aria-hidden="true"></div>
       <h1 id="hero-title" class="sr-only">Зельеварня</h1>
@@ -50,82 +51,94 @@
           <a class="btn btn-ink" href="#book">Открыть книгу рецептов</a>
         </div>
       </div>
-      <div class="hero-photos">
-        <figure class="pin pin-a">
-          <img src="photos/blazer.jpg" alt="Бармен переливает горящий напиток из кружки в кружку над стойкой с бутылками" width="720" height="720" />
-          <figcaption>горит, пока варим</figcaption>
-        </figure>
-        <figure class="pin pin-b">
-          <img src="photos/hall.jpg" alt="Вечерний зал: деревянная стойка, люстра и бокал на столе" width="900" height="675" />
-          <figcaption>зал к полуночи</figcaption>
-        </figure>
-      </div>
       <aside class="hero-margin" aria-label="Часы работы">
         <span class="hm-label">Варим</span>
         <span class="hm-value">ежедневно<br />18:00–03:00</span>
       </aside>
     </section>
 
-    <section id="book" class="book-sec folio" aria-labelledby="book-title">
-      <div class="folio-frame" aria-hidden="true"></div>
-      <header class="sec-head">
-        <svg class="sec-runes" aria-hidden="true" data-runes="ansuz,berkanan,kenaz"></svg>
-        <h2 id="book-title">Книга рецептов</h2>
-        <p>Двенадцать зелий. Листайте стрелками, свайпом или&nbsp;закладками сбоку.</p>
-      </header>
-      <div class="book" data-book>
-        <div class="book-tabs" role="tablist" aria-label="Зелья"></div>
-        <div class="book-body">
-          <div class="page page-l" data-page="l"></div>
-          <div class="page page-r" data-page="r"></div>
-          <div class="spine" aria-hidden="true"></div>
+    <section id="bar" class="portal" aria-labelledby="bar-title" data-portal>
+      <div class="portal-rim" aria-hidden="true"></div>
+      <div class="portal-view">
+        <img class="portal-img" src="photos/bar.jpg" alt="Стойка бара: медные трубы, подсвеченные полки с бутылками, высокие табуреты" />
+        <div class="portal-copy">
+          <p class="kicker">Под котлом</p>
+          <h2 id="bar-title">Стойка на&nbsp;четырнадцать табуретов и&nbsp;двести бутылок за&nbsp;спиной бармена</h2>
+          <p class="portal-sub">Спускаетесь на&nbsp;двенадцать ступеней вниз, и&nbsp;город заканчивается. Медь, свечи, полки до&nbsp;потолка и&nbsp;котёл, который не&nbsp;гаснет до&nbsp;трёх ночи.</p>
         </div>
-        <div class="book-nav">
-          <button class="turn" data-turn="-1" aria-label="Предыдущее зелье">
-            <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M38 10H4M12 2 3 10l9 8" /></svg>
-          </button>
-          <span class="folio-num" data-folio>I / XII</span>
-          <button class="turn" data-turn="1" aria-label="Следующее зелье">
-            <svg viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10h34M28 2l9 8-9 8" /></svg>
-          </button>
-        </div>
+        <p class="portal-hint" aria-hidden="true">листайте вниз</p>
+      </div>
+    </section>
+    </div>
+
+    <section class="night" aria-labelledby="night-title">
+      <figure class="night-photo reveal">
+        <img src="photos/night.jpg" alt="Тёмный зал: тёплые лампы на стене, двое гостей у стойки" loading="lazy" />
+      </figure>
+      <div class="night-copy reveal">
+        <p class="kicker">Ежедневно, 18:00–03:00</p>
+        <h2 id="night-title">Свет здесь только от&nbsp;ламп и&nbsp;котла</h2>
+        <p>Верхнего света нет. Лампы над стойкой, свечи на&nbsp;столах и&nbsp;зелёный отблеск из&nbsp;котла, в&nbsp;котором с&nbsp;вечера томятся настойки. Сюда приходят не&nbsp;на&nbsp;танцы, а&nbsp;поговорить вполголоса.</p>
+        <dl class="facts">
+          <div><dt>14</dt><dd>мест у&nbsp;стойки</dd></div>
+          <div><dt>16</dt><dd>столов в&nbsp;зале</dd></div>
+          <div><dt>12</dt><dd>зелий в&nbsp;книге</dd></div>
+        </dl>
       </div>
     </section>
 
-    <section id="ritual" class="ritual-sec folio" aria-labelledby="ritual-title">
-      <div class="folio-frame" aria-hidden="true"></div>
-      <header class="sec-head">
-        <svg class="sec-runes" aria-hidden="true" data-runes="raido,isa,thurisaz"></svg>
-        <h2 id="ritual-title">Ритуал подачи</h2>
-        <p>Зелье не&nbsp;приносят. Его&nbsp;доводят до&nbsp;готовности у&nbsp;вас на&nbsp;глазах.</p>
+    <section id="ritual" class="rit" aria-labelledby="ritual-title">
+      <header class="n-head reveal">
+        <p class="kicker">Ритуал подачи</p>
+        <h2 id="ritual-title">Зелье не&nbsp;приносят. Его&nbsp;доводят до&nbsp;готовности у&nbsp;вас на&nbsp;глазах</h2>
       </header>
-      <div class="ritual-plates">
-        <svg class="ritual-trail" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true"></svg>
-        <figure class="medal" data-step="brew">
+      <div class="rit-grid">
+        <figure class="rit-card rit-a reveal">
           <video src="video/brew.mp4" poster="video/brew.jpg" muted loop playsinline preload="none" aria-label="Бармен заливает сухой лёд в чашу с колбами"></video>
-          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+          <figcaption><span class="rn">I</span><h3>Варим</h3><p>Настойки на&nbsp;травах и&nbsp;специях стоят в&nbsp;котле с&nbsp;вечера. Анчан, бузина, копчёный ананас.</p></figcaption>
         </figure>
-        <figure class="medal" data-step="smoke">
+        <figure class="rit-card rit-b reveal">
           <video src="video/smoke.mp4" poster="video/smoke.jpg" muted loop playsinline preload="none" aria-label="Дым переливается через край бокала, сверху ставят стеклянный колпак"></video>
-          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+          <figcaption><span class="rn">II</span><h3>Дымим</h3><p>Колпак с&nbsp;дымом розмарина и&nbsp;пузырь дыма поверх бокала.</p></figcaption>
         </figure>
-        <figure class="medal" data-step="serve">
-          <div class="medal-shift"></div>
-          <svg class="medal-ring" viewBox="0 0 400 400" aria-hidden="true"></svg>
+        <figure class="rit-card rit-c reveal">
+          <img src="photos/fire.jpg" alt="Бармен в тёмном баре наливает напиток, руки освещены огнём" loading="lazy" />
+          <figcaption><span class="rn">III</span><h3>Поджигаем</h3><p>Корица горит над бокалом, пока вы не&nbsp;скажете «хватит». Последнюю каплю добавляете сами, и&nbsp;синий становится розовым.</p></figcaption>
         </figure>
       </div>
-      <ol class="ritual-steps">
-        <li><span class="step-num" data-glyph="sun"></span><h3>Варим</h3><p>Настойки на&nbsp;травах и&nbsp;специях стоят в&nbsp;котле с&nbsp;вечера. Анчан, бузина, копчёный ананас.</p></li>
-        <li><span class="step-num" data-glyph="air"></span><h3>Дымим</h3><p>Колпак с&nbsp;дымом розмарина, пузырь дыма поверх бокала, горящая корица.</p></li>
-        <li><span class="step-num" data-glyph="mercury"></span><h3>Подаём</h3><p>Последнюю каплю добавляете вы. И&nbsp;смотрите, как синий становится розовым.</p></li>
-      </ol>
+    </section>
+
+    <section id="book" class="menu" aria-labelledby="menu-title">
+      <header class="n-head reveal">
+        <p class="kicker">Книга рецептов</p>
+        <h2 id="menu-title">Двенадцать зелий по&nbsp;старой книге</h2>
+        <p>Наведите на&nbsp;зелье или нажмите, чтобы прочитать состав и&nbsp;побочный эффект.</p>
+      </header>
+      <div class="menu-grid" data-menu></div>
+    </section>
+
+    <section id="interior" class="gal" aria-labelledby="gal-title" data-gal>
+      <div class="gal-pin">
+        <header class="n-head gal-head">
+          <p class="kicker">Зал</p>
+          <h2 id="gal-title">Погреб, библиотека и&nbsp;склеп на&nbsp;десятерых</h2>
+        </header>
+        <div class="gal-track" data-gal-track>
+          <figure class="gal-item gal-wide"><img src="photos/cellar.jpg" alt="Сводчатый погреб с рядом бочек, на бочках горят свечи" loading="lazy" /><figcaption><b>Склеп</b>Стол на&nbsp;десятерых между бочками. Свечи меняем каждый вечер</figcaption></figure>
+          <figure class="gal-item"><img src="photos/shaker.jpg" alt="Бармен в кепке трясёт шейкер на фоне полок с бутылками" loading="lazy" /><figcaption><b>Стойка</b>Садитесь ближе: бармен расскажет, что в&nbsp;котле сегодня</figcaption></figure>
+          <figure class="gal-item gal-wide"><img src="photos/library.jpg" alt="Старый зал с деревянным потолком, люстрами, камином и бархатными креслами" loading="lazy" /><figcaption><b>Библиотека</b>Кресла у&nbsp;камина и&nbsp;шахматы. Книги можно читать, рецепты не&nbsp;выносить</figcaption></figure>
+          <figure class="gal-item"><img src="photos/candle.jpg" alt="Свеча в чёрном подсвечнике на деревянной стойке, огни в размытом фоне" loading="lazy" /><figcaption><b>Столы</b>На&nbsp;каждом свеча и&nbsp;руна. Руна и&nbsp;есть номер стола</figcaption></figure>
+          <figure class="gal-item gal-wide"><img src="photos/copper.jpg" alt="Барная станция: ряды стальных шейкеров, джиггеров и стаканов для смешивания" loading="lazy" /><figcaption><b>Лаборатория</b>Шейкеры, джиггеры и&nbsp;колбы. Здесь варят настойки на&nbsp;неделю вперёд</figcaption></figure>
+          <figure class="gal-item"><img src="photos/stairs.jpg" alt="Тёмный зал с лампами на стене, мягкими креслами и деревянной лестницей" loading="lazy" /><figcaption><b>Лестница вниз</b>Двенадцать ступеней от&nbsp;улицы до&nbsp;котла</figcaption></figure>
+        </div>
+      </div>
     </section>
 
     <section id="hall" class="hall-sec folio" aria-labelledby="hall-title">
       <div class="folio-frame" aria-hidden="true"></div>
       <header class="sec-head">
         <svg class="sec-runes" aria-hidden="true" data-runes="othala,mannaz,dagaz"></svg>
-        <h2 id="hall-title">Зал и&nbsp;бронь</h2>
+        <h2 id="hall-title">Схема зала и&nbsp;бронь</h2>
         <p>Шестнадцать столов, камин, библиотека и&nbsp;склеп на&nbsp;десятерых. Нажмите на&nbsp;руну стола, и&nbsp;он&nbsp;попадёт в&nbsp;записку.</p>
       </header>
       <div class="hall-grid">
