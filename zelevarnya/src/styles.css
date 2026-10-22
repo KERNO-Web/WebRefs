@@ -428,3 +428,25 @@ svg .roughen { filter: url(#ink-rough); }
   a, button, select, label, summary, [role='button'], [role='tab'], .btn, .tbl, .turn, .seal, .book-tabs button { cursor: url('./cursor-athame-lit.svg') 4 4, pointer; }
   input[type='text'], input[type='tel'] { cursor: text; }
 }
+
+/* ---------- the hero's pinned photos: the bar itself, taped to the page ---------- */
+.hero-photos { position: absolute; z-index: 4; right: calc(var(--frame) + 14px); top: 19%; width: 262px; height: 420px; }
+.pin { position: absolute; margin: 0; padding: 8px 8px 36px; background: #f8f2e2; box-shadow: 0 1px 0 rgb(60 40 20 / 0.12), 0 14px 26px -12px rgb(50 30 10 / 0.6); }
+.pin img { display: block; width: 100%; height: auto; }
+.pin figcaption { position: absolute; left: 10px; right: 8px; bottom: 7px; font-family: 'Marck Script', var(--serif); font-size: 18px; line-height: 1; color: #3b2814; }
+.pin::before { content: ''; position: absolute; top: -11px; left: 50%; width: 74px; height: 24px; translate: -50% 0; rotate: -5deg; background: rgb(232 219 176 / 0.78); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
+.pin-a { width: 182px; top: 0; right: 62px; rotate: 5deg; }
+.pin-b { width: 214px; top: 214px; right: 0; rotate: -4deg; }
+.pin-b::before { rotate: 4deg; }
+@media (max-width: 640px) {
+  /* on a phone: cauldron, then the photos, then the copy */
+  .hero { display: flex; flex-direction: column; }
+  .hero-art { order: 1; align-self: flex-start; }
+  .hero-photos { order: 2; position: relative; right: auto; top: auto; width: auto; height: 200px; margin: 2vw calc(var(--frame) + var(--pad)) 0; }
+  .hero-copy { order: 3; }
+  .pin { padding: 6px 6px 28px; }
+  .pin figcaption { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; bottom: 6px; }
+  .pin-a { width: 47%; left: 2%; right: auto; }
+  .pin-b { width: 50%; top: 22px; right: 0; }
+  .hero .hole { left: auto !important; }
+}

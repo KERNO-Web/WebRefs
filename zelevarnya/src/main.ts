@@ -92,6 +92,8 @@ onFrame((t, f) => living.forEach((x) => { if (x.g.ownerSVGElement && x.g.ownerSV
 // Photo and video credits (CC BY / BY-SA need attribution).
 const credits = document.querySelector('[data-credits]')!;
 credits.innerHTML = POTIONS.map((p) => `<li>${p.name}: <a href="${p.credit.source}" target="_blank" rel="noopener">${p.credit.author}</a>, <a href="${p.credit.licenseUrl}" target="_blank" rel="noopener">${p.credit.license}</a>, Wikimedia Commons; кадрировано и тонировано</li>`).join('')
+  + '<li>Фото «Голубой блейзер»: <a href="https://commons.wikimedia.org/wiki/File:Bartender_preparing_a_blue_blazer_cocktail03.jpg" target="_blank" rel="noopener">Stefan Giesbert (cocktailpodcast.de)</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>, Wikimedia Commons; кадрировано и тонировано</li>'
+  + '<li>Фото зала: <a href="https://commons.wikimedia.org/wiki/File:Interior_of_the_old_Public_Bar_in_The_Spreadeagle_-_geograph.org.uk_-_1742671.jpg" target="_blank" rel="noopener">tristan forward</a>, <a href="https://creativecommons.org/licenses/by-sa/2.0/" target="_blank" rel="noopener">CC BY-SA 2.0</a>, Wikimedia Commons; тонировано</li>'
   + '<li>Видео ритуала: <a href="https://mixkit.co/free-stock-video/bartender-makes-an-experimental-cocktail-4172/" target="_blank" rel="noopener">Mixkit 4172</a> и <a href="https://mixkit.co/free-stock-video/experimental-cocktail-in-the-bar-4416/" target="_blank" rel="noopener">Mixkit 4416</a>, Mixkit Free License</li>';
 
 // ---------- mood: light, dust, watchers, candles, marginalia ----------
@@ -103,7 +105,9 @@ document.querySelectorAll<HTMLElement>('.sec-head').forEach((h, i) => {
   candle(h, 'candle-r', 120, i * 2 + 2);
 });
 const hero = $('.hero');
-burntHole(hero, { position: 'absolute', right: '7%', top: '20%' }, 130, 1);
+// the right side of the hero holds the pinned photos; the eyes watch from the gap
+// between the left tentacle and the title
+burntHole(hero, { position: 'absolute', left: '19%', top: '13%' }, 130, 1);
 inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
 // pinned to the copy, just above the heading, so a short screen never slides the heading into it;
 // the arrow points up and over to the cauldron
