@@ -27,9 +27,10 @@ const goLabel = (p: Project) => (CASES[p.slug] ? 'Смотреть кейс' : '
 const clip = (p: Project) =>
   CLIPS.has(p.slug) ? `<video class="clip" data-src="clips/${p.slug}.mp4" muted playsinline loop preload="none" aria-hidden="true"></video>` : '';
 // a work without a loop has a living cover: a slow drift and a passing sheen (styles.css)
+const status = (p: Project) => p.label ?? (p.real ? 'Коммерческий проект' : 'Авторский концепт');
 const shot = (p: Project, alt: string, extra = '') =>
-  `<div class="shot${CLIPS.has(p.slug) ? '' : ' cover'}"><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div></div>`;
-const kind = (p: Project) => `<p class="kind">${esc(p.label ?? (p.real ? 'Коммерческий проект' : 'Авторский концепт'))}</p>`;
+  `<div class="shot${CLIPS.has(p.slug) ? '' : ' cover'}"><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div><span class="chip"${p.accent ? ` style="--dot:${esc(p.accent)}"` : ''}><i></i>${esc(status(p))}</span></div>`;
+const kind = (p: Project) => `<p class="kind">${esc(status(p))}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');
 

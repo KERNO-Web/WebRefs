@@ -421,35 +421,16 @@ main {
   --drift-x: -2%;
   --drift-y: -1.4%;
   --drift-t: 15s;
-  --sheen-d: 0.8s;
 }
 .grid .card:nth-child(3n + 2) .shot.cover {
   --drift-x: 1.8%;
   --drift-y: -1%;
   --drift-t: 19s;
-  --sheen-d: 4.2s;
 }
 .grid .card:nth-child(3n) .shot.cover {
   --drift-x: -1%;
   --drift-y: 1.4%;
   --drift-t: 17s;
-  --sheen-d: 7.1s;
-}
-/* now and then a sheen passes over the cover, like light across glass */
-.shot.cover .shot-in::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.12) 46%, rgba(255, 255, 255, 0.28) 50%, rgba(255, 255, 255, 0.1) 54%, transparent 62%);
-  translate: -110% 0;
-  pointer-events: none;
-}
-.shot.cover.live .shot-in::after {
-  animation: sheen 10s cubic-bezier(0.45, 0, 0.4, 1) var(--sheen-d, 2s) infinite;
-}
-@keyframes sheen {
-  0% { translate: -110% 0; }
-  18%, 100% { translate: 110% 0; }
 }
 @keyframes drift {
   from {
@@ -459,15 +440,41 @@ main {
     transform: scale(1.09) translate(var(--drift-x, -1.5%), var(--drift-y, -1%));
   }
 }
-.scrolling .shot.cover img,
-.scrolling .shot.cover .shot-in::after {
+.scrolling .shot.cover img {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
-  .shot.cover img,
-  .shot.cover .shot-in::after {
+  .shot.cover img {
     animation: none !important;
   }
+}
+/* the status chip sits on the card, not in the picture, so the cover's drift
+   never carries it under the rounded corner */
+.shot .chip {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 26px;
+  padding: 0 11px 0 9px;
+  border-radius: 999px;
+  background: rgba(20, 20, 22, 0.78);
+  color: #f2efe9;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.shot .chip i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--dot, var(--accent));
 }
 /* the work's video loop sits over the still and fades in once it is playing;
    the still's own idle light steps aside meanwhile */
