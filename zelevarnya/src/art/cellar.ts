@@ -5,15 +5,15 @@ import { arc, el, P, poly, rng, stroke, swell } from '../ink';
 // a short vaulted stairway and the lit door of the bar at the bottom. All in the hero art's user space
 // (viewBox 0 -60 1000 1080).
 
-export const ARCH = { x: 500, spring: 500, ri: 230, ro: 312, floor: 1020 };
+export const ARCH = { x: 500, spring: 430, ri: 230, ro: 312, floor: 1020 };
 /** the doorway runs on below the art's edge, so a tall phone screen never sees parchment under the stairs */
 const BOT = 1700;
 /** vanishing point of the vault, at eye level */
-export const VP: P = [500, 610];
+export const VP: P = [500, 540];
 /** how deep the end wall stands: the corridor is short, the bar's door large */
 const END = 0.5;
 /** the bar's door in the end wall: centre of the doorway, half width, height */
-export const DOOR = { x: 500, bottom: 890, hw: 96, h: 262 };
+export const DOOR = { x: 500, bottom: 855, hw: 96, h: 262 }; // bottom = floorAt(END)
 
 const depth = (p: P, s: number): P => [VP[0] + (p[0] - VP[0]) * s, VP[1] + (p[1] - VP[1]) * s];
 /** floor under a receding arch: lower the further down the stairs */

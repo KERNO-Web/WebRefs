@@ -9,7 +9,7 @@ import { NS } from './ink';
 import { buildNight } from './night';
 import { POTIONS } from './data';
 import { paintPaper } from './paper';
-import { burntHole, candle, candlelight, dust, inkBlot, note } from './atmosphere';
+import { candle, candlelight, dust, inkBlot, note } from './atmosphere';
 
 paintPaper();
 const cellar = buildHero();
@@ -111,14 +111,9 @@ document.querySelectorAll<HTMLElement>('.sec-head').forEach((h, i) => {
   candle(h, 'candle-r', 120, i * 2 + 2);
 });
 const hero = $('.hero');
-// the right side of the hero holds the pinned photos; the eyes watch from the gap
-// between the left tentacle and the title
-burntHole(hero, { position: 'absolute', left: '19%', top: '13%' }, 130, 1);
 inkBlot(hero, { position: 'absolute', right: '15%', top: '12%' }, 70, 2);
 const hall = $('.hall');
 note(hall, 'стол XIII не бронировать. Никогда.', { position: 'absolute', left: '50%', top: '103%', transform: 'rotate(-3deg)' }, { dx: 30, dy: -70, bend: -0.3 });
 note(hall, 'там кто-то есть', { position: 'absolute', left: '14%', top: '104%', transform: 'rotate(3deg)' }, { dx: 190, dy: -50, bend: 0.25 });
-const foot = $('.foot');
-burntHole(foot, { position: 'absolute', right: '4%', top: '-30px' }, 90, 8);
 
 start();
