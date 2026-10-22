@@ -396,3 +396,57 @@ mark {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* ===================================================================
+   Redesign layer (Oct 2026): the archive desk of a logistics company in
+   the taiga, not a grey three-pane app. Kraft paper and spruce green; the
+   library is a kraft folder, the source is a real sheet lying on a stack;
+   questions are set like a heading, answers like the regulation itself.
+   =================================================================== */
+:root {
+  --bg: #ece5d6;
+  --panel: #e2d8c4;
+  --paper: #fffdf6;
+  --raise: #fffdf6;
+  --ink: #1d1a14;
+  --muted: #5a5244;
+  --faint: #857b69;
+  --line: #d6ccb8;
+  --line-2: #c5b89f;
+  --accent: #1f4a37;
+  --accent-soft: #dfe7dc;
+  --shadow: 0 1px 0 rgb(70 52 24 / 0.06), 0 16px 34px -18px rgb(70 52 24 / 0.45);
+  --r: 4px;
+}
+body::before {
+  content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3 0 0 0 0 .22 0 0 0 0 .1 0 0 0 .08 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.top { background: var(--paper); }
+.talk { border-radius: 999px; }
+/* the library: a kraft folder, documents as file tabs */
+.lib { background: var(--panel); border-right: 0; box-shadow: inset -1px 0 0 var(--line-2); }
+.lib h2 { font: 700 13px var(--font); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.docs { border-top: 0; gap: 6px; }
+.doc { background: var(--paper); border-radius: 2px 10px 2px 2px; box-shadow: 0 1px 0 rgb(70 52 24 / 0.1); border-bottom: 0 !important; }
+.doc:hover { background: #fff; }
+.doc b { font-size: 15.5px; }
+.drop { background: rgb(255 253 246 / 0.5); border-color: var(--line-2); border-radius: 4px; }
+/* the conversation */
+.chat { background: var(--bg); }
+.hello h1 { font-size: clamp(34px, 4vw, 52px); line-height: 1.04; letter-spacing: -0.02em; text-wrap: balance; }
+.hello p { font: 400 17px/1.55 var(--serif); color: var(--muted); }
+.hint { font: 400 16px/1.4 var(--serif); }
+.feed > .msg.me { font: 700 22px/1.25 var(--serif); letter-spacing: -0.01em; text-wrap: balance; border-top-color: var(--line-2); }
+.feed > .msg.me::before { content: 'Вопрос сотрудника'; font: 600 11px var(--font); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.feed > .msg.bot:not(.skel) { padding: 18px 22px 18px 24px; border-left: 0; background: var(--paper); border-radius: 2px 14px 14px 14px; box-shadow: var(--shadow); position: relative; }
+.feed > .msg.bot:not(.skel)::before { content: ''; position: absolute; left: 0; top: 18px; bottom: 18px; width: 3px; border-radius: 0 3px 3px 0; background: var(--accent); }
+.msg.bot .ans { font: 400 17px/1.62 var(--serif); }
+.cite { border-radius: 999px; min-width: 20px; height: 20px; font-family: var(--font); }
+.ask { border-radius: 999px; background: var(--paper); box-shadow: var(--shadow); border-color: transparent; }
+.ask button { border-radius: 999px; }
+/* the source: a sheet on a stack of sheets */
+.viewer { background: var(--panel); border-left: 0; padding: 18px 18px 0; }
+.viewer-doc { background: var(--paper); border-radius: 3px 3px 0 0;
+  box-shadow: 0 1px 0 rgb(70 52 24 / 0.08), 4px 5px 0 -1px #f5efe2, 4px 5px 0 0 var(--line-2), 8px 10px 0 -1px #efe7d6, 8px 10px 0 0 var(--line-2), 0 24px 40px -24px rgb(70 52 24 / 0.5); }
+.viewer-head h2 { font-size: 21px; }
