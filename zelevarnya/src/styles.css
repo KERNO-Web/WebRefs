@@ -105,7 +105,8 @@ svg .roughen { filter: url(#ink-rough); }
 
 /* ---------- hero ---------- */
 .hero { min-height: max(100svh, 760px); padding-top: 0; padding-bottom: 0; overflow: hidden; display: grid; }
-.hero-art { position: absolute; left: 59%; top: 66px; height: min(calc(100svh - 10px), 1100px); width: auto; aspect-ratio: 1000 / 1080; transform: translateX(-50%); overflow: visible; }
+/* the arch stands on the page's inner frame line; its height is what is left under the top bar */
+.hero-art { position: absolute; left: 59%; bottom: calc(var(--frame) + 6px); height: min(calc(100% - var(--frame) - 76px), 1100px); width: auto; aspect-ratio: 1000 / 1080; transform: translateX(-50%); overflow: visible; }
 .hero-art .title { font-family: var(--display); font-weight: 700; fill: var(--ink); letter-spacing: 0.02em; }
 .tentacles { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .hero-copy { position: absolute; left: calc(var(--frame) + var(--pad)); bottom: calc(var(--frame) + 44px); max-width: 380px; z-index: 3; }
@@ -182,7 +183,7 @@ svg .roughen { filter: url(#ink-rough); }
 /* ---------- responsive ---------- */
 @media (max-width: 1100px) {
   .nav { display: none; }
-  .hero-art { left: 64%; height: min(calc(100svh - 120px), 900px); }
+  .hero-art { left: 64%; height: min(calc(100% - var(--frame) - 100px), 900px); }
   .mark { margin-right: auto; }
 }
 @media (max-width: 900px) {
@@ -225,7 +226,7 @@ svg .roughen { filter: url(#ink-rough); }
 .hall .plan { pointer-events: auto; }
 .top { transition: transform 0.3s; }
 @media (max-height: 520px) and (orientation: landscape) {
-  .hero-art { height: 540px; left: 67%; }
+  .hero-art { left: 67%; }
   .hero-copy { max-width: 290px; }
   .hero-lead { font-size: 25px; }
   .hero-sub { display: none; }
@@ -311,7 +312,7 @@ svg .roughen { filter: url(#ink-rough); }
   /* phones: the scene and the copy stack instead of overlapping, so a short screen
      can't slide the heading over the arch */
   .hero { display: block; min-height: 0; padding-bottom: calc(var(--frame) + 26px); }
-  .hero-art { position: relative; display: block; margin-top: 24px; top: auto; }
+  .hero-art { position: relative; display: block; margin-top: 24px; top: auto; bottom: auto; }
   .hero-copy { position: relative; left: auto; right: auto; bottom: auto; margin: 6vw calc(var(--frame) + var(--pad)) 0; }
   /* the eyes watch from beside the arch, clear of it */
   .hero .hole { top: calc(24px + 88vw) !important; bottom: auto; right: 1% !important; transform: scale(0.58); }
