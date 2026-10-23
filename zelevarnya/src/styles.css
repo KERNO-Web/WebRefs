@@ -178,6 +178,7 @@ svg .roughen { filter: url(#ink-rough); }
 .rune-strip { width: 100%; height: 44px; display: block; margin-bottom: 26px; overflow: visible; }
 .foot-row { display: flex; flex-wrap: wrap; gap: 14px 40px; justify-content: space-between; align-items: baseline; font-size: 18px; }
 .foot-mark { font-family: var(--display); font-weight: 700; font-size: 30px; }
+.foot-links { display: grid; gap: 6px; justify-items: end; }
 
 /* ---------- section tentacles ---------- */
 .edge-tentacle { position: absolute; pointer-events: none; overflow: visible; z-index: 2; }
@@ -215,6 +216,7 @@ svg .roughen { filter: url(#ink-rough); }
   .seal-row { flex-direction: column; align-items: center; text-align: center; gap: 40px; }
   .slip { transform: none; }
   .foot-row { flex-direction: column; }
+  .foot-links { justify-items: start; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

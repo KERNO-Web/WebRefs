@@ -322,3 +322,8 @@ body {
 .variant a[aria-current='page'] { background: var(--yellow); color: var(--graphite); }
 .variant a:not([aria-current]):hover { color: #fff; }
 @media (max-width: 700px) { .variant a { padding: 6px 10px; font-size: 12.5px; } .brand small { display: none; } }
+
+/* ссылка на канал рядом с «Обсудить проект» */
+.talk-ch { text-decoration: none; color: #c9ccd0; font-weight: 600; font-size: 14px; white-space: nowrap; padding: 0 6px; }
+.talk-ch:hover { color: #fff; }
+@media (max-width: 620px) { .talk-ch { display: none; } }

@@ -15,6 +15,7 @@
   window.__kernoEndCta = true;
 
   const TG = 'https://t.me/Kernodev';
+  const CH = 'https://t.me/KernoRefs';
   const SESSION_KEY = 'kerno-end-cta-shown';
   const script = document.currentScript;
   const scope = script && script.dataset.kernoScope;
@@ -133,6 +134,7 @@ html body .kerno-cta.kerno-cta .kc-o{pointer-events:none}
           '<div class="kc-row">' +
             '<a class="kc-btn" href="' + TG + '" target="_blank" rel="noopener">Написать в&nbsp;Telegram</a>' +
             '<a class="kc-handle" href="' + TG + '" target="_blank" rel="noopener">@Kernodev</a>' +
+            '<a class="kc-handle" href="' + CH + '" target="_blank" rel="noopener">Канал с&nbsp;кейсами ↗</a>' +
           '</div>' +
         '</div>' +
         '<div class="kc-foot"><span>© KERNØ</span><span>Прокрутите вверх, чтобы вернуться</span></div>' +

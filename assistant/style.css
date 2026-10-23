@@ -450,3 +450,8 @@ body::before {
 .viewer-doc { background: var(--paper); border-radius: 3px 3px 0 0;
   box-shadow: 0 1px 0 rgb(70 52 24 / 0.08), 4px 5px 0 -1px #f5efe2, 4px 5px 0 0 var(--line-2), 8px 10px 0 -1px #efe7d6, 8px 10px 0 0 var(--line-2), 0 24px 40px -24px rgb(70 52 24 / 0.5); }
 .viewer-head h2 { font-size: 21px; }
+
+/* ссылка на канал рядом с «Обсудить проект» */
+.talk-ch { text-decoration: none; font-weight: 600; font-size: 14px; white-space: nowrap; color: var(--muted); padding: 8px 4px; }
+.talk-ch:hover { color: var(--ink); }
+@media (max-width: 820px) { .talk-ch { display: none; } }
