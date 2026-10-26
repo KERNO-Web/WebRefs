@@ -7,6 +7,7 @@ import { startContact } from './contact';
 import { CATS, PROJECTS, type Cat, type Project } from './projects';
 import { visibleProjects } from './settings';
 import { CASES } from './cases';
+import { bindCaseMedia, chapterCase, unbindCaseMedia } from './case-chapters';
 import { CLIPS } from './clips';
 import { bindPreviews } from './previews';
 
@@ -193,6 +194,12 @@ function renderCase(slug: string) {
   const c = CASES[slug];
   if (!p || !c) return false;
   const next = list.length > 1 ? list[(i + 1) % list.length] : null;
+  // a case told through its work has its own layout (case-chapters.ts)
+  if (c.chapters) {
+    caseView.innerHTML = chapterCase(p, c, next, { esc, glue, arrow: ARROW, route: CASE_ROUTE });
+    bindCaseMedia(caseView);
+    return true;
+  }
   const year = p.year ? `<div><dt>Год</dt><dd>${p.year}</dd></div>` : '';
   caseView.innerHTML = `
     <article class="case wrap">
@@ -257,6 +264,7 @@ async function route() {
   home.hidden = view !== 'home';
   admin.hidden = !isAdmin;
   caseView.hidden = !isCase;
+  if (!isCase) unbindCaseMedia();
   if (isAdmin) {
     document.title = 'KERNØ — закреп на главной';
     if (!adminMounted) {
