@@ -1819,12 +1819,13 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   .ec-open {
     justify-self: stretch;
   }
-  /* the draft strip is too thin at phone width: keep its middle, taller */
+  /* the whole draft strip is too thin at phone width: keep one team and the
+     centre panel, cut exactly at the frame between the panel and the other team */
   .ec-band .ec-frame {
-    aspect-ratio: 16 / 7;
+    aspect-ratio: 1112 / 364;
   }
   .ec-band .ec-frame > video {
-    object-position: center top;
+    object-position: left center;
   }
   .ec-w-row {
     grid-template-columns: 64px minmax(0, 1fr);

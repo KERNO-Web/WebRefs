@@ -18,7 +18,8 @@ const pad = (n: number) => String(n).padStart(2, '0');
 export function chapterCase(p: Project, c: Case, next: Project | null, h: Helpers) {
   const { esc, glue, arrow } = h;
   // hyphenated words (тай-брейк, плей-офф, epc-tournament.com) never break at the hyphen
-  const t = (s: string) => esc(glue(s)).replace(/[\p{L}\d]+(?:[-–][\p{L}\d]+)+(?:\.\p{L}+)?/gu, '<span class="nw">$&</span>');
+  // and the last word of a line of copy never hangs alone
+  const t = (s: string) => esc(glue(s.replace(/ (\S+)\s*$/, '\u00a0$1'))).replace(/[\p{L}\d]+(?:[-–][\p{L}\d]+)+(?:\.\p{L}+)?/gu, '<span class="nw">$&</span>');
   const chapters = c.chapters ?? [];
   const external = p.external || /^https?:/.test(p.href) ? ' target="_blank" rel="noopener"' : '';
 
