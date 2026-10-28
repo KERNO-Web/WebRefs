@@ -823,8 +823,8 @@ main {
   opacity: 0;
   transform: translate3d(0, 28px, 0);
   transition:
-    opacity 1s var(--ease),
-    transform 1.2s var(--ease);
+    opacity 1s var(--ease) var(--d, 0s),
+    transform 1.2s var(--ease) var(--d, 0s);
 }
 .js .rv.in {
   opacity: 1;
@@ -1308,6 +1308,10 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   aspect-ratio: var(--r);
   background: var(--ec-ink);
   clip-path: polygon(var(--ec-cut) 0, 100% 0, 100% 100%, 0 100%, 0 var(--ec-cut));
+  /* own layer: a clipped, playing video otherwise makes macOS Chrome/Safari repaint
+     the text next to it, and the lead above the hero blinks once the loop starts */
+  isolation: isolate;
+  transform: translateZ(0);
 }
 /* small marks get a heavier line so it holds at 11–12px */
 .ec-num::before,
@@ -1361,6 +1365,10 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   gap: 32px var(--gap);
   align-items: end;
   margin-top: clamp(40px, 6vw, 88px);
+  /* the title and lead keep a layer of their own, apart from the hero video below */
+  position: relative;
+  isolation: isolate;
+  transform: translateZ(0);
 }
 .ec-kind {
   margin: 0 0 12px;
@@ -2561,6 +2569,292 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   }
 }
 
+/* ---------- hero: what it is, said plainly ---------- */
+
+.role span {
+  display: block;
+  max-width: 25em;
+  margin-top: 8px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--grey);
+}
+
+/* ---------- the offer between the works ---------- */
+
+.promo {
+  grid-column: 1 / -1;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 20px clamp(32px, 4vw, 72px);
+  align-items: end;
+  padding: clamp(28px, 4.4vw, 72px);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    radial-gradient(55% 95% at var(--mx, 82%) var(--my, 18%), rgba(124, 108, 255, 0.26), transparent 70%),
+    var(--panel);
+}
+/* the Ø from the logo, drawn in once when the block arrives */
+.promo-o {
+  position: absolute;
+  z-index: -1;
+  right: -3%;
+  top: 50%;
+  height: 150%;
+  width: auto;
+  transform: translate3d(0, -50%, 0);
+  fill: none;
+  stroke: rgba(124, 108, 255, 0.34);
+  stroke-width: 0.7;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  pointer-events: none;
+}
+.promo-o path {
+  transition-delay: 0.45s;
+}
+.promo-o > * {
+  transition: stroke-dashoffset 1.6s var(--ease);
+}
+.promo.in .promo-o > *,
+html:not(.js) .promo-o > * {
+  stroke-dashoffset: 0;
+}
+.promo-k {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.promo-t {
+  grid-column: 1;
+  grid-row: 2 / span 2;
+  align-self: start;
+  font-size: clamp(32px, 3.7vw, 60px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.promo-d {
+  grid-column: 2;
+  max-width: 30em;
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.5;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+.promo-a {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 18px;
+  margin-top: 8px;
+}
+.promo-h {
+  font-size: 14px;
+  color: var(--grey);
+}
+.promo .btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s var(--ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  .promo .btn:hover svg {
+    transform: translate3d(2px, -2px, 0);
+  }
+}
+
+/* ---------- terms: four facts before the contact ---------- */
+
+.terms {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 40px var(--gap);
+  margin: clamp(64px, 7vw, 104px) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.terms li {
+  position: relative;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+.terms li:nth-child(2) { --d: 0.07s; }
+.terms li:nth-child(3) { --d: 0.14s; }
+.terms li:nth-child(4) { --d: 0.21s; }
+/* the violet rule runs along the top line as the fact arrives */
+.terms li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -1px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.1s var(--ease) calc(var(--d, 0s) + 0.2s);
+}
+.terms li.in::before,
+html:not(.js) .terms li::before {
+  transform: none;
+}
+.terms-n {
+  display: block;
+  font-size: clamp(28px, 2.5vw, 40px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.terms h3 {
+  margin: 10px 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--accent-h);
+}
+.terms p {
+  max-width: 28em;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-2);
+  text-wrap: pretty;
+}
+
+/* the steps light up one after another once the statement is in view */
+.js .process li {
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
+}
+.js .process li:nth-child(1) { transition-delay: 0.3s; }
+.js .process li:nth-child(2) { transition-delay: 0.38s; }
+.js .process li:nth-child(3) { transition-delay: 0.46s; }
+.js .process li:nth-child(4) { transition-delay: 0.54s; }
+.js .process li:nth-child(5) { transition-delay: 0.62s; }
+.pause.in .process li {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---------- phone menu ---------- */
+
+.burger {
+  display: none;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.burger i {
+  position: absolute;
+  left: 11px;
+  right: 11px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--text);
+  transition: transform 0.3s var(--ease);
+}
+.burger i:first-child {
+  top: 15px;
+}
+.burger i:last-child {
+  top: 22px;
+}
+.menu-open .burger i:first-child {
+  transform: translate3d(0, 3.5px, 0) rotate(45deg);
+}
+.menu-open .burger i:last-child {
+  transform: translate3d(0, -3.5px, 0) rotate(-45deg);
+}
+html.menu-open {
+  overflow: hidden;
+}
+.sheet {
+  position: fixed;
+  inset: var(--top) 0 0 0;
+  z-index: 29;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 16px var(--pad) calc(24px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  opacity: 0;
+  transform: translate3d(0, -8px, 0);
+  transition:
+    opacity 0.3s var(--ease),
+    transform 0.35s var(--ease);
+}
+.sheet.on {
+  opacity: 1;
+  transform: none;
+}
+.sheet > a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.5s var(--ease),
+    color 0.2s;
+}
+.sheet > a span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--grey);
+  font-variant-numeric: tabular-nums;
+}
+.sheet > a.on {
+  color: var(--accent-h);
+}
+.sheet.on > a {
+  opacity: 1;
+  transform: none;
+}
+.sheet.on > a:nth-child(1) { transition-delay: 0.05s; }
+.sheet.on > a:nth-child(2) { transition-delay: 0.1s; }
+.sheet.on > a:nth-child(3) { transition-delay: 0.15s; }
+.sheet.on > a:nth-child(4) { transition-delay: 0.2s; }
+.sheet-foot {
+  display: grid;
+  gap: 18px;
+  margin-top: auto;
+  padding-top: 32px;
+}
+.sheet-foot .btn {
+  width: 100%;
+}
+.sheet-ch {
+  text-align: center;
+  font-size: 15px;
+  color: var(--text-2);
+}
+
+@media (max-width: 1080px) {
+  .terms {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* ---------- phone ---------- */
 
 @media (max-width: 760px) {
@@ -2581,9 +2875,39 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
     gap: 18px;
     font-size: 14px;
   }
-  .top-nav a[href='#contact'],
-  .top-nav a[href='#build'] {
+  .top-nav,
+  .tg-ch {
     display: none;
+  }
+  .burger {
+    display: block;
+  }
+  .top-cta {
+    margin-left: auto;
+  }
+  .promo {
+    grid-template-columns: minmax(0, 1fr);
+    border-radius: 16px;
+  }
+  .promo-t,
+  .promo-d,
+  .promo-a {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .promo-o {
+    height: 90%;
+    top: 4%;
+    right: -18%;
+    transform: none;
+    opacity: 0.7;
+  }
+  .promo-a .btn {
+    flex: 1 1 100%;
+  }
+  .terms {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
   }
   .tg {
     padding: 0 12px;

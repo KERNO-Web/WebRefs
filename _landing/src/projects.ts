@@ -166,7 +166,7 @@ export const PROJECTS: Project[] = [
     real: true,
     title: 'FACEMAIL',
     description:
-      'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы. Работает на facemail.site.',
+      'Приватный почтовый клиент: входящие, папки, панель чтения, тёмная и светлая темы.',
     thumbnail: 'covers/facemail.jpg',
     href: 'https://facemail.site',
     tags: ['Веб-почта', 'UI', 'Продукт'],
@@ -234,7 +234,7 @@ export const PROJECTS: Project[] = [
     real: true,
     title: 'Esports Pro Circuit',
     description:
-      'Турнирная платформа по Dota 2: сезоны, сетки, матч-центр, ростеры, заявки команд и админка. Работает на epc-tournament.com.',
+      'Турнирная платформа по Dota 2: сезоны, сетки, матч-центр, ростеры, заявки команд и админка.',
     thumbnail: 'covers/epc.jpg',
     href: 'https://epc-tournament.com',
     tags: ['Киберспорт', 'Платформа', 'Next.js'],

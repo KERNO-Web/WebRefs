@@ -138,11 +138,52 @@ function render() {
   renderGrid(rest);
 }
 
+/* ---------- the offer between the works ---------- */
+
+const TG = 'https://t.me/Kernodev';
+const PROMO: Record<Cat | 'all', { t: string; d: string }> = {
+  all: {
+    t: 'Нужно похожее для вашего бизнеса?',
+    d: 'Пришлите ссылку на свой сайт или опишите задачу парой фраз. Отвечу, как сделаю, за сколько дней и сколько это будет стоить.',
+  },
+  sites: {
+    t: 'Нужен сайт?',
+    d: 'Пришлите ссылку на текущий сайт или на тот, который нравится. Первую версию лендинга покажу через 1–2 дня.',
+  },
+  apps: {
+    t: 'Нужен кабинет, CRM или сервис?',
+    d: 'Опишите, как сейчас ведёте работу: в таблице, в чате, на бумаге. Первую рабочую версию покажу через 3–4 дня.',
+  },
+  bots: {
+    t: 'Нужен бот или Mini App?',
+    d: 'Напишите, что клиент должен сделать в Telegram: записаться, заказать, узнать статус. Первая версия бота через 1–2 дня.',
+  },
+  auto: {
+    t: 'Что-то делаете руками каждый день?',
+    d: 'Опишите, откуда приходят заявки и куда вы их переносите. Пример автоматизации на ваших данных покажу на следующий день.',
+  },
+};
+const promo = () => {
+  const m = PROMO[cat ?? 'all'];
+  return `
+      <aside class="promo rv" aria-label="Обсудить задачу">
+        <svg class="promo-o" viewBox="0 0 100 110" aria-hidden="true"><ellipse cx="50" cy="55" rx="38" ry="44" pathLength="1"/><path d="M14 104 86 6" pathLength="1"/></svg>
+        <p class="promo-k">Под вашу задачу</p>
+        <h3 class="promo-t">${esc(glue(m.t))}</h3>
+        <p class="promo-d">${esc(glue(m.d))}</p>
+        <div class="promo-a">
+          <a class="btn btn-accent btn-lg" href="${TG}" target="_blank" rel="noopener">Написать в\u00a0Telegram ${ARROW}</a>
+          <span class="promo-h">@Kernodev, отвечаю сам</span>
+        </div>
+      </aside>`;
+};
+
 function renderGrid(rest: Project[]) {
-  document.getElementById('grid')!.innerHTML = rest
-    .map(
+  // the offer sits after the third row; a short list gets it at the end
+  const at = rest.length > 7 ? 6 : rest.length;
+  const cards = rest.map(
       (r, i) => `
-      <a class="card rv" ${linkAttrs(r)}>
+      <a class="card rv" style="--d:${(i % 2) * 0.07}s" ${linkAttrs(r)}>
         ${shot(r, r.title, ' loading="lazy"')}
         <div class="info">
           <span class="num">${pad(i + 1)}</span>
@@ -151,10 +192,68 @@ function renderGrid(rest: Project[]) {
           <span class="go">${goLabel(r)} ${ARROW}</span>
         </div>
       </a>`,
-    )
-    .join('');
+    );
+  cards.splice(at, 0, promo());
+  document.getElementById('grid')!.innerHTML = cards.join('');
+  bindPromo();
   observeReveals();
   bindPreviews();
+}
+
+// the violet light on the offer follows the pointer
+function bindPromo() {
+  const el = document.querySelector<HTMLElement>('.promo');
+  if (!el || !matchMedia('(hover: hover)').matches) return;
+  el.addEventListener('pointermove', (e) => {
+    const r = el.getBoundingClientRect();
+    el.style.setProperty('--mx', `${((e.clientX - r.left) / r.width) * 100}%`);
+    el.style.setProperty('--my', `${((e.clientY - r.top) / r.height) * 100}%`);
+  });
+}
+
+/* ---------- hero numbers: counted from the list, so they never go stale ---------- */
+
+function renderStats() {
+  const { featured, rest } = visibleProjects();
+  const all = [...featured, ...rest];
+  const n = { all: all.length, live: all.filter((p) => p.real || p.label).length };
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.querySelectorAll<HTMLElement>('[data-stat]').forEach((el) => {
+    const to = n[el.dataset.stat as keyof typeof n];
+    el.textContent = String(to);
+    if (reduce) return;
+    // count up with the hero's entrance; ease-out, so it settles instead of stopping dead
+    const t0 = performance.now() + 450;
+    const tick = (t: number) => {
+      const k = Math.min(1, Math.max(0, (t - t0) / 1100));
+      el.textContent = String(Math.round(to * (1 - (1 - k) ** 3)));
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    el.textContent = '0';
+    requestAnimationFrame(tick);
+  });
+}
+
+/* ---------- phone menu ---------- */
+
+function startMenu() {
+  const btn = document.querySelector<HTMLButtonElement>('.burger')!;
+  const sheet = document.getElementById('sheet')!;
+  const set = (open: boolean) => {
+    btn.setAttribute('aria-expanded', String(open));
+    document.documentElement.classList.toggle('menu-open', open);
+    if (open) {
+      sheet.hidden = false;
+      requestAnimationFrame(() => requestAnimationFrame(() => sheet.classList.add('on')));
+    } else {
+      sheet.classList.remove('on');
+      setTimeout(() => !sheet.classList.contains('on') && (sheet.hidden = true), 350);
+    }
+  };
+  btn.addEventListener('click', () => set(btn.getAttribute('aria-expanded') !== 'true'));
+  sheet.addEventListener('click', (e) => (e.target as HTMLElement).closest('a') && set(false));
+  addEventListener('keydown', (e) => e.key === 'Escape' && sheet.classList.contains('on') && (set(false), btn.focus()));
+  matchMedia('(min-width: 761px)').addEventListener('change', (e) => e.matches && set(false));
 }
 
 /* ---------- reveals ---------- */
@@ -298,27 +397,36 @@ addEventListener('keydown', (e) => {
 
 /* ---------- current section in the top bar ---------- */
 
-const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('.top-nav a')];
+const navLinks = [...document.querySelectorAll<HTMLAnchorElement>('.top-nav a, .sheet > a')];
+const SECTIONS = ['works', 'build', 'how', 'contact'];
+// «how» sits inside «build», so several can be in view at once: the last one wins
+const inView = new Set<string>();
 const spy = new IntersectionObserver(
   (entries) => {
-    for (const e of entries) {
-      const link = navLinks.find((a) => a.hash === `#${e.target.id}`);
-      link?.classList.toggle('on', e.isIntersecting);
-    }
+    for (const e of entries) e.isIntersecting ? inView.add(e.target.id) : inView.delete(e.target.id);
+    const cur = [...SECTIONS].reverse().find((id) => inView.has(id));
+    navLinks.forEach((a) => a.classList.toggle('on', a.hash === `#${cur}`));
   },
   { rootMargin: '-45% 0px -50% 0px' },
 );
-['works', 'build', 'contact'].forEach((id) => spy.observe(document.getElementById(id)!));
+SECTIONS.forEach((id) => spy.observe(document.getElementById(id)!));
 
 // the name rises only once its own face has arrived, so it never jumps from the
-// fallback width to Dela's; a slow network gets 1.5 s before the fallback is used.
+// fallback width to Dela's; a slow network gets 0.9 s before the fallback is used.
 // Then two frames, so the entrance transitions start from their initial state
 Promise.race([
   document.fonts.load("1em 'Dela Gothic One'", 'KERNØ'),
-  new Promise((done) => setTimeout(done, 1500)),
+  new Promise((done) => setTimeout(done, 900)),
 ])
   .catch(() => {})
-  .then(() => requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add('ready'))));
+  .then(() =>
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        document.documentElement.classList.add('ready');
+        renderStats();
+      }),
+    ),
+  );
 route();
 renderCats();
 render();
@@ -326,3 +434,4 @@ startAmbient();
 startHeroFx();
 startCursor();
 startContact();
+startMenu();
