@@ -65,10 +65,15 @@ export function startAmbient() {
 
   /* ---------- the rare swell, never on a schedule you can feel ---------- */
 
+  // the class sits on the back layer, not on <html>: a root class re-styles the
+  // whole page, and the blurred top bar repainted with a visible blink each time.
+  // With the shader on, the violet field is hidden and the swell has nothing to do
+  const back = document.querySelector<HTMLElement>('.ambient');
   const fire = () => {
+    if (root.classList.contains('has-fx') || !back) return;
     if (performance.now() - lastScroll > 800 && !document.hidden) {
-      root.classList.add('swell');
-      setTimeout(() => root.classList.remove('swell'), 6100);
+      back.classList.add('swell');
+      setTimeout(() => back.classList.remove('swell'), 6100);
     }
     setTimeout(fire, rand(12000, 20000));
   };

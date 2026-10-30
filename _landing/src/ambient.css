@@ -72,7 +72,7 @@
   75% { scale: 0.9; }
 }
 /* the rare "background swell": one field leans in for a few seconds */
-.swell .light-a {
+.ambient.swell .light-a {
   opacity: calc(var(--o) * 1.9);
   transition: opacity 3s ease-in-out;
 }
