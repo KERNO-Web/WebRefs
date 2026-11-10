@@ -223,14 +223,14 @@ button {
   height: 40px;
   padding: 0 16px 0 14px;
   border-radius: 10px;
-  background: var(--accent-btn);
-  color: #fff;
+  border: 1px solid var(--line);
+  color: var(--text);
   font-size: 14px;
   font-weight: 600;
-  transition: background-color 0.3s;
+  transition: border-color 0.3s;
 }
 .tg:hover {
-  background: var(--accent-h);
+  border-color: var(--accent);
 }
 .top-cta {
   display: flex;
@@ -376,15 +376,13 @@ main {
   color: var(--grey);
 }
 .js .hero-side {
-  opacity: 0;
-  transform: translate3d(0, 12px, 0);
-  transition:
-    opacity 1s 0.3s var(--ease),
-    transform 1s 0.3s var(--ease);
+  animation: hero-side-in 1s 0.3s var(--ease) backwards;
 }
-.ready .hero-side {
-  opacity: 1;
-  transform: none;
+@keyframes hero-side-in {
+  from {
+    opacity: 0.001;
+    transform: translate3d(0, 12px, 0);
+  }
 }
 
 /* ---------- cards ---------- */
@@ -460,7 +458,7 @@ main {
     transform: scale(1.09) translate(var(--drift-x, -1.5%), var(--drift-y, -1%));
   }
 }
-.scrolling .shot.cover img {
+.works.scrolling .shot.cover img {
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {
@@ -468,33 +466,23 @@ main {
     animation: none !important;
   }
 }
-/* the status chip sits on the card, not in the picture, so the cover's drift
-   never carries it under the rounded corner */
-.shot .chip {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  z-index: 2;
-  display: inline-flex;
+/* the work's status: a quiet line under the title, nothing sits over the cover */
+.meta {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  height: 26px;
-  padding: 0 11px 0 9px;
-  border-radius: 999px;
-  background: rgba(20, 20, 22, 0.78);
-  color: #f2efe9;
-  font-size: 12.5px;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: -0.005em;
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  pointer-events: none;
+  line-height: 1.4;
+  color: var(--grey);
 }
-.shot .chip i {
-  width: 7px;
-  height: 7px;
+.meta i {
+  flex: none;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--dot, var(--accent));
+  background: var(--dot, var(--grey));
 }
 /* the work's video loop sits over the still and fades in once it is playing;
    the still's own idle light steps aside meanwhile */
@@ -676,19 +664,10 @@ main {
   border-top: 1px solid var(--line);
 }
 .pin {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
   font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-}
-.pin i {
-  width: 8px;
-  height: 8px;
-  background: var(--accent);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--grey);
 }
 .feat-idx {
   font-size: 13px;
@@ -2537,8 +2516,16 @@ html.has-cursor :is(input, textarea, select, [contenteditable='true']) {
   }
 }
 @media (max-width: 760px) {
-  .hero-cta .btn {
-    flex: 1 1 auto;
+  .hero-cta {
+    flex-direction: column;
+    gap: 12px;
+  }
+  /* on a phone the main action comes first */
+  .hero-cta .btn-accent {
+    order: -1;
+  }
+  .hero-cta .btn-hero {
+    height: 48px;
   }
   .svc summary,
   .svc-body {

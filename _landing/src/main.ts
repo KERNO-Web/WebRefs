@@ -30,7 +30,10 @@ const clip = (p: Project) =>
 // a work without a loop has a living cover: a slow drift and a passing sheen (styles.css)
 const status = (p: Project) => p.label ?? (p.real ? 'Коммерческий проект' : 'Авторский концепт');
 const shot = (p: Project, alt: string, extra = '') =>
-  `<div class="shot${CLIPS.has(p.slug) ? '' : ' cover'}"><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div><span class="chip"${p.accent ? ` style="--dot:${esc(p.accent)}"` : ''}><i></i>${esc(status(p))}</span></div>`;
+  `<div class="shot${CLIPS.has(p.slug) ? '' : ' cover'}"><div class="shot-in"><img src="${esc(p.thumbnail)}" alt="${esc(alt)}" width="1200" height="630"${extra} />${clip(p)}</div></div>`;
+// the work's status sits under its title, never over the cover
+const meta = (p: Project) =>
+  `<p class="meta"${p.accent ? ` style="--dot:${esc(p.accent)}"` : ''}><i aria-hidden="true"></i>${esc(status(p))}</p>`;
 const kind = (p: Project) => `<p class="kind">${esc(status(p))}</p>`;
 // short Russian words stay with the next word, never at a line end
 const glue = (s: string) => s.replace(/(^|[\s(«])(в|к|с|у|о|а|и|я|на|по|за|из|от|до|для|не|но|же|без)\s/gi, '$1$2\u00a0').replace(/\s—/g, '\u00a0—');
@@ -101,7 +104,7 @@ function render() {
   }
   const head = `
     <header class="feat-head">
-      <span class="pin"><i aria-hidden="true"></i>Закреплено</span>
+      <span class="pin">Закреплено</span>
     </header>`;
   if (featured.length > 1) {
     feat.removeAttribute('style');
@@ -114,6 +117,7 @@ function render() {
         ${shot(p, `${p.title} — первый экран`, i === 0 ? ' fetchpriority="high"' : '')}
         <div class="feat-info">
           <h2 class="card-title">${esc(p.title)}</h2>
+          ${meta(p)}
           <p class="desc">${esc(glue(p.description))}</p>
           <span class="go">${goLabel(p)} ${ARROW}</span>
         </div>
@@ -129,6 +133,7 @@ function render() {
       ${shot(p, `${p.title} — первый экран`, ' fetchpriority="high"')}
       <div class="feat-info">
         <h2 class="card-title">${esc(p.title)}</h2>
+          ${meta(p)}
         <p class="desc">${esc(glue(p.description))}</p>
         <span class="go">${goLabel(p)} ${ARROW}</span>
       </div>
@@ -188,6 +193,7 @@ function renderGrid(rest: Project[]) {
         <div class="info">
           <span class="num">${pad(i + 1)}</span>
           <h3 class="card-title">${esc(r.title)}</h3>
+          ${meta(r)}
           <p class="desc">${esc(glue(r.description))}</p>
           <span class="go">${goLabel(r)} ${ARROW}</span>
         </div>
@@ -231,6 +237,8 @@ function renderStats() {
     };
     el.textContent = '0';
     requestAnimationFrame(tick);
+    // no frames, no count: the real number still lands
+    setTimeout(() => (el.textContent = String(to)), 1800);
   });
 }
 
@@ -414,19 +422,21 @@ SECTIONS.forEach((id) => spy.observe(document.getElementById(id)!));
 // the name rises only once its own face has arrived, so it never jumps from the
 // fallback width to Dela's; a slow network gets 0.9 s before the fallback is used.
 // Then two frames, so the entrance transitions start from their initial state
+// If frames never come (a throttled or headless tab), a timer shows the page anyway
+let shown = false;
+const show = () => {
+  if (shown) return;
+  shown = true;
+  document.documentElement.classList.add('ready');
+  renderStats();
+};
+setTimeout(show, 1500);
 Promise.race([
   document.fonts.load("1em 'Dela Gothic One'", 'KERNØ'),
   new Promise((done) => setTimeout(done, 900)),
 ])
   .catch(() => {})
-  .then(() =>
-    requestAnimationFrame(() =>
-      requestAnimationFrame(() => {
-        document.documentElement.classList.add('ready');
-        renderStats();
-      }),
-    ),
-  );
+  .then(() => requestAnimationFrame(() => requestAnimationFrame(show)));
 route();
 renderCats();
 render();

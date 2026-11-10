@@ -42,15 +42,19 @@ export function startAmbient() {
 
   /* ---------- scrolling yields: the swell waits, covers hold still ---------- */
 
+  const works = document.getElementById('works');
   let scrollTimer = 0;
   let lastScroll = 0;
   addEventListener(
     'scroll',
     () => {
       lastScroll = performance.now();
-      root.classList.add('scrolling');
+      // the class sits on the works grid, not on <html>, and is set once per
+      // gesture: a root class re-styles the whole page under the blurred top bar,
+      // which repainted with a visible blink on the first bit of scroll
+      if (works && !works.classList.contains('scrolling')) works.classList.add('scrolling');
       clearTimeout(scrollTimer);
-      scrollTimer = window.setTimeout(() => root.classList.remove('scrolling'), 650);
+      scrollTimer = window.setTimeout(() => works?.classList.remove('scrolling'), 650);
     },
     { passive: true },
   );
